@@ -1,0 +1,5 @@
+* text=auto eol=lf
+# Preserve approved document bytes across Windows/Linux checkouts.
+AGENTS.md -text
+docs/MASTER_SPEC_v0.1.md -text
+docs/BUILD_BLUEPRINT_v0.1.md -text

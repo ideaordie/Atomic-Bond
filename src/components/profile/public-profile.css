@@ -1,0 +1,37 @@
+.public-x-profile {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  margin: 12px 0;
+  padding-top: 10px;
+  border-top: 1px solid #294153;
+}
+.public-x-profile > span {
+  font-size: 13px;
+  color: #e0edf4;
+  overflow-wrap: anywhere;
+}
+.public-x-profile small {
+  grid-column: 1;
+  font-size: 10px;
+  color: #aac0cd;
+}
+.public-x-profile a {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #5d8097;
+  border-radius: 10px;
+  color: #d6efff;
+  font-size: 10px;
+  text-decoration: none;
+}
+.public-x-profile a:focus-visible {
+  outline: 2px solid #b9e9ff;
+  outline-offset: 3px;
+}

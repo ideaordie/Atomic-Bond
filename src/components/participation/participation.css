@@ -1,0 +1,286 @@
+.create-bond {
+  position: absolute;
+  z-index: 3;
+  top: 207px;
+  left: 18px;
+  min-height: 44px;
+  border: 1px solid #dfba79;
+  border-radius: 24px;
+  padding: 10px 20px;
+  color: #ffe4b0;
+  background: #17202ce8;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  box-shadow: 0 0 20px #deb57314;
+}
+.bond-dialog {
+  width: min(480px, calc(100% - 28px));
+  max-height: calc(100dvh - 28px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  margin: auto;
+  padding: 24px;
+  border: 1px solid #466578;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #112333, #07111e 65%);
+  color: #e3edf3;
+  box-shadow: 0 24px 100px #000b;
+}
+.bond-dialog::backdrop {
+  background: #020810bf;
+  backdrop-filter: blur(9px);
+}
+.bond-dialog-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+}
+.bond-dialog button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  border: 1px solid #466578;
+  background: #14283b;
+  color: #e3edf3;
+  cursor: pointer;
+  font: inherit;
+}
+.bond-dialog-top button {
+  width: 44px;
+  padding: 0;
+  font-size: 24px;
+}
+.bond-dialog h2 {
+  font-size: clamp(25px, 5vw, 32px);
+  line-height: 1.2;
+  margin: 20px 0 10px;
+  color: #fff0d0;
+}
+.bond-dialog h2:focus {
+  outline: none;
+}
+.bond-dialog p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 12px 0;
+}
+.bond-dialog .development-tag {
+  color: #9bc5da;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  margin: 12px 0 0;
+}
+.bond-dialog .invitation-timer {
+  color: #eac48c;
+  font-size: 12px;
+}
+.bond-dialog .flow-primary {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  border-color: #cbb581;
+  background: linear-gradient(110deg, #dac08d, #f6dcaa);
+  color: #172432;
+  font-weight: 700;
+}
+.bond-dialog .flow-secondary {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+.flow-actions {
+  display: grid;
+  gap: 12px;
+}
+.flow-actions .flow-primary {
+  margin-top: 0;
+}
+.invitation-symbol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  margin: 16px auto 8px;
+  width: 146px;
+  height: 108px;
+  border: 1px solid #607888;
+  border-radius: 16px;
+  font-size: 48px;
+  color: #afd7e7;
+  background: #081724;
+}
+.invitation-symbol span {
+  font-size: 28px;
+  color: #efc881;
+}
+.bond-code {
+  display: block;
+  font-size: 25px;
+  letter-spacing: 0.2em;
+  margin: 20px 0 8px;
+}
+.invitation-url {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #afdff3;
+  font-size: 12px;
+  padding: 12px 0;
+  min-height: 44px;
+}
+.bond-dialog .field-help {
+  color: #a7bdcd;
+  font-size: 12px;
+}
+.atom-form {
+  display: grid;
+  gap: 9px;
+  margin-top: 20px;
+}
+.atom-form label {
+  display: block;
+  font-size: 14px;
+  margin-top: 6px;
+}
+.atom-form label span {
+  color: #adc0cc;
+  font-size: 11px;
+}
+.atom-form input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #5c7689;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #061422;
+  color: #f3f7fa;
+  font: inherit;
+  font-size: 16px;
+}
+.location-field {
+  position: relative;
+}
+.location-field label {
+  margin-bottom: 9px;
+}
+.location-results {
+  position: absolute;
+  z-index: 5;
+  top: 78px;
+  left: 0;
+  right: 0;
+  box-shadow: 0 12px 24px #0008;
+  list-style: none;
+  padding: 4px;
+  margin: 5px 0;
+  border: 1px solid #698b9f;
+  border-radius: 12px;
+  background: #11293a;
+  max-height: 192px;
+  overflow: auto;
+}
+.location-results li {
+  padding: 10px;
+  min-height: 56px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.bond-dialog .location-empty {
+  padding: 12px;
+  margin-top: 5px;
+  font-size: 12px;
+}
+.location-results li[aria-selected="true"],
+.location-results li:hover {
+  background: #24485c;
+}
+.location-results strong,
+.location-results span,
+.location-selected strong,
+.location-selected span {
+  display: block;
+  font-size: 13px;
+}
+.location-results span,
+.location-selected span {
+  color: #bcd1df;
+  font-size: 12px;
+  margin-top: 3px;
+}
+.location-selected {
+  border-left: 2px solid #88cdb8;
+  padding: 6px 12px;
+  background: #15352e66;
+}
+.flow-error {
+  border: 1px solid #e6a098;
+  border-radius: 10px;
+  padding: 12px;
+  color: #ffdbd6;
+  background: #4b2628;
+}
+.verification-address {
+  font-size: 22px !important;
+  overflow-wrap: anywhere;
+  color: #c5e7f5;
+}
+.bond-pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px 0;
+}
+.bond-pair div {
+  display: grid;
+  gap: 8px;
+}
+.bond-pair span {
+  color: #acc6d4;
+  font-size: 11px;
+}
+.bond-pair strong {
+  font-size: 18px;
+  color: #f4d49d;
+}
+.impact-metrics {
+  margin: 20px 0;
+}
+.impact-metrics div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #294153;
+  font-size: 14px;
+}
+.impact-metrics dd {
+  margin: 0;
+  color: #f5d49e;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.bond-dialog .growth-callout {
+  color: #b5e7d9;
+  padding-left: 12px;
+  border-left: 2px solid #78bba9;
+}
+.bond-dialog :is(button, input, a):focus-visible {
+  outline: 2px solid #b9e9ff;
+  outline-offset: 3px;
+}
+@media (min-width: 700px) {
+  .create-bond {
+    top: 146px;
+    left: auto;
+    right: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bond-dialog {
+    scroll-behavior: auto;
+  }
+}

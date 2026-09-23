@@ -1,0 +1,13 @@
+node_modules
+.pnpm-store
+.vercel
+artifacts
+.next
+pnpm-lock.yaml
+next-env.d.ts
+playwright-report
+test-results
+coverage
+AGENTS.md
+docs/MASTER_SPEC_v0.1.md
+docs/BUILD_BLUEPRINT_v0.1.md
