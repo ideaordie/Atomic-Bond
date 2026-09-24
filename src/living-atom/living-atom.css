@@ -257,6 +257,33 @@
   box-shadow: 0 10px 36px #0009;
   z-index: 4;
 }
+.atom-context {
+  max-height: 45svh;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  scrollbar-gutter: stable;
+}
+.context-title > div {
+  min-width: 0;
+}
+.context-title .context-alias {
+  color: #f0f7fc;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.2;
+  margin: 4px 0;
+}
+.context-relationship {
+  font-size: 11px;
+  color: #c4e5f7;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 12px 0 0;
+}
+.atom-context .view-network {
+  position: sticky;
+  bottom: 0;
+}
 .context-title {
   display: flex;
   gap: 10px;
@@ -264,6 +291,7 @@
   padding-right: 25px;
 }
 .context-avatar {
+  flex-shrink: 0;
   width: 36px;
   height: 36px;
   display: grid;

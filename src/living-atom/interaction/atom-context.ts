@@ -32,6 +32,17 @@ export function atomContext(
   const countries = new Set(
     members.map((node) => node.metadata?.countryCode).filter(Boolean),
   );
+  const cities = new Set(
+    members
+      .filter((node) => node.metadata?.city)
+      .map((node) =>
+        JSON.stringify([
+          node.metadata?.countryCode,
+          node.metadata?.region,
+          node.metadata?.city,
+        ]),
+      ),
+  );
   const directEdge =
     distance === 1
       ? graph.edges.find(
@@ -48,6 +59,7 @@ export function atomContext(
     directCount: network.neighbors.get(selectedId)!.size,
     regionCount: regions.size,
     countryCount: countries.size,
+    cityCount: cities.size,
     bondedAt: directEdge?.createdAt,
   };
 }

@@ -7,6 +7,55 @@ baseline and v0.1 engine report remain historical, unchanged documents.
 
 ## Preserved foundation
 
+### Atom identity context — Task #5.1 / v0.5.1
+
+Selection opens a public context panel without changing the camera or centered
+Atom. **View their network** remains the explicit recenter action. The panel
+always shows `ATOM #<publicId>` and displays a prominent trimmed alias only when
+provided. Missing alias and X values create no empty rows or placeholder text.
+
+The validated X handle and **VIEW ON X** share one keyboard-accessible external
+link, with a 44px minimum target and visible focus. The URL is constructed from
+the normalized handle; no stored URLs are used. Opening X leaves the current
+network state intact and continues to state that ownership is not verified.
+
+Relationship distance and the deterministic shortest path now originate from
+`originalId` (the user's Atom), even when another Atom is the camera center.
+Direct Bonds are distinguished from indirect connections. Compact paths show
+YOU, intermediate dots (or a count for long paths), and the destination alias or
+public number. The accessible path names each public participant. A path
+describes connectivity only, never inherited trust.
+
+Network size includes the selected Atom and all reachable people. Reach retains
+regions/countries and adds known cities, deduplicated by country/region/city;
+city coverage is partial. Home region remains coarse. Only explicitly selected
+GraphNode public fields are rendered; private identity records are not inputs.
+
+The panel is capped at 45% of the small viewport height, scrolls vertically when
+needed, wraps long names, and keeps the recenter action sticky. The Living Atom
+remains visible around it. Existing motion, scene layout and fixtures are intact.
+
+Unit tests cover all four alias/X combinations, public-only rendering, invalid
+URLs, direct and indirect paths, and user-relative context after recentering.
+Browser tests cover long aliases, maximum-length handles, external keyboard
+navigation, selection without recentering, explicit recentering, and screenshots
+for each optional-field combination at all three reference viewports. Existing
+indirect-context captures remain part of the regression suite.
+
+Task #5.1 verification (2026-09-23): formatting, lint, TypeScript, production
+build, all 102 unit/graph/service/rendering tests and all 45 Chromium browser
+tests passed. The 96 prior unit tests and 33 prior browser tests remain intact.
+Eighteen captures were visually reviewed at 390 × 844, 768 × 1024 and 1440 × 900:
+all four optional-field combinations, plus direct and four-Bond indirect
+connections. A 60-character unbroken alias and 15-character handle wrap without
+horizontal overflow; the longest mobile panel scrolls to reveal lower details
+while its action stays accessible. Captures are preserved locally under ignored
+`artifacts/references/atom-identity-v0.1/`. No physical-device or hosted deployment
+verification was performed. Master Specification, Blueprint and mock fixture
+hashes match the v0.5.0 baseline.
+
+## Original spatial foundation
+
 The fixture, shared graph types, BFS perspective, base scene budget, camera
 helpers and graph-distance Pulse traversal are unchanged. The original 1,000
 Atoms and 4,062 Bonds still produce 640 reachable people from the starting Atom,

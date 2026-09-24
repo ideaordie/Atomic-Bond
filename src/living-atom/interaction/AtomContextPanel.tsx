@@ -26,14 +26,14 @@ export function AtomContextPanel({
     return () => window.clearInterval(timer);
   }, []);
   const context = useMemo(
-    () => atomContext(graph, centerId, atomId),
-    [graph, centerId, atomId],
+    () => atomContext(graph, originalId, atomId),
+    [graph, originalId, atomId],
   );
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, [atomId]);
-  const from = centerId === originalId ? "you" : "this Atom";
+  const alias = context.selected.displayName?.trim();
   const homeRegion =
     context.selected.metadata?.homeRegion ??
     [context.selected.metadata?.region, context.selected.metadata?.countryCode]
@@ -41,29 +41,23 @@ export function AtomContextPanel({
       .join(", ");
   const relationship =
     context.distance === 0
-      ? "Your current perspective"
+      ? "Your Atom"
       : context.distance === undefined
-        ? "Not connected to this perspective"
+        ? "Not connected to you"
         : context.distance === 1
-          ? `Directly Bonded to ${from}`
-          : `${context.distance} Bonds from ${from}`;
+          ? "Directly Bonded to you"
+          : `${context.distance} Bonds from you`;
   const path = context.path;
   const pathLabels = path.map((node, index) =>
-    index === 0
-      ? centerId === originalId
-        ? "YOU"
-        : "CURRENT"
-      : `#${node.publicId}`,
+    index === 0 ? "YOU" : node.displayName?.trim() || `ATOM #${node.publicId}`,
   );
-  const compactPath =
-    pathLabels.length <= 4
-      ? pathLabels
-      : [
-          pathLabels[0]!,
-          pathLabels[1]!,
-          `… ${pathLabels.length - 3} more …`,
-          pathLabels[pathLabels.length - 1]!,
-        ];
+  const compactPath = [
+    "YOU",
+    ...(path.length <= 6
+      ? path.slice(1, -1).map(() => "●")
+      : [`${path.length - 2} people`]),
+    alias || `ATOM #${context.selected.publicId}`,
+  ];
   return (
     <aside
       className="atom-context"
@@ -84,11 +78,23 @@ export function AtomContextPanel({
         </span>
         <div>
           <h2 ref={heading} tabIndex={-1}>
-            Atom #{context.selected.publicId}
+            ATOM #{context.selected.publicId}
           </h2>
-          <p data-testid="relationship">{relationship}</p>
+          {alias && (
+            <p className="context-alias" data-testid="atom-alias">
+              {alias}
+            </p>
+          )}
         </div>
       </div>
+      <PublicXProfile profiles={context.selected.socialProfiles} />
+      <p
+        className="context-relationship"
+        data-testid="relationship"
+        aria-label={`Connection to you: ${relationship}`}
+      >
+        {relationship}
+      </p>
       <dl className="context-metrics">
         <div>
           <dt>Network</dt>
@@ -97,6 +103,8 @@ export function AtomContextPanel({
         <div>
           <dt>Reach</dt>
           <dd>
+            {context.cityCount} known{" "}
+            {context.cityCount === 1 ? "city" : "cities"} ·{" "}
             {context.regionCount} regions · {context.countryCount} countries
           </dd>
         </div>
@@ -118,7 +126,6 @@ export function AtomContextPanel({
         </p>
       )}
       {homeRegion && <p className="bond-date">Home region: {homeRegion}</p>}
-      <PublicXProfile profiles={context.selected.socialProfiles} />
       <button
         type="button"
         className="view-network"

@@ -13,6 +13,22 @@
   protected the exact supplied v0.2 file from formatting and line-ending changes.
   No application code changed; Task #5.2 has not begun.
 
+## 0.5.1 — Task #5.1 / Atom Identity Context
+
+- Added prominent optional aliases beside the permanent public Atom identifier;
+  absent alias/X data produces no placeholder rows.
+- Made the validated X handle itself part of the accessible external profile
+  link, preserving unverified ownership and the current network state.
+- Anchored relationship context to the user's Atom after perspective changes,
+  with direct/indirect labels and concise accessible relationship paths.
+- Retained network/coarse region information and added partial known-city reach.
+  Bounded panel height, wrapping, and a sticky recenter action support mobile.
+- Added public identity/privacy and browser regression coverage. No backend,
+  frozen specification change, fixture change or Task #6 work was introduced.
+- Verified formatting, lint, TypeScript, production build, 102 unit/graph/service
+  tests and 45 browser tests. Reviewed 18 captures across mobile, tablet and
+  desktop, including all optional identity combinations and relationship types.
+
 ## 0.5.0 — Task #5 / Deployment Foundation
 
 - Audited the valid local Git repository and publication boundaries; no real

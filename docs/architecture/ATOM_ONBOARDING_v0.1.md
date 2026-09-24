@@ -1,5 +1,22 @@
 # Atom Onboarding v0.1 — Task #4
 
+## Public identity context — Task #5.1
+
+The public profile contract remains unchanged: `PublicAtom.alias` maps to
+`GraphNode.displayName`, `publicId` remains the permanent visible number, and
+`socialProfiles` holds optional validated public handles. The context panel
+renders only these public identity fields and coarse geography, never the
+PrivateIdentity record or arbitrary metadata. Future Supabase adapters must
+produce this same public projection; no backend integration is added here.
+
+Aliases are prominent when present and omitted when absent. The X handle itself
+is now part of the accessible **VIEW ON X** link. It uses normalized handle-based
+URL construction, opens externally, and continues to state unverified ownership.
+No email, authentication fields, notification preferences, private identifiers
+or precise coordinates are required or rendered by the panel.
+
+## Original implementation
+
 Implementation decision:
 
 > Creating an Atom requires a verified email address and a validated coarse home region. A conventional username/password login is not required.
