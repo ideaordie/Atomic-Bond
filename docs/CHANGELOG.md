@@ -1,5 +1,18 @@
 # Changelog
 
+## Documentation migration — Master Product Specification v0.2
+
+- Master Product Specification v0.2 approved as the authoritative frozen product
+  specification; v0.2 supersedes v0.1, which remains preserved as historical only.
+- Emotional Pulse added as a core Atomic Bond mechanic, and Feel the Network
+  added as a core network experience.
+- Active emotional states expire after 24 hours. Emotional state is explicitly
+  user-selected and never inferred; it is not an emotional ranking or reputation
+  system.
+- Updated governing references in AGENTS, README and the Build Blueprint, and
+  protected the exact supplied v0.2 file from formatting and line-ending changes.
+  No application code changed; Task #5.2 has not begun.
+
 ## 0.5.0 — Task #5 / Deployment Foundation
 
 - Audited the valid local Git repository and publication boundaries; no real

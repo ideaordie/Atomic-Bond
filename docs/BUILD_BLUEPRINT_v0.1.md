@@ -3,7 +3,7 @@
 ## Build Blueprint — v0.1
 
 **Status:** Initial Engineering Blueprint
-**Product Authority:** Atomic Bond Master Product Specification v0.1
+**Product Authority:** Atomic Bond Master Product Specification v0.2
 **Purpose:** Translate the frozen product specification into a modular, testable, agent-friendly software architecture.
 
 ---
@@ -23,7 +23,7 @@ The system must be:
 * visually distinctive
 * resistant to regression
 
-The application must preserve the principles defined in the frozen Master Product Specification v0.1.
+The application must preserve the principles defined in the frozen Master Product Specification v0.2.
 
 If this blueprint conflicts with the Master Product Specification, the **Master Product Specification takes precedence.**
 
@@ -138,7 +138,7 @@ Initial repository structure:
 atomic-bond/
 │
 ├── docs/
-│   ├── MASTER_SPEC_v0.1.md
+│   ├── MASTER_SPEC_v0.2.md
 │   ├── BUILD_BLUEPRINT_v0.1.md
 │   ├── CHANGELOG.md
 │   └── architecture/
@@ -1115,7 +1115,7 @@ Initial assignment:
 
 > Initialize the Atomic Bond repository according to Build Blueprint v0.1.
 >
-> Add the frozen Master Product Specification v0.1 and Build Blueprint v0.1 under `/docs`.
+> Add the frozen Master Product Specification v0.2 and Build Blueprint v0.1 under `/docs`.
 >
 > Establish the application framework, TypeScript configuration, linting, formatting, unit testing, end-to-end testing and CI.
 >

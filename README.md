@@ -16,7 +16,7 @@ email delivery, or database exist. Participation data resets on refresh.
 ## Authority
 
 Read [AGENTS.md](AGENTS.md), the frozen
-[Master Product Specification](docs/MASTER_SPEC_v0.1.md), and the
+[Master Product Specification v0.2](docs/MASTER_SPEC_v0.2.md), and the
 [Build Blueprint](docs/BUILD_BLUEPRINT_v0.1.md) before substantial changes.
 Specification revisions require explicit approval. Material blueprint changes
 must be proposed before implementation.

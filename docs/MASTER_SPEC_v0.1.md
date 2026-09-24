@@ -1,3 +1,7 @@
+SUPERSEDED
+
+This specification has been superseded by MASTER_SPEC_v0.2.md and is retained for historical reference only.
+
 # ATOMIC BOND
 
 ## Master Product Specification — v0.1
