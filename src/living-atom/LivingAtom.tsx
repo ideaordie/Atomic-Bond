@@ -12,13 +12,29 @@ import {
   zoomCamera,
 } from "./interaction/camera";
 import { useReducedMotion } from "./interaction/use-reduced-motion";
-import { PULSE_STEP_MS, pulseSteps } from "./pulse/traversal";
+import { ACTION_DURATION_MS, pulseStepMs, pulseSteps } from "./pulse/traversal";
 import { idlePulse, type PulsePresentation } from "./pulse/presentation";
 import { AggregateExplorer } from "./interaction/AggregateExplorer";
 import { AtomContextPanel } from "./interaction/AtomContextPanel";
 import "./living-atom.css";
+import "./controls.css";
+import { PulseComposer } from "../components/pulse/PulseComposer";
+import { NetworkEmotionResults } from "../components/pulse/NetworkEmotionResults";
+import { EmotionalSummary } from "../components/pulse/EmotionalSummary";
+import { EMOTION_DEFINITIONS } from "./pulse/emotions";
+import { emotionPaint } from "./pulse/emotion-presentation";
+import { emotionalNetwork } from "../graph/metrics/emotional-network";
+import { networkReach } from "../graph/metrics/network-reach";
+import type { Emotion, EmotionalPulse } from "../types/emotional-pulse";
+
+const EMPTY_PULSES: readonly EmotionalPulse[] = [];
 
 export interface LivingAtomProps {
+  emotional?: {
+    pulses: readonly EmotionalPulse[];
+    now: number;
+    send: (emotion: Emotion) => void;
+  };
   graph: GraphData;
   originalAtomId: string;
   onCreateBond?: () => void;
@@ -30,6 +46,7 @@ export function LivingAtom({
   originalAtomId,
   onCreateBond,
   arrivalId,
+  emotional,
 }: LivingAtomProps) {
   const [selection, setSelection] = useState({
     originalId: originalAtomId,
@@ -40,13 +57,25 @@ export function LivingAtom({
   const [camera, setCamera] = useState(INITIAL_CAMERA);
   const [paused, setPaused] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [feelNetwork, setFeelNetwork] = useState(false);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const feelButton = useRef<HTMLButtonElement>(null);
+  const [sentEmotion, setSentEmotion] = useState<Emotion | null>(null);
+  const pulseButton = useRef<HTMLButtonElement>(null);
+  const traversalStartedAt = useRef(0);
   const [pulse, setPulse] = useState<PulsePresentation>(() =>
     idlePulse(originalAtomId),
   );
   const reducedMotion = useReducedMotion();
   const baseScene = useMemo(
-    () => createScene(graph, selection.selectedId),
-    [graph, selection.selectedId],
+    () =>
+      createScene(
+        graph,
+        selection.selectedId,
+        feelNetwork || sentEmotion !== null,
+      ),
+    [graph, selection.selectedId, feelNetwork, sentEmotion],
   );
   const mode = viewScale(camera.zoom);
   const scene = useMemo(
@@ -54,25 +83,76 @@ export function LivingAtom({
     [baseScene, graph, mode],
   );
   const steps = useMemo(() => pulseSteps(scene), [scene]);
+  const emotionalSummary = useMemo(
+    () =>
+      emotionalNetwork(
+        graph,
+        originalAtomId,
+        emotional?.pulses ?? [],
+        emotional?.now ?? 0,
+      ),
+    [graph, originalAtomId, emotional?.pulses, emotional?.now],
+  );
+  const paints = useMemo(
+    () =>
+      emotionPaint(scene, emotionalSummary.active, feelNetwork, originalAtomId),
+    [scene, emotionalSummary.active, feelNetwork, originalAtomId],
+  );
+  const reach = useMemo(
+    () => networkReach(graph, originalAtomId),
+    [graph, originalAtomId],
+  );
+  const ownPulse = emotionalSummary.active.find(
+    (p) => p.atomId === originalAtomId,
+  );
   const running = pulse.distance !== null;
   const isMine = selection.selectedId === originalAtomId;
 
   useEffect(() => {
     if (!running) return;
+    const stepMs = pulseStepMs(scene.maxDistance);
+    const stop = window.setTimeout(
+      () => {
+        setPulse((previous) => ({
+          ...previous,
+          distance: null,
+          completed: true,
+        }));
+      },
+      Math.max(
+        0,
+        ACTION_DURATION_MS - (performance.now() - traversalStartedAt.current),
+      ),
+    );
     const timer = window.setInterval(() => {
       setPulse((previous) => {
         if (previous.distance === null) return previous;
-        return previous.distance < scene.maxDistance
+        const distance = Math.floor(
+          (performance.now() - traversalStartedAt.current) / stepMs,
+        );
+        return distance <= scene.maxDistance
           ? {
               ...previous,
-              distance: previous.distance + 1,
-              stepStartedAt: performance.now(),
+              distance,
+              stepStartedAt: traversalStartedAt.current + distance * stepMs,
             }
-          : { ...previous, distance: null, completed: true };
+          : previous;
       });
-    }, PULSE_STEP_MS);
-    return () => window.clearInterval(timer);
+    }, stepMs);
+    return () => {
+      window.clearInterval(timer);
+      window.clearTimeout(stop);
+    };
   }, [running, scene.maxDistance, selection.selectedId]);
+
+  useEffect(() => {
+    if (!feelNetwork) return;
+    const timer = window.setTimeout(
+      () => setFeelNetwork(false),
+      ACTION_DURATION_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [feelNetwork]);
 
   const inspect = useCallback((id: string) => {
     setInspectedId(id);
@@ -82,6 +162,7 @@ export function LivingAtom({
     setSelection((state) => selectAtom(state, id));
     setCamera(INITIAL_CAMERA);
     setPulse(idlePulse(id));
+    setSentEmotion(null);
     setInspectedId(null);
     toolsToggle.current?.focus({ preventScroll: true });
   };
@@ -89,6 +170,7 @@ export function LivingAtom({
     setSelection(returnToOriginal);
     setCamera(INITIAL_CAMERA);
     setPulse(idlePulse(originalAtomId));
+    setSentEmotion(null);
     setInspectedId(null);
     setToolsOpen(false);
   };
@@ -106,7 +188,7 @@ export function LivingAtom({
         ? "Your Pulse begins here."
         : `Reaching through Bonds · ${reached} people illuminated`
       : pulse.completed
-        ? `Pulse complete · ${scene.representedCount} people illuminated`
+        ? `Pulse complete · PULSE SENT · ${reach.people} connected Atoms reached, including you · ${reach.cities.length} known cities · ${reach.regions.length} regions · ${reach.countries.length} countries`
         : "One connection opens another world.";
 
   return (
@@ -114,6 +196,11 @@ export function LivingAtom({
       <h1 className="sr-only">The Living Atom</h1>
       <div className="atom-stage">
         <AtomCanvas
+          emotions={paints}
+          feelNetwork={feelNetwork}
+          {...(sentEmotion
+            ? { pulseColor: EMOTION_DEFINITIONS[sentEmotion].color }
+            : {})}
           scene={scene}
           camera={camera}
           reducedMotion={reducedMotion}
@@ -129,56 +216,95 @@ export function LivingAtom({
         />
       </div>
 
-      {isMine && onCreateBond && (
-        <button type="button" className="create-bond" onClick={onCreateBond}>
-          CREATE BOND
-        </button>
+      {!feelNetwork && (
+        <div className="reach-readout" aria-label="Network information">
+          <div>
+            <span>{isMine ? "MY BONDS" : "THEIR BONDS"}</span>
+            <strong data-testid="direct-count">{scene.directCount}</strong>
+            <small>people</small>
+          </div>
+          <div>
+            <span>{isMine ? "MY NETWORK" : "THEIR NETWORK"}</span>
+            <strong data-testid="reachable-count">
+              {scene.reachableCount}
+            </strong>
+            <small>people, including {isMine ? "you" : "this Atom"}</small>
+          </div>
+          <div>
+            <span>REGIONAL REACH</span>
+            <strong>
+              {scene.regionCount} <em>regions</em>
+            </strong>
+            <small>{scene.countryCount} countries</small>
+          </div>
+          <p>Coarse, synthetic geography</p>
+        </div>
       )}
-
-      <div className="reach-readout" aria-label="Network information">
-        <div>
-          <span>{isMine ? "MY BONDS" : "THEIR BONDS"}</span>
-          <strong data-testid="direct-count">{scene.directCount}</strong>
-          <small>people</small>
-        </div>
-        <div>
-          <span>{isMine ? "MY NETWORK" : "THEIR NETWORK"}</span>
-          <strong data-testid="reachable-count">{scene.reachableCount}</strong>
-          <small>people, including {isMine ? "you" : "this Atom"}</small>
-        </div>
-        <div>
-          <span>REGIONAL REACH</span>
-          <strong>
-            {scene.regionCount} <em>regions</em>
-          </strong>
-          <small>{scene.countryCount} countries</small>
-        </div>
-        <p>Coarse, synthetic geography</p>
-      </div>
+      {feelNetwork && <EmotionalSummary summary={emotionalSummary} />}
+      {resultsOpen && (
+        <NetworkEmotionResults
+          graph={graph}
+          viewerId={originalAtomId}
+          pulses={emotional?.pulses ?? EMPTY_PULSES}
+          now={emotional?.now ?? 0}
+          onClose={() => {
+            setResultsOpen(false);
+            feelButton.current?.focus({ preventScroll: true });
+          }}
+        />
+      )}
       <div className="perspective-label" aria-live="polite">
         <span>{isMine ? "YOUR PERSPECTIVE" : "VIEWING THEIR NETWORK"}</span>
         <strong data-testid="selected-atom">#{scene.selected.publicId}</strong>
+        {isMine && ownPulse && (
+          <p className="own-pulse-label" data-testid="own-pulse">
+            Your Pulse: {EMOTION_DEFINITIONS[ownPulse.emotion].label} · active
+            for 24 hours
+          </p>
+        )}
       </div>
-      <button
-        type="button"
-        ref={toolsToggle}
-        className="tools-toggle"
-        aria-expanded={toolsOpen}
-        aria-controls="explorer-tools"
-        onClick={() => {
-          setToolsOpen((value) => !value);
-          setInspectedId(null);
-        }}
+      <div
+        className="secondary-actions"
+        role="group"
+        aria-label="Network exploration"
       >
-        Explore Atoms <span aria-hidden="true">⌕</span>
-      </button>
+        <button
+          type="button"
+          ref={toolsToggle}
+          className="tools-toggle"
+          aria-expanded={toolsOpen}
+          aria-controls="explorer-tools"
+          onClick={() => {
+            setToolsOpen((value) => !value);
+            setInspectedId(null);
+          }}
+        >
+          Explore Atoms <span aria-hidden="true">⌕</span>
+        </button>
 
+        <button
+          type="button"
+          className="my-atom"
+          onClick={home}
+          aria-label="My Atom"
+        >
+          <span>My Atom</span>
+        </button>
+      </div>
       {inspectedId && (
         <AtomContextPanel
           graph={graph}
           centerId={selection.selectedId}
           originalId={originalAtomId}
           atomId={inspectedId}
+          {...(emotionalSummary.active.find((p) => p.atomId === inspectedId)
+            ? {
+                activePulse: emotionalSummary.active.find(
+                  (p) => p.atomId === inspectedId,
+                )!,
+              }
+            : {})}
+          pulseNow={emotional?.now ?? 0}
           onView={() => recenter(inspectedId)}
           onClose={() => {
             setInspectedId(null);
@@ -188,6 +314,61 @@ export function LivingAtom({
       )}
 
       <div className="spatial-dock">
+        <div
+          className="primary-actions"
+          role="group"
+          aria-label="Primary network actions"
+        >
+          {isMine && onCreateBond && (
+            <button
+              type="button"
+              className="create-bond"
+              onClick={onCreateBond}
+            >
+              CREATE BOND
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="pulse-button"
+            ref={pulseButton}
+            onClick={() => {
+              if (running) setPulse(idlePulse(selection.selectedId));
+              else {
+                setComposerOpen(true);
+                setToolsOpen(false);
+                setInspectedId(null);
+              }
+            }}
+          >
+            <span aria-hidden="true" className="pulse-symbol">
+              ◉
+            </span>
+            {running ? "Stop Pulse" : "Pulse"}
+          </button>
+          <button
+            className="feel-network"
+            type="button"
+            aria-pressed={feelNetwork}
+            ref={feelButton}
+            onClick={() => {
+              setFeelNetwork((value) => !value);
+              setResultsOpen(true);
+            }}
+          >
+            FEEL YOUR NETWORK
+          </button>
+        </div>
+        <p
+          className="pulse-status"
+          role="status"
+          data-testid="pulse-status"
+          data-degree={pulse.distance ?? "idle"}
+        >
+          {pulseMessage}
+        </p>
+
         <div className="dock-navigation" aria-label="View controls">
           <button
             type="button"
@@ -210,39 +391,6 @@ export function LivingAtom({
           >
             ◎<span>Recenter</span>
           </button>
-          <button type="button" className="my-atom" onClick={home}>
-            ⌂<span>My Atom</span>
-          </button>
-        </div>
-        <div className="pulse-control">
-          <button
-            type="button"
-            className="pulse-button"
-            onClick={() =>
-              setPulse(
-                running
-                  ? idlePulse(selection.selectedId)
-                  : {
-                      ...idlePulse(selection.selectedId),
-                      distance: 0,
-                      stepStartedAt: performance.now(),
-                    },
-              )
-            }
-          >
-            <span aria-hidden="true" className="pulse-symbol">
-              ◉
-            </span>
-            {running ? "Stop Pulse" : "Send Pulse"}
-          </button>
-          <p
-            className="pulse-status"
-            role="status"
-            data-testid="pulse-status"
-            data-degree={pulse.distance ?? "idle"}
-          >
-            {pulseMessage}
-          </p>
         </div>
         <div className="scale-controls" aria-label="Network scale">
           <span>VIEW</span>
@@ -264,6 +412,28 @@ export function LivingAtom({
           ))}
         </div>
       </div>
+
+      {composerOpen && (
+        <PulseComposer
+          onClose={() => {
+            setComposerOpen(false);
+            pulseButton.current?.focus();
+          }}
+          onSend={(emotion) => {
+            emotional?.send(emotion);
+            if (!isMine) home();
+            setSentEmotion(emotion);
+            traversalStartedAt.current = performance.now();
+            setPulse({
+              ...idlePulse(originalAtomId),
+              distance: 0,
+              stepStartedAt: performance.now(),
+            });
+            setComposerOpen(false);
+            pulseButton.current?.focus();
+          }}
+        />
+      )}
 
       {toolsOpen && (
         <aside
@@ -294,6 +464,9 @@ export function LivingAtom({
               {individualNodes.map((node) => (
                 <option key={node.id} value={node.members[0]}>
                   {node.label}
+                  {feelNetwork
+                    ? ` · ${paints.get(node.id)?.label ?? "No active Pulse"}`
+                    : ""}
                   {node.distance === 0
                     ? " · current center"
                     : node.distance === 1

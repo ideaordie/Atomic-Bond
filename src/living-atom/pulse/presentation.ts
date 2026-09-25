@@ -22,8 +22,9 @@ export function pulsePhase(
   startedAt: number,
   now: number,
   reducedMotion: boolean,
+  stepMs = PULSE_STEP_MS,
 ): number {
   return reducedMotion
     ? 1
-    : Math.max(0, Math.min(1, (now - startedAt) / PULSE_STEP_MS));
+    : Math.max(0, Math.min(1, (now - startedAt) / stepMs));
 }

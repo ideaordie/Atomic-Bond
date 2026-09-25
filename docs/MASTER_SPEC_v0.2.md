@@ -156,7 +156,7 @@ FEELING?** and then **SEND PULSE**.
 
 ## 15. EMOTIONAL PULSE VOCABULARY
 
-Initial approved states: **JOY, CALM, EXCITED, SAD, ANXIOUS, ANGRY,
+Initial approved states: **JOY, CALM, EXCITED, CURIOUS, SAD, ANXIOUS, ANGRY,
 AFRAID**. They are broad, everyday, non-clinical states. Pulse must
 never be presented as diagnosis.
 
@@ -165,7 +165,7 @@ never be presented as diagnosis.
 ## 16. EMOTION COLORS
 
 Initial direction: Joy---yellow/gold; Calm---cyan/teal;
-Excited---orange; Sad---blue; Anxious---magenta/pink; Angry---red;
+Excited---orange; Curious---green; Sad---blue; Anxious---magenta/pink; Angry---red;
 Afraid---purple. Color cannot be the sole accessibility cue; labels/text
 alternatives are required where needed.
 

@@ -1,3 +1,10 @@
+import {
+  ACTION_DURATION_MS,
+  pulseStepMs,
+} from "../../src/living-atom/pulse/traversal";
+import { sendEmotionalPulse } from "./pulse-helpers";
+import { createScene } from "../../src/living-atom/layout/scene";
+import { generateMockGraph, mockAtomId } from "../../src/data/mock/graph";
 import { expect, test } from "@playwright/test";
 
 test("ambient motion advances, freezes in place, resumes smoothly and leaves Pulse independent", async ({
@@ -108,14 +115,20 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   await page.getByRole("button", { name: "Pause motion", exact: true }).click();
   await page.clock.runFor(50);
   const pausedNodes = (await sample()).nodes;
-  await page.getByRole("button", { name: "Send Pulse", exact: true }).click();
-  await page.clock.runFor(900);
+  await sendEmotionalPulse(page);
+  await page.clock.runFor(
+    Math.ceil(
+      pulseStepMs(
+        createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
+      ) * 1.25,
+    ),
+  );
   await expect(page.getByTestId("pulse-status")).toHaveAttribute(
     "data-degree",
     "1",
   );
   const pulsePixels = await pixels();
-  await page.clock.runFor(150);
+  await page.clock.runFor(50);
   expect(
     (await pixels()) !== pulsePixels,
     "Pulse travels while ambient positions are frozen",
@@ -124,13 +137,17 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   await page
     .getByRole("button", { name: "Resume motion", exact: true })
     .click();
-  await page.clock.runFor(600);
+  await page.clock.runFor(
+    pulseStepMs(
+      createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
+    ),
+  );
   await expect(page.getByTestId("pulse-status")).toHaveAttribute(
     "data-degree",
     "2",
   );
   expect((await sample()).nodes).not.toEqual(pausedNodes);
-  await page.clock.runFor(4000);
+  await page.clock.fastForward(ACTION_DURATION_MS);
   await expect(page.getByTestId("pulse-status")).toContainText(
     "Pulse complete",
   );

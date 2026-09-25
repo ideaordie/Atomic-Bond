@@ -1,3 +1,8 @@
+import {
+  ACTION_DURATION_MS,
+  pulseStepMs,
+} from "../../src/living-atom/pulse/traversal";
+import { sendEmotionalPulse } from "./pulse-helpers";
 import { expect, test } from "@playwright/test";
 import { generateMockGraph, mockAtomId } from "../../src/data/mock/graph";
 import { createScene } from "../../src/living-atom/layout/scene";
@@ -115,12 +120,20 @@ test("Pulse advances by degree and recentering cancels the old traversal", async
   await page.goto("/explore");
   await page.clock.install({ time: new Date("2026-09-21T00:00:00Z") });
   await page.clock.pauseAt(new Date("2026-09-21T00:00:01Z"));
-  await page.getByRole("button", { name: "Send Pulse", exact: true }).click();
+  await sendEmotionalPulse(page);
   const status = page.getByTestId("pulse-status");
   await expect(status).toHaveAttribute("data-degree", "0");
   const pulseFrames: string[] = [];
-  for (let distance = 1; distance <= 8; distance++) {
-    await page.clock.runFor(600);
+  for (
+    let distance = 1;
+    distance <= createScene(graph, mockAtomId(0), true).maxDistance;
+    distance++
+  ) {
+    await page.clock.runFor(
+      pulseStepMs(
+        createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
+      ),
+    );
     await expect(status).toHaveAttribute("data-degree", String(distance));
     if (distance <= 2) {
       await page.clock.runFor(20);
@@ -132,10 +145,19 @@ test("Pulse advances by degree and recentering cancels the old traversal", async
     }
   }
   expect(pulseFrames[0]).not.toEqual(pulseFrames[1]);
-  await page.clock.runFor(600);
+  await page.clock.runFor(
+    pulseStepMs(
+      createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
+    ),
+  );
+  await page.clock.fastForward(ACTION_DURATION_MS);
   await expect(status).toContainText("Pulse complete");
-  await page.getByRole("button", { name: "Send Pulse", exact: true }).click();
-  await page.clock.runFor(600);
+  await sendEmotionalPulse(page);
+  await page.clock.runFor(
+    pulseStepMs(
+      createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
+    ),
+  );
   await page.getByRole("button", { name: "Explore Atoms" }).click();
   await page
     .getByLabel("Select an Atom", { exact: true })
@@ -280,8 +302,14 @@ test("spatial views remain usable and provide review captures", async ({
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(canvas).toHaveAttribute("data-motion", "gentle");
   await page.clock.runFor(50);
-  await page.getByRole("button", { name: "Send Pulse", exact: true }).click();
-  await page.clock.runFor(900);
+  await sendEmotionalPulse(page);
+  await page.clock.runFor(
+    Math.ceil(
+      pulseStepMs(
+        createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
+      ) * 1.25,
+    ),
+  );
   await expect(page.getByTestId("pulse-status")).toHaveAttribute(
     "data-degree",
     "1",

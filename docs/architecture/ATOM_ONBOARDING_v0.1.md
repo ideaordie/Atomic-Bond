@@ -162,3 +162,10 @@ the mobile dialog scrolls vertically as needed, and no horizontal overflow was
 found. Six screenshots using synthetic example data are retained in
 [`artifacts/references/x-profile-v0.1`](../../artifacts/references/x-profile-v0.1).
 The frozen Master Specification and Build Blueprint remain unchanged.
+
+## Task #5.2 Pulse boundary
+
+[Emotional Pulse](EMOTIONAL_PULSE_v0.1.md) is supplied by a separate connected-network
+visibility service. It is not a field in PublicAtom or unrestricted Atom serialization.
+Onboarding still collects only the existing required email/home region and optional
+public identity fields; it does not request or infer emotion.

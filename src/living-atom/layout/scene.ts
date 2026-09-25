@@ -26,8 +26,15 @@ export function shellRadius(distance: number): number {
 }
 
 /** Pure and input-order-independent. Aggregates never mix different distances. */
-export function createScene(graph: GraphData, selectedId: string): AtomScene {
+export function createScene(
+  graph: GraphData,
+  selectedId: string,
+  fullNetwork = false,
+): AtomScene {
   const perspective = getPerspective(graph, selectedId);
+  const displayDepth = fullNetwork
+    ? Math.max(...perspective.distances.values())
+    : DISPLAY_DEPTH;
   const groups = new Map<
     string,
     { distance: number; members: string[]; kind: "atom" | "aggregate" }
@@ -36,7 +43,7 @@ export function createScene(graph: GraphData, selectedId: string): AtomScene {
   const ids = [...perspective.distances.keys()].sort();
   for (const id of ids) {
     const distance = perspective.distances.get(id)!;
-    if (distance > DISPLAY_DEPTH) continue;
+    if (distance > displayDepth) continue;
     const count = layerCounts.get(distance) ?? 0;
     const individual =
       distance === 0 || (distance <= 3 && count < ATOMS_PER_LAYER);
@@ -59,7 +66,7 @@ export function createScene(graph: GraphData, selectedId: string): AtomScene {
   );
   const nodes: VisualNode[] = [];
   const representatives = new Map<string, string>();
-  for (let distance = 0; distance <= DISPLAY_DEPTH; distance++) {
+  for (let distance = 0; distance <= displayDepth; distance++) {
     const layer = sortedGroups.filter(
       ([, group]) => group.distance === distance,
     );

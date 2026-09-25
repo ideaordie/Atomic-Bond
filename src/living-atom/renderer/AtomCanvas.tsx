@@ -8,8 +8,12 @@ import { transitionProgress } from "../animation/motion";
 import { createAmbientClock } from "../animation/ambient-clock";
 import { panCamera, zoomCamera } from "../interaction/camera";
 import { createCanvasRenderer } from "./canvas-renderer";
+import type { EmotionPaint } from "../pulse/emotion-presentation";
 
 interface Props {
+  emotions?: ReadonlyMap<string, EmotionPaint>;
+  feelNetwork?: boolean;
+  pulseColor?: string;
   scene: SpatialScene;
   camera: Camera;
   reducedMotion: boolean;
@@ -80,6 +84,9 @@ export function AtomCanvas({
       if (time - lastPaint >= 30 || dirty) {
         const elapsedMs = ambientClock.sample(time, !still && !document.hidden);
         renderer.draw({
+          ...(state.emotions ? { emotions: state.emotions } : {}),
+          ...(state.pulseColor ? { pulseColor: state.pulseColor } : {}),
+          feelNetwork: state.feelNetwork ?? false,
           scene: state.scene,
           camera: state.camera,
           elapsedMs,
@@ -269,6 +276,8 @@ export function AtomCanvas({
         aria-label={`Living Atom network centered on Atom #${props.scene.selected.publicId}`}
         aria-describedby="network-instructions"
         data-testid="atom-canvas"
+        data-emotional-view={props.feelNetwork ? "active" : "structural"}
+        data-pulse-color={props.pulseColor ?? "none"}
         data-motion={props.reducedMotion || props.paused ? "still" : "gentle"}
         data-center={props.scene.selected.id}
         data-representation={props.scene.mode}

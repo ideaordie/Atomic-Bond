@@ -63,10 +63,17 @@ export function paintCore(
   radius: number,
   time: number,
   active: boolean,
+  tone?: string,
 ) {
   const breath = 1 + Math.sin(time / 3400) * 0.08;
-  glow(ctx, point, radius * 4.8 * breath, "#e7ad51", active ? 0.29 : 0.18);
-  glow(ctx, point, radius * 2, "#ffd890", 0.35);
+  glow(
+    ctx,
+    point,
+    radius * 4.8 * breath,
+    tone ?? "#e7ad51",
+    active ? 0.29 : 0.18,
+  );
+  glow(ctx, point, radius * 2, tone ?? "#ffd890", 0.35);
   const sphere = ctx.createRadialGradient(
     point.x - radius * (0.32 + Math.sin(time / 6000) * 0.04),
     point.y - radius * 0.4,
@@ -76,9 +83,9 @@ export function paintCore(
     radius * 1.2,
   );
   sphere.addColorStop(0, "#fff7cf");
-  sphere.addColorStop(0.28, "#f4d992");
-  sphere.addColorStop(0.72, "#c8903c");
-  sphere.addColorStop(1, "#55351b");
+  sphere.addColorStop(0.28, tone ?? "#f4d992");
+  sphere.addColorStop(0.72, tone ? `${tone}99` : "#c8903c");
+  sphere.addColorStop(1, tone ? "#122238" : "#55351b");
   ctx.fillStyle = sphere;
   ctx.beginPath();
   ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
@@ -100,7 +107,7 @@ export function paintCore(
     ctx.fill();
   }
   ctx.restore();
-  ctx.strokeStyle = "#ffe9b7";
+  ctx.strokeStyle = tone ?? "#ffe9b7";
   ctx.lineWidth = 1.15;
   ctx.beginPath();
   ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);

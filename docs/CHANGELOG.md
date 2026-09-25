@@ -1,5 +1,68 @@
 # Changelog
 
+## Network emotion results refinement
+
+- FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS with a measuring indicator and automatically refreshed distribution and regional coverage.
+- Results remain open after the 15-second view until explicitly closed, with responsive scrolling and keyboard focus restoration.
+- Browser coverage checks measurement, refresh, expiration, close and reopening at all three reference sizes.
+
+## Pulse action timing refinement
+
+- Pulse animation and Feel Your Network each stop automatically after 15 seconds.
+  Graph-distance traversal fits within that window; full reach remains accurate.
+- Each activation has an independent timer. Manual stops cancel pending timers.
+  The selected emotion retains its existing 24-hour lifetime.
+- Verified formatting, lint, TypeScript, 116 unit tests, production build and
+  63 browser tests, including exact deadlines and view reactivation at all
+  three reference viewport sizes.
+
+## 0.5.4 — Task #5.4 / Curious Emotional Pulse
+
+- Added Curious as the eighth explicitly selected emotion, with a centralized
+  green identity distinct from Calm and Joy. Updated the approved vocabulary
+  and color entries only in Master Specification v0.2.
+- Existing vocabulary-driven fixtures, selector, propagation, context and regional
+  distributions now include Curious. Lifecycle and privacy boundaries are unchanged.
+- Added Curious fixture, distribution, regional, replacement, context and expiry
+  checks; expanded all-state visual/propagation coverage to eight states.
+- Passed the complete regression suite: formatting, lint, TypeScript, 116 unit
+  tests, production build and 60 browser tests. Reviewed Curious captures at
+  390 × 844, 768 × 1024 and 1440 × 900. No Task #6 work was started.
+
+## 0.5.3 — Task #5.3 / Primary Action UI Refinement
+
+- Renamed the active interface to FEEL YOUR NETWORK, preserving internal APIs.
+- Grouped Create Bond, Pulse and Feel Your Network in a responsive primary dock;
+  grouped Explore Atoms and My Atom as secondary actions, with quieter view utilities.
+- Preserved graph rendering, Pulse lifecycle, participation and selection behavior.
+  Share remains deferred; no new sharing behavior or Task #6 work was introduced.
+- Added responsive control geometry, keyboard and toggle regression coverage;
+  restored focus to the invoking control after the Pulse selector closes.
+- Verified formatting, lint, TypeScript, 114 unit tests, production build and all
+  57 browser tests. Reviewed normal/Feel controls at 390 × 844, 768 × 1024 and
+  1440 × 900; checked alignment, reachability, focus and horizontal overflow.
+
+## 0.5.2 — Task #5.2 / Emotional Pulse & Feel the Network
+
+- Added explicit selection of seven approved emotions, latest-state replacement
+  and exact 24-hour expiry using a controllable local service clock.
+- Added emotional graph propagation across the full connected component, accurate
+  reach feedback, persistent sender color and unchanged recipient states.
+- Added Feel the Network with mixed particle clouds, neutral inactive Atoms,
+  active-only percentages, connected coverage and contextual regional counts.
+- Added active Pulse context while preserving public identity, X links and
+  explicit View their network behavior. Pulse visibility stays separate from
+  unrestricted public Atom serialization.
+- Added deterministic Pulse fixtures, lifecycle/privacy/graph and browser tests,
+  responsive captures and architecture documentation. Existing regression
+  assertions remain, adapted to explicit selection and full traversal.
+- Verified formatting, lint, TypeScript, 114 unit/graph/service tests, production
+  build and all 54 browser regressions. Rebuilt and reran the nine Emotional Pulse
+  browser checks after the final mobile legend stacking fix. Captured all seven
+  emotions and reviewed representative views at all three required viewport sizes.
+- No backend, notifications, Return Pulse, production persistence, frozen
+  specification changes or Task #6 work.
+
 ## Documentation migration — Master Product Specification v0.2
 
 - Master Product Specification v0.2 approved as the authoritative frozen product

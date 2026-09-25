@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { GraphData } from "../../types/graph";
 import { atomContext } from "./atom-context";
 import { PublicXProfile } from "../../components/profile/PublicXProfile";
+import { CurrentPulse } from "../../components/pulse/CurrentPulse";
+import type { EmotionalPulse } from "../../types/emotional-pulse";
 
 export function AtomContextPanel({
   graph,
@@ -12,6 +14,8 @@ export function AtomContextPanel({
   atomId,
   onView,
   onClose,
+  activePulse,
+  pulseNow = 0,
 }: {
   graph: GraphData;
   centerId: string;
@@ -19,6 +23,8 @@ export function AtomContextPanel({
   atomId: string;
   onView: () => void;
   onClose: () => void;
+  activePulse?: EmotionalPulse;
+  pulseNow?: number;
 }) {
   const [openedAt, setOpenedAt] = useState(() => Date.now());
   useEffect(() => {
@@ -88,6 +94,10 @@ export function AtomContextPanel({
         </div>
       </div>
       <PublicXProfile profiles={context.selected.socialProfiles} />
+      <CurrentPulse
+        {...(activePulse ? { pulse: activePulse } : {})}
+        now={pulseNow}
+      />
       <p
         className="context-relationship"
         data-testid="relationship"

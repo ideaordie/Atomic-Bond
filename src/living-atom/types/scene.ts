@@ -1,6 +1,7 @@
 import type { GraphNode } from "../../types/graph";
 import type { SpatialScene } from "./spatial";
 import type { PulseDirection } from "../pulse/presentation";
+import type { EmotionPaint } from "../pulse/emotion-presentation";
 
 export interface Point {
   readonly x: number;
@@ -44,6 +45,9 @@ export interface Camera {
 }
 
 export interface RenderFrame {
+  readonly emotions?: ReadonlyMap<string, EmotionPaint>;
+  readonly feelNetwork?: boolean;
+  readonly pulseColor?: string;
   readonly scene: SpatialScene;
   readonly camera: Camera;
   readonly elapsedMs: number;

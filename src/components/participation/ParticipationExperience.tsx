@@ -10,6 +10,9 @@ import { createMockParticipation } from "../../services/participation/mock-servi
 import { LivingAtom } from "../../living-atom/LivingAtom";
 import { BondFlow } from "./BondFlow";
 import "./participation.css";
+import { MockPulseService } from "../../services/pulses/pulse-service";
+import { mockEmotionalPulses } from "../../data/mock/emotional-pulses";
+import { useEmotionalPulses } from "../pulse/use-emotional-pulses";
 
 export function ParticipationExperience({
   graph: initialGraph,
@@ -20,6 +23,14 @@ export function ParticipationExperience({
 }) {
   const [services] = useState(() => createMockParticipation(initialGraph));
   const [graph, setGraph] = useState(initialGraph);
+  const [pulseService] = useState(
+    () =>
+      new MockPulseService(
+        originalAtomId,
+        mockEmotionalPulses(initialGraph, Date.now()),
+      ),
+  );
+  const emotional = useEmotionalPulses(pulseService, graph, originalAtomId);
   const [invite, setInvite] = useState<Invitation | null>(null);
   const [arrival, setArrival] = useState<string | null>(null);
   const [latest, setLatest] = useState<BondResult | null>(null);
@@ -32,6 +43,7 @@ export function ParticipationExperience({
   return (
     <>
       <LivingAtom
+        emotional={emotional}
         graph={graph}
         originalAtomId={originalAtomId}
         arrivalId={arrival}

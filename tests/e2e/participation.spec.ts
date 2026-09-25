@@ -1,3 +1,4 @@
+import { sendEmotionalPulse } from "./pulse-helpers";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 test.setTimeout(60_000);
@@ -135,7 +136,9 @@ test("new Atom participation, canonical location, verification and Living Atom i
   await page.getByRole("button", { name: "My Atom" }).click();
   await page.getByRole("button", { name: "Regions", exact: true }).click();
   await capture(page, info, "11-regional-reach");
-  await page.getByRole("button", { name: "Send Pulse", exact: true }).click();
+  await page.clock.install();
+  await sendEmotionalPulse(page);
+  await page.clock.fastForward(120_000);
   await expect(page.getByTestId("pulse-status")).toContainText(
     "Pulse complete",
     { timeout: 10_000 },

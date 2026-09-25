@@ -2,8 +2,9 @@
 
 **See how connected we already are.**
 
-Version 0.5.0 adds deployment preparation to optional public X profile handles and local Atom
-onboarding and simulated Bond creation in the
+Version 0.5.3 groups Create Bond, Pulse and Feel Your Network in a responsive
+action dock. Local Emotional Pulse, public identity context, optional X profiles,
+Atom onboarding and simulated Bond creation are available in the
 Living Atom Spatial Experience v0.2 at `/explore`: a
 Canvas 2D human network with perspective depth, irregular local orbits, regional
 particle clouds and graph-aware Pulse. Select someone to inspect their connection,
@@ -41,7 +42,11 @@ on the canvas or through **Explore Atoms**, then choose **View their network**
 to change perspective. **My Atom** restores your starting perspective. Drag to
 pan; use the wheel, pinch or zoom buttons to change scale. **Recenter** resets
 the camera. People, Networks and Regions emphasize different levels of detail.
-**Send Pulse** propagates along real graph connections in the displayed horizon.
+**PULSE** asks how you feel; select one of eight states and **Send Pulse** to
+propagate through your connected network. Your latest state lasts 24 hours or
+until replaced. **FEEL YOUR NETWORK** shows active voluntary states, neutral
+inactive Atoms and a compact coverage summary. Both actions stop automatically
+after 15 seconds; the selected emotion still lasts 24 hours. Pulse data resets on refresh.
 Motion controls are in Explore Atoms and respect the system's reduced-motion
 preference. All data and geography in this demonstration are synthetic.
 
@@ -106,3 +111,8 @@ the local artifact directory.
 See [Atom onboarding](docs/architecture/ATOM_ONBOARDING_v0.1.md) and
 [Bond flow](docs/architecture/BOND_FLOW_v0.1.md) for service boundaries,
 privacy rules, state transitions, and Task #4 verification.
+
+See [Emotional Pulse v0.1](docs/architecture/EMOTIONAL_PULSE_v0.1.md) for the
+lifecycle, connected-network visibility boundary, aggregation and future integration plans.
+
+FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open after the 15-second view ends until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.

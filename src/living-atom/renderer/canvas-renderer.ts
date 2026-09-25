@@ -1,6 +1,7 @@
 import { spatialPositions } from "../animation/spatial-motion";
 import { arrivalVisibility } from "../animation/bond-arrival";
 import { pulsePhase } from "../pulse/presentation";
+import { pulseStepMs } from "../pulse/traversal";
 import type {
   AtomRenderer,
   Point,
@@ -58,6 +59,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
     },
     draw(frame) {
       const { scene, camera } = frame;
+      const energyColor = frame.pulseColor ?? "#ffda8b";
       if (frame.arrival?.id !== arrivalKey) {
         arrivalKey = frame.arrival?.id;
         const previousMembers = new Set(
@@ -82,6 +84,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
         frame.pulseStartedAt,
         frame.now,
         frame.reducedMotion,
+        pulseStepMs(scene.maxDistance),
       );
       const alpha = frame.reducedMotion ? 1 : 0.3 + frame.transition * 0.7;
       const worldPositions = spatialPositions(scene.nodes, frame.elapsedMs);
@@ -180,13 +183,13 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                       ? 0.13
                       : 0.09);
             ctx.strokeStyle = active
-              ? "#e9dfb6"
+              ? energyColor
               : direct
                 ? "#dcae64"
                 : end.tint;
             ctx.lineWidth = active && !sameLevel ? 1.3 : direct ? 0.95 : 0.5;
             if (direct || (active && !sameLevel)) {
-              ctx.shadowColor = active ? "#ffe0a0" : "#dfa85b";
+              ctx.shadowColor = active ? energyColor : "#dfa85b";
               ctx.shadowBlur = active ? 8 : 4;
             }
             ctx.beginPath();
@@ -206,8 +209,8 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 Math.min(1, phase / 0.72),
               );
               ctx.globalAlpha = 0.95;
-              glow(ctx, energy, 9, "#ffda8b", 0.65);
-              ctx.fillStyle = "#fff4cd";
+              glow(ctx, energy, 9, energyColor, 0.65);
+              ctx.fillStyle = energyColor;
               ctx.beginPath();
               ctx.arc(energy.x, energy.y, 1.8, 0, Math.PI * 2);
               ctx.fill();
@@ -228,6 +231,11 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
             (node.id === arrivalNode.id || node.distance === 0)) ||
           (frame.pulseDistance === node.distance &&
             (phase > 0.7 || node.distance === 0 || frame.reducedMotion));
+        const emotion = frame.emotions?.get(node.id);
+        const tint =
+          active && frame.pulseColor
+            ? energyColor
+            : (emotion?.colors[0] ?? node.tint);
         commands.push({
           z: projected.depth,
           id: node.id,
@@ -254,10 +262,18 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 ctx,
                 point,
                 Math.max(12, radius * 1.8),
-                node.tint,
+                tint,
                 active ? 0.5 : 0.14,
               );
               for (let i = 0; i < node.particles.length; i++) {
+                const particleColor =
+                  active && frame.pulseColor
+                    ? energyColor
+                    : (emotion?.colors[
+                        Math.floor(
+                          (i * emotion.colors.length) / node.particles.length,
+                        )
+                      ] ?? node.tint);
                 const particle = node.particles[i]!;
                 const drift = Math.sin(frame.elapsedMs / 6000 + i) * 3;
                 const shimmer =
@@ -277,10 +293,10 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                     ctx,
                     { x, y },
                     active ? 9 : 5,
-                    node.tint,
+                    particleColor,
                     active ? 0.75 : 0.4,
                   );
-                ctx.fillStyle = active ? "#fff3d0" : node.tint;
+                ctx.fillStyle = particleColor;
                 ctx.beginPath();
                 ctx.arc(x, y, i % 7 === 0 ? 1.3 : 0.65, 0, Math.PI * 2);
                 ctx.fill();
@@ -294,13 +310,24 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                     (node.distance === 1 ? 15 : 8) * scale,
                   ) * projected.perspective;
               if (center)
-                paintCore(ctx, point, radius, frame.elapsedMs, active);
+                paintCore(
+                  ctx,
+                  point,
+                  radius,
+                  frame.elapsedMs,
+                  active,
+                  frame.feelNetwork ||
+                    emotion?.activeCount ||
+                    (active && frame.pulseColor)
+                    ? tint
+                    : undefined,
+                );
               else {
                 glow(
                   ctx,
                   point,
                   radius * 3.2,
-                  node.tint,
+                  tint,
                   active ? 0.6 : node.distance === 1 ? 0.25 : 0.16,
                 );
                 const sphere = ctx.createRadialGradient(
@@ -311,11 +338,11 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                   point.y,
                   radius,
                 );
-                sphere.addColorStop(0, `${node.tint}d9`);
-                sphere.addColorStop(0.6, `${node.tint}59`);
+                sphere.addColorStop(0, `${tint}d9`);
+                sphere.addColorStop(0.6, `${tint}59`);
                 sphere.addColorStop(1, "#102238e6");
                 ctx.fillStyle = sphere;
-                ctx.strokeStyle = active ? "#fff4cd" : `${node.tint}cc`;
+                ctx.strokeStyle = active ? energyColor : `${tint}cc`;
                 ctx.lineWidth = 0.8;
                 ctx.beginPath();
                 ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
@@ -329,7 +356,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                     active ? "#fff8e0" : "#e4eff0cc",
                   );
                 if (node.distance === 1) {
-                  ctx.strokeStyle = `${node.tint}19`;
+                  ctx.strokeStyle = `${tint}19`;
                   ctx.lineWidth = 0.5;
                   ctx.beginPath();
                   ctx.ellipse(
@@ -371,6 +398,10 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                   point.x,
                   point.y + radius + 22,
                 );
+                if (emotion?.label) {
+                  ctx.font = "10px Arial";
+                  ctx.fillText(emotion.label, point.x, point.y + radius + 36);
+                }
               }
             }
             ctx.restore();
@@ -398,7 +429,9 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
             ctx.fillStyle = "#7898b0";
             ctx.font = "10px Arial";
             ctx.fillText(
-              `${region.reachableCount} people in reach`,
+              frame.feelNetwork
+                ? `${scene.nodes.filter((node) => node.regionKey === region.key).reduce((sum, node) => sum + (frame.emotions?.get(node.id)?.activeCount ?? 0), 0)} active Pulses`
+                : `${region.reachableCount} people in reach`,
               point.x,
               labelY + 15,
             );

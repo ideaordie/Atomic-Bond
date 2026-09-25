@@ -1,5 +1,10 @@
 # Living Atom Spatial Experience v0.2
 
+Current extension: [Emotional Pulse v0.1](EMOTIONAL_PULSE_v0.1.md) adds
+Task #5.2 state, visibility and full-component Pulse/Feel rendering. The
+eight-Bond horizon described below remains the default structural view; the
+original verification results below are historical.
+
 Task #3 introduced application version 0.3.0; Task #3.1 patches it as 0.3.1.
 This is a Canvas 2D presentation extension
 within the approved blueprint. The Master Specification, blueprint, foundation
