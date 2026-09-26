@@ -148,15 +148,12 @@ test("expiry updates the mounted network exactly at the deadline", async ({
   await expect(page.getByTestId("own-pulse")).toContainText("Sad");
   await page.clock.runFor(1);
   await expect(page.getByTestId("own-pulse")).toHaveCount(0);
-  await page
-    .getByRole("button", { name: "FEEL YOUR NETWORK", exact: true })
-    .click();
   await expect(page.getByTestId("active-pulse-count")).toHaveText(
     "0 active Pulses",
   );
 });
 
-test("Pulse and Feel stop independently at 15 seconds without clearing emotion", async ({
+test("Pulse stops at 15 seconds while Feel stays on until toggled off", async ({
   page,
 }) => {
   await setup(page);
@@ -179,18 +176,33 @@ test("Pulse and Feel stop independently at 15 seconds without clearing emotion",
     "640 connected Atoms reached",
   );
   await expect(feel).toHaveAttribute("aria-pressed", "true");
-  await page.clock.runFor(4999);
+  await page.clock.fastForward(60_000);
   await expect(feel).toHaveAttribute("aria-pressed", "true");
-  await page.clock.runFor(1);
-  await expect(feel).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-emotional-view",
+    "active",
+  );
   await expect(page.getByTestId("own-pulse")).toContainText("Curious");
-  await feel.click();
-  await page.clock.runFor(1000);
-  await feel.click();
-  await feel.click();
-  await page.clock.runFor(14000);
+  await page
+    .getByRole("button", { name: "Close network emotion results" })
+    .click();
   await expect(feel).toHaveAttribute("aria-pressed", "true");
-  await page.clock.runFor(1000);
+  await feel.click();
+  await expect(feel).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    page.getByRole("region", { name: "NETWORK EMOTION RESULTS" }),
+  ).toHaveCount(0);
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-emotional-view",
+    "structural",
+  );
+  await feel.click();
+  await expect(
+    page.getByRole("region", { name: "NETWORK EMOTION RESULTS" }),
+  ).toBeVisible();
+  await page.clock.fastForward(60_000);
+  await expect(feel).toHaveAttribute("aria-pressed", "true");
+  await feel.click();
   await expect(feel).toHaveAttribute("aria-pressed", "false");
 });
 
@@ -241,6 +253,8 @@ test("results measure automatically, refresh and stay open until closed", async 
   ).toBeGreaterThan(200);
   await capture(page, info, "results-ready");
   await page.clock.fastForward(ACTION_DURATION_MS);
+  await expect(feel).toHaveAttribute("aria-pressed", "true");
+  await feel.click();
   await expect(feel).toHaveAttribute("aria-pressed", "false");
   await expect(results).toBeVisible();
   await sendEmotionalPulse(page, "Curious");

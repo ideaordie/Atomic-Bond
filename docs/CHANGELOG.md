@@ -1,5 +1,16 @@
 # Changelog
 
+## Network results activation fix
+
+- Open NETWORK EMOTION RESULTS only when turning Feel Your Network on. Turning it off no longer reopens a dismissed panel; an already open panel remains independently closable.
+- Added regression coverage for dismissal, deactivation and reactivation.
+
+## Feel Your Network manual toggle
+
+- Removed the Feel Your Network timeout; the view stays active until its button is clicked again.
+- Preserved the 15-second Pulse animation, 24-hour emotional state, and independently closable results panel.
+- Updated browser regression coverage for sustained activation, manual stop and reactivation.
+
 ## Network emotion results refinement
 
 - FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS with a measuring indicator and automatically refreshed distribution and regional coverage.

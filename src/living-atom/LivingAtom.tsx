@@ -145,15 +145,6 @@ export function LivingAtom({
     };
   }, [running, scene.maxDistance, selection.selectedId]);
 
-  useEffect(() => {
-    if (!feelNetwork) return;
-    const timer = window.setTimeout(
-      () => setFeelNetwork(false),
-      ACTION_DURATION_MS,
-    );
-    return () => window.clearTimeout(timer);
-  }, [feelNetwork]);
-
   const inspect = useCallback((id: string) => {
     setInspectedId(id);
     setToolsOpen(false);
@@ -354,7 +345,7 @@ export function LivingAtom({
             ref={feelButton}
             onClick={() => {
               setFeelNetwork((value) => !value);
-              setResultsOpen(true);
+              if (!feelNetwork) setResultsOpen(true);
             }}
           >
             FEEL YOUR NETWORK

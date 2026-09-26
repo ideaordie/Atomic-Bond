@@ -64,8 +64,8 @@ excluded until a simulated confirmed Bond connects them.
 
 Pulse presentation stops 15 seconds after sending. Graph-degree steps use at most
 600 ms and shorten for deeper networks to fit full traversal within that window.
-Feel Your Network automatically exits 15 seconds after each activation, independently
-of Pulse. Neither timer clears the 24-hour emotional state.
+Feel Your Network stays on until the user clicks its button again, independently
+of Pulse. Toggling the view does not clear the 24-hour emotional state.
 Traversal time is measured from its start, so delayed
 timers catch up. Ambient motion, Pause/Resume and reduced-motion preferences
 remain independent of graph propagation. Changing perspective cancels traversal
@@ -130,4 +130,4 @@ and mounted expiry with controlled time, alongside existing regressions.
 Captures are generated at 390 × 844, 768 × 1024 and 1440 × 900 under ignored
 `test-results/`. Physical-device and hosted-preview acceptance remain separate.
 
-FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open after the 15-second view ends until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.
+FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open when Feel Your Network is toggled off until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.

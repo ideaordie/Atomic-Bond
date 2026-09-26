@@ -45,8 +45,8 @@ the camera. People, Networks and Regions emphasize different levels of detail.
 **PULSE** asks how you feel; select one of eight states and **Send Pulse** to
 propagate through your connected network. Your latest state lasts 24 hours or
 until replaced. **FEEL YOUR NETWORK** shows active voluntary states, neutral
-inactive Atoms and a compact coverage summary. Both actions stop automatically
-after 15 seconds; the selected emotion still lasts 24 hours. Pulse data resets on refresh.
+inactive Atoms and a compact coverage summary. Pulse animation stops automatically after 15 seconds. Feel Your Network stays on
+until its button is clicked again; the selected emotion still lasts 24 hours. Pulse data resets on refresh.
 Motion controls are in Explore Atoms and respect the system's reduced-motion
 preference. All data and geography in this demonstration are synthetic.
 
@@ -115,4 +115,4 @@ privacy rules, state transitions, and Task #4 verification.
 See [Emotional Pulse v0.1](docs/architecture/EMOTIONAL_PULSE_v0.1.md) for the
 lifecycle, connected-network visibility boundary, aggregation and future integration plans.
 
-FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open after the 15-second view ends until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.
+FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open when Feel Your Network is toggled off until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.
