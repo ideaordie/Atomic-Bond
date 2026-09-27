@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.1 — Task #8.1 / Living Emotional Network
+
+- Made authorized connected Emotional Pulses visible by default in MY ATOM; removed the separate FEEL YOUR NETWORK control.
+- Added compact YOUR NETWORK NOW with eight-state distribution, honest coverage/geography, update age and persistent expanded scrolling.
+- Preserved dimensional spheres, graph-aware temporary propagation and all eight colors; inactive owner Atoms use neutral blue-gray with reduced-motion-aware material transitions.
+- Separated bounded Pulse/topology reconciliation, exact local expiry, resume recovery and unavailable/offline handling without changing RLS or public serialization.
+- Applied only the approved Master Spec interaction revision; v0.8.0 remains the immutable first functional MVP baseline.
+
 ## 0.8.0 — First functional Atomic Bond MVP baseline
 
 - Frozen on 2026-09-27 at the project owner's explicit request, following their report that the application was working and the results-panel scrolling correction.

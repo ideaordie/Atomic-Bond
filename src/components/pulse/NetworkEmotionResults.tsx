@@ -1,143 +1,157 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import type { GraphData } from "../../types/graph";
-import { EMOTIONS, type EmotionalPulse } from "../../types/emotional-pulse";
-import { emotionalNetwork } from "../../graph/metrics/emotional-network";
+﻿import { useRef, useState } from "react";
+import type { emotionalNetwork } from "../../graph/metrics/emotional-network";
+import type { networkReach } from "../../graph/metrics/network-reach";
+import { EMOTIONS } from "../../types/emotional-pulse";
 import { EMOTION_DEFINITIONS } from "../../living-atom/pulse/emotions";
 
 export function NetworkEmotionResults({
-  graph,
-  viewerId,
-  pulses,
+  summary,
+  reach,
   now,
-  onClose,
+  updatedAt,
+  status,
 }: {
-  graph: GraphData;
-  viewerId: string;
-  pulses: readonly EmotionalPulse[];
+  summary: ReturnType<typeof emotionalNetwork>;
+  reach: ReturnType<typeof networkReach>;
   now: number;
-  onClose: () => void;
+  updatedAt: number;
+  status: "ready" | "refreshing" | "unavailable" | "offline";
 }) {
-  const heading = useRef<HTMLHeadingElement>(null);
-  const latest = useRef({ graph, viewerId, pulses, now });
-  useEffect(() => {
-    latest.current = { graph, viewerId, pulses, now };
-  }, [graph, viewerId, pulses, now]);
-  const [result, setResult] = useState<{
-    viewerId: string;
-    summary: ReturnType<typeof emotionalNetwork>;
-  } | null>(null);
-  const measuring = !result || result.viewerId !== viewerId;
-  useEffect(() => {
-    heading.current?.focus({ preventScroll: true });
-  }, []);
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    let frame: number;
-    // Measure on opening, then once per minute. Keep the result DOM mounted
-    // during background updates so scrolling and keyboard focus are preserved.
-    const measure = () => {
-      cancelAnimationFrame(frame);
-      clearTimeout(timer);
-      frame = requestAnimationFrame(() => {
-        timer = setTimeout(() => {
-          const current = latest.current;
-          setResult({
-            viewerId: current.viewerId,
-            summary: emotionalNetwork(
-              current.graph,
-              current.viewerId,
-              current.pulses,
-              // The owner clock uses zero until its first client tick.
-              current.now || Date.now(),
-            ),
-          });
-        }, 0);
-      });
-    };
-    measure();
-    const interval = setInterval(measure, 60_000);
-    return () => {
-      clearInterval(interval);
-      cancelAnimationFrame(frame);
-      clearTimeout(timer);
-    };
-  }, [viewerId]);
-  const summary = measuring ? null : result.summary;
+  const [expanded, setExpanded] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const close = () => {
+    setExpanded(false);
+    toggle.current?.focus({ preventScroll: true });
+  };
+  const available = status === "ready" || status === "refreshing";
+  const age = Math.max(0, Math.floor((now - updatedAt) / 60_000));
   return (
-    <section
-      className="network-emotion-results"
-      role="region"
-      aria-labelledby="network-emotion-results-heading"
-    >
-      <header>
-        <h2 id="network-emotion-results-heading" ref={heading} tabIndex={-1}>
-          NETWORK EMOTION RESULTS
-        </h2>
-        <button
-          type="button"
-          aria-label="Close network emotion results"
-          onClick={onClose}
+    <section className="network-now" aria-label="Your Network Now">
+      <button
+        ref={toggle}
+        className="network-now-toggle"
+        type="button"
+        aria-expanded={expanded}
+        aria-controls="network-now-details"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <strong>
+          YOUR NETWORK NOW{" "}
+          <span aria-hidden="true">{expanded ? "−" : "+"}</span>
+        </strong>
+        <span data-testid="active-pulse-count">
+          {available
+            ? `${summary.active.length} active ${summary.active.length === 1 ? "Pulse" : "Pulses"}`
+            : "Emotional state unavailable"}{" "}
+          · {summary.connectedCount} connected{" "}
+          {summary.connectedCount === 1 ? "Atom" : "Atoms"}
+        </span>
+      </button>
+      {expanded && (
+        <div
+          id="network-now-details"
+          className="network-emotion-results"
+          role="region"
+          aria-label="Your Network Now details"
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.stopPropagation();
+              close();
+            }
+          }}
         >
-          ×
-        </button>
-      </header>
-      <p role="status" className="measurement-status">
-        {measuring
-          ? "Measuring your connected network…"
-          : "Results ready · updates once per minute"}
-      </p>
-      <div className="emotion-distribution" aria-busy={measuring}>
-        {measuring ? (
+          <header>
+            <h2>YOUR NETWORK NOW</h2>
+            <button
+              type="button"
+              aria-label="Close Your Network Now"
+              onClick={close}
+            >
+              ×
+            </button>
+          </header>
+          <p role="status" className="measurement-status">
+            {status === "offline"
+              ? "Offline · reconnect to update emotional state"
+              : status === "unavailable"
+                ? "Update unavailable · retrying automatically"
+                : status === "refreshing"
+                  ? "Updating your connected network…"
+                  : `Updated ${age === 0 ? "just now" : `${age} ${age === 1 ? "minute" : "minutes"} ago`}`}
+          </p>
           <div
-            className="measurement-track"
-            role="progressbar"
-            aria-label="Calculating network emotion results"
+            className="emotion-distribution"
+            aria-busy={status === "refreshing"}
           >
-            <span />
-          </div>
-        ) : (
-          summary && (
-            <>
+            {!available ? (
               <p>
-                <strong>{summary.active.length} active Pulses</strong> across{" "}
-                {summary.connectedCount} connected Atoms, including you.
+                Emotional colors are hidden until authorized state can be
+                refreshed. Your last confirmed connections remain visible.
               </p>
-              <p>
-                Recent voluntary submissions only. Not population sentiment.
-              </p>
-              <ul>
-                {EMOTIONS.map((emotion) => (
-                  <li key={emotion}>
-                    <span
-                      className="emotion-label"
-                      style={{
-                        borderLeftColor: EMOTION_DEFINITIONS[emotion].color,
-                      }}
-                    >
-                      {EMOTION_DEFINITIONS[emotion].label}
-                    </span>
-                    <span>
-                      {summary.counts[emotion]} ·{" "}
-                      {summary.percentages[emotion].toFixed(1)}%
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p>
-                Percentages use {summary.active.length} active visible Pulses
-                only. Others remain neutral.
-              </p>
-              {summary.regions.map((region) => (
-                <p key={region.key}>
-                  Among active Pulses in your connected {region.label} network:{" "}
-                  <strong>{region.count} active Pulses</strong>.
+            ) : (
+              <>
+                <p>
+                  <strong>
+                    {summary.active.length} active{" "}
+                    {summary.active.length === 1 ? "Pulse" : "Pulses"}
+                  </strong>{" "}
+                  across {summary.connectedCount} connected{" "}
+                  {summary.connectedCount === 1 ? "Atom" : "Atoms"}, including
+                  you.
                 </p>
-              ))}
-            </>
-          )
-        )}
-      </div>
+                {summary.active.length === 0 && (
+                  <p>
+                    No active Pulses right now. Atoms remain neutral until
+                    someone chooses to share.
+                  </p>
+                )}
+                {summary.connectedCount === 1 && (
+                  <p>Your network begins with you. Create a Bond to connect.</p>
+                )}
+                <p>
+                  Recent voluntary submissions only. Not population sentiment.
+                </p>
+                <ul>
+                  {EMOTIONS.map((emotion) => (
+                    <li key={emotion}>
+                      <span
+                        className="emotion-label"
+                        style={{
+                          borderLeftColor: EMOTION_DEFINITIONS[emotion].color,
+                        }}
+                      >
+                        {EMOTION_DEFINITIONS[emotion].label}
+                      </span>
+                      <span>
+                        {summary.counts[emotion]} ·{" "}
+                        {summary.percentages[emotion].toFixed(1)}%
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  Percentages use {summary.active.length} active visible Pulses
+                  only. Others remain neutral.
+                </p>
+                <p>
+                  Known network reach: {reach.cities.length} cities ·{" "}
+                  {reach.regions.length} regions · {reach.countries.length}{" "}
+                  countries. Geography may be incomplete.
+                </p>
+                {summary.regions.map((region) => (
+                  <p key={region.key}>
+                    {region.label}:{" "}
+                    <strong>
+                      {region.count} active{" "}
+                      {region.count === 1 ? "Pulse" : "Pulses"}
+                    </strong>
+                  </p>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -7,11 +7,7 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
   await page.goto("/explore");
   const group = page.getByRole("group", { name: "Primary network actions" });
   const buttons = group.getByRole("button");
-  await expect(buttons).toHaveText([
-    "CREATE BOND",
-    /Pulse/,
-    "FEEL YOUR NETWORK",
-  ]);
+  await expect(buttons).toHaveText(["CREATE BOND", /Pulse/]);
   const boxes = await buttons.evaluateAll((nodes) =>
     nodes.map((node) => {
       const box = node.getBoundingClientRect();
@@ -40,7 +36,6 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
     expect(box.bottom).toBeLessThanOrEqual(page.viewportSize()!.height);
   }
   expect(boxes[1]!.x).toBeGreaterThan(boxes[0]!.right);
-  expect(boxes[2]!.x).toBeGreaterThan(boxes[1]!.right);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -61,24 +56,16 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(buttons.nth(1)).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(buttons.nth(2)).toBeFocused();
+  const disclosure = page.getByRole("button", { name: /YOUR NETWORK NOW/ });
+  await disclosure.focus();
   await page.keyboard.press("Enter");
-  await expect(buttons.nth(2)).toHaveAttribute("aria-pressed", "true");
+  await expect(disclosure).toHaveAttribute("aria-expanded", "true");
+  await page.getByRole("button", { name: "Close Your Network Now" }).click();
+  await expect(disclosure).toBeFocused();
   await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
     "data-emotional-view",
     "active",
   );
-  await page.screenshot({
-    path: info.outputPath("feel-controls.png"),
-    fullPage: true,
-  });
-  await page
-    .getByRole("button", { name: "Close network emotion results" })
-    .click();
-  await expect(buttons.nth(2)).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(buttons.nth(2)).toHaveAttribute("aria-pressed", "false");
   await expect(
     page
       .getByRole("group", { name: "Network exploration" })

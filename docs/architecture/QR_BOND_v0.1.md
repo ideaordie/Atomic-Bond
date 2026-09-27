@@ -75,8 +75,9 @@ the email link or original QR can restore context while valid.
 
 Successful confirmation displays BOND CREATED and passes freshly retrieved real
 GraphData to the existing arrival animation. Both participants retain their own
-MY ATOM perspective. The owner view polls every ten seconds while visible and
-refreshes on focus. Newly observed direct edges trigger arrival and close the
+MY ATOM perspective. Task #8.1 reconciles topology every minute while visible/online,
+with ten-second checks while this mounted view knows an invitation is pending,
+and reconciliation on focus/reconnection. See [Living Emotional Network](EMOTIONAL_PULSE_v0.1.md). Newly observed direct edges trigger arrival and close the
 old invitation modal. Manual refresh remains a recovery option. This is polling,
 not realtime subscriptions. One-Atom and two-Atom networks use the same graph
 metrics; no fixture, synthetic density or invented reach is introduced.

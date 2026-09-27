@@ -93,43 +93,6 @@
   outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
-.living-atom .feel-network {
-  position: absolute;
-  top: 208px;
-  right: 24px;
-  min-height: 44px;
-  padding: 10px 16px;
-  font-size: 11px;
-  z-index: 3;
-}
-.feel-network[aria-pressed="true"] {
-  border-color: var(--border);
-  background: var(--surface);
-}
-.emotional-summary {
-  position: absolute;
-  top: 122px;
-  left: 32px;
-  width: 205px;
-  z-index: 3;
-  color: var(--text);
-}
-.emotional-summary > p {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: var(--text);
-  margin: 0 0 8px;
-}
-.emotional-summary > strong {
-  display: block;
-  font-size: 21px;
-}
-.emotional-summary > small {
-  display: block;
-  font-size: 11px;
-  line-height: 1.5;
-  margin: 5px 0;
-}
 .emotion-distribution {
   max-height: 40svh;
   overflow-y: auto;
@@ -169,33 +132,6 @@
   color: var(--text);
 }
 @media (max-width: 600px) {
-  .living-atom .feel-network {
-    right: 16px;
-    top: 208px;
-    font-size: 10px;
-    padding: 8px 12px;
-  }
-  .emotional-summary {
-    top: 78px;
-    left: 18px;
-    right: 18px;
-    width: auto;
-    display: grid;
-    grid-template-columns: 1fr 125px;
-  }
-  .emotional-summary > p {
-    font-size: 8px;
-    margin-bottom: 3px;
-  }
-  .emotional-summary > strong {
-    font-size: 19px;
-    grid-column: 1;
-  }
-  .emotional-summary > small {
-    font-size: 8px;
-    grid-column: 1;
-    margin: 2px 0;
-  }
   .pulse-composer {
     padding: 20px;
   }
@@ -321,4 +257,58 @@
   border-left: 5px solid;
   padding-left: 8px;
   color: var(--text);
+}
+
+/* Informational disclosure, separate from the two primary actions. */
+.network-now {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 142px;
+  right: 28px;
+  width: 260px;
+  z-index: 5;
+}
+.living-atom .network-now-toggle {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 12px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+}
+.network-now-toggle strong {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+.network-now-toggle strong span {
+  float: right;
+}
+.network-now-toggle > span {
+  font-size: 10px;
+}
+.network-now .network-emotion-results {
+  position: absolute;
+  top: 64px;
+  right: 0;
+  left: auto;
+  bottom: auto;
+  width: 300px;
+  max-height: min(42svh, 380px);
+}
+@media (max-width: 600px) {
+  .network-now {
+    top: 210px;
+    right: 16px;
+    width: 230px;
+  }
+  .network-now .network-emotion-results {
+    top: 62px;
+    width: min(330px, calc(100vw - 32px));
+    max-height: min(34svh, calc(100svh - 455px));
+  }
 }

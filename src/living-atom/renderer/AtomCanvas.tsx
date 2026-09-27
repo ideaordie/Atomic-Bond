@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Camera, Point, RendererFactory } from "../types/scene";
 import type { SpatialScene } from "../types/spatial";
 import type { PulseDirection } from "../pulse/presentation";
+import { blendEmotionPaints } from "../animation/emotion-transition";
 import { transitionProgress } from "../animation/motion";
 import { createAmbientClock } from "../animation/ambient-clock";
 import { panCamera, zoomCamera } from "../interaction/camera";
@@ -63,6 +64,9 @@ export function AtomCanvas({
     let arrivalStarted = 0;
     const ambientClock = createAmbientClock();
     let dirty = true;
+    let emotionTarget = current.current.emotions;
+    let emotionPrevious = emotionTarget;
+    let emotionStarted = -Infinity;
     const draw = (time: number) => {
       frameId = 0;
       if (!alive) return;
@@ -79,12 +83,24 @@ export function AtomCanvas({
         startedAt = time;
         ambientClock.reset();
       }
+      if (state.emotions !== emotionTarget) {
+        emotionPrevious = emotionTarget;
+        emotionTarget = state.emotions;
+        emotionStarted = time;
+      }
+      const emotionProgress = state.reducedMotion
+        ? 1
+        : Math.min(1, (time - emotionStarted) / 450);
+      const material =
+        emotionPrevious && emotionTarget
+          ? blendEmotionPaints(emotionPrevious, emotionTarget, emotionProgress)
+          : emotionTarget;
       const still = state.reducedMotion || state.paused;
       const pulseMoving = state.pulseDistance !== null && !state.reducedMotion;
       if (time - lastPaint >= 30 || dirty) {
         const elapsedMs = ambientClock.sample(time, !still && !document.hidden);
         renderer.draw({
-          ...(state.emotions ? { emotions: state.emotions } : {}),
+          ...(material ? { emotions: material } : {}),
           ...(state.pulseColor ? { pulseColor: state.pulseColor } : {}),
           feelNetwork: state.feelNetwork ?? false,
           scene: state.scene,
@@ -106,7 +122,10 @@ export function AtomCanvas({
         dirty = false;
       }
       if (
-        (!still || pulseMoving || (arrivalId && arrivalProgress < 1)) &&
+        (!still ||
+          pulseMoving ||
+          emotionProgress < 1 ||
+          (arrivalId && arrivalProgress < 1)) &&
         !document.hidden
       )
         frameId = requestAnimationFrame(draw);

@@ -9,8 +9,11 @@ import {
   createOwnerInvitation,
   sendOwnerPulse,
   refreshOwnerNetwork,
+  visibleOwnerPulses,
 } from "../../services/auth/actions";
 import "./auth.css";
+import { createNetworkReconciler } from "../../services/pulses/network-reconciliation";
+import { usePulseClock } from "../pulse/use-pulse-clock";
 export function OwnerExperience({
   graph: initialGraph,
   publicId,
@@ -29,64 +32,103 @@ export function OwnerExperience({
   const creatingRef = useRef(false);
   const [notice, setNotice] = useState(initialArrivalId ? "BOND CREATED" : "");
   const [pulses, setPulses] = useState(initialPulses),
-    [now, setNow] = useState(0),
     [invite, setInvite] = useState<DisplayInvitation | null>(null),
     [error, setError] = useState("");
+  const now = usePulseClock(pulses);
+  const [updatedAt, setUpdatedAt] = useState(0);
+  const [status, setStatus] = useState<
+    "ready" | "refreshing" | "unavailable" | "offline"
+  >("ready");
+  const pendingUntil = useRef(0);
+  const localPulse = useRef<EmotionalPulse | null>(null);
   useEffect(() => {
     let cancelled = false;
-    let loading = false;
-    const refresh = async () => {
-      if (loading) return;
-      loading = true;
-      try {
-        const result = await refreshOwnerNetwork();
-        if (!cancelled) {
-          setError("");
-          const added = result.graph.edges.find(
-            (e) =>
-              !graphRef.current.edges.some((old) => old.id === e.id) &&
-              (e.source === publicId || e.target === publicId),
+    let generation = 0;
+    const reconciler = createNetworkReconciler({
+      clock: Date.now,
+      visible: () => document.visibilityState === "visible" && navigator.onLine,
+      invitationPending: () => pendingUntil.current > Date.now(),
+      refresh: async (topology) => {
+        const requestGeneration = generation;
+        const beforeSend = localPulse.current;
+        setStatus("refreshing");
+        try {
+          const result = topology
+            ? await refreshOwnerNetwork()
+            : { graph: null, pulses: await visibleOwnerPulses() };
+          if (cancelled || requestGeneration !== generation) return;
+          if (result.graph) {
+            const updated = result.graph;
+            const oldEdges = new Set(graphRef.current.edges.map((e) => e.id));
+            const added = updated.edges.find(
+              (e) =>
+                !oldEdges.has(e.id) &&
+                (e.source === publicId || e.target === publicId),
+            );
+            if (added) {
+              setArrival(
+                added.source === publicId ? added.target : added.source,
+              );
+              setNotice("BOND CREATED");
+              setInvite(null);
+              pendingUntil.current = 0;
+            }
+            if (JSON.stringify(graphRef.current) !== JSON.stringify(updated)) {
+              graphRef.current = updated;
+              setGraph(updated);
+            }
+          }
+          // A response begun before a local send must not overwrite that send.
+          const own = localPulse.current;
+          const next =
+            own && own !== beforeSend
+              ? [...result.pulses.filter((p) => p.atomId !== publicId), own]
+              : result.pulses;
+          setPulses((previous) =>
+            JSON.stringify(previous) === JSON.stringify(next) ? previous : next,
           );
-          if (added) {
-            setArrival(added.source === publicId ? added.target : added.source);
-            setNotice("BOND CREATED");
-            setInvite(null);
+          setUpdatedAt(Date.now());
+          setStatus("ready");
+        } catch {
+          if (!cancelled && requestGeneration === generation) {
+            setPulses([]);
+            setStatus(navigator.onLine ? "unavailable" : "offline");
           }
-          if (
-            JSON.stringify(graphRef.current) !== JSON.stringify(result.graph)
-          ) {
-            graphRef.current = result.graph;
-            setGraph(result.graph);
-          }
-          setPulses(result.pulses);
         }
-      } catch {
-        if (!cancelled)
-          setError(
-            "Network update unavailable. Your last confirmed view is shown; reconnect or refresh to retry.",
-          );
-      } finally {
-        loading = false;
-      }
+      },
+    });
+    const resume = () => {
+      void reconciler.tick(true);
     };
-    const timer = setInterval(() => {
-      setNow(Date.now());
-    }, 1000);
+    const offline = () => {
+      generation++;
+      setPulses([]);
+      setStatus("offline");
+    };
+    const initial = setTimeout(resume, 0);
     const poll = setInterval(() => {
-      if (document.visibilityState === "visible") void refresh();
-    }, 10000);
-    window.addEventListener("focus", refresh);
+      void reconciler.tick();
+    }, 5_000);
+    window.addEventListener("focus", resume);
+    window.addEventListener("online", resume);
+    window.addEventListener("offline", offline);
+    document.addEventListener("visibilitychange", resume);
     return () => {
       cancelled = true;
-      clearInterval(timer);
+      reconciler.dispose();
+      clearTimeout(initial);
       clearInterval(poll);
-      window.removeEventListener("focus", refresh);
+      window.removeEventListener("focus", resume);
+      window.removeEventListener("online", resume);
+      window.removeEventListener("offline", offline);
+      document.removeEventListener("visibilitychange", resume);
     };
   }, [publicId]);
   async function send(emotion: Emotion) {
     const pulse = await sendOwnerPulse(emotion);
     setPulses((p) => [...p.filter((x) => x.atomId !== publicId), pulse]);
-    setNow(Date.now());
+    localPulse.current = pulse;
+    setUpdatedAt(Date.now());
   }
   return (
     <>
@@ -95,14 +137,17 @@ export function OwnerExperience({
         originalAtomId={publicId}
         synthetic={false}
         arrivalId={arrival}
-        emotional={{ pulses, now, send }}
+        emotional={{ pulses, now, send, updatedAt, status }}
         onCreateBond={() => {
           if (creatingRef.current) return;
           creatingRef.current = true;
           setCreating(true);
           setError("");
           void createOwnerInvitation()
-            .then(setInvite)
+            .then((value) => {
+              pendingUntil.current = Date.parse(value.expiresAt);
+              setInvite(value);
+            })
             .catch(() =>
               setError(
                 "Unable to create an invitation. Sign in again or retry.",

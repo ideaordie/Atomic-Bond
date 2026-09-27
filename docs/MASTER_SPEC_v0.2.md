@@ -198,23 +198,29 @@ unnecessary emotional-history retention.
 
 ------------------------------------------------------------------------
 
-## 20. FEEL THE NETWORK
+## 20. LIVING EMOTIONAL NETWORK
 
-**FEEL THE NETWORK** visualizes active Emotional Pulses across the
-viewer's connected network. Active Atoms illuminate according to their
-selected state; Atoms without an active Pulse remain neutral. The
-experience should resemble a living emotional constellation.
+Authenticated MY ATOM automatically visualizes authorized active Emotional
+Pulses across the viewer's connected network. Active Atoms illuminate according
+to their selected state; Atoms without an active Pulse remain neutral. This is
+the default Living Atom experience, not a separate FEEL THE NETWORK mode.
+Public anonymous views do not automatically receive emotional state. Changing
+the visual center never expands the authenticated viewer's authorization.
+The experience should resemble a living emotional constellation.
 
 ------------------------------------------------------------------------
 
 ## 21. EMOTIONAL NETWORK VIEW
 
-The view may show active emotional Atoms, regional emotional clusters,
-active-Pulse count, and aggregate distribution. Coverage must be
+The Living Atom shows active emotional Atoms and regional emotional clusters.
+A compact, expandable **YOUR NETWORK NOW** information panel shows active-Pulse
+count and aggregate distribution, separate from primary actions. Coverage must be
 explicit, e.g. **1,842 active Pulses across 18,492 connected Atoms**.
 These statistics describe only recent voluntary Pulses from
 participating connected Atoms and must not be represented as general
-population sentiment.
+population sentiment. Percentages use only active visible Pulses. The panel
+includes available coarse geography and update age, supports zero/small networks,
+and updates without requiring a separate emotional-view mode.
 
 ------------------------------------------------------------------------
 
@@ -444,9 +450,9 @@ reputation.
 
 ## 48. CORE INTERFACE
 
-Primary interface: **LIVING ATOM** (see the network); **CREATE BOND**
-(create a confirmed connection); **PULSE** (share temporary emotion);
-**FEEL THE NETWORK** (see recent voluntary emotional states);
+Core interface: **LIVING ATOM** (continuously see the connected network and
+authorized active Emotional Pulses); **CREATE BOND** (create a confirmed connection); **PULSE** (share temporary emotion);
+**YOUR NETWORK NOW** (expand current authorized emotional-network information);
 **EXPLORE** (understand/view another Atom's network); **SHARE** (invite
 others).
 
@@ -458,7 +464,7 @@ Production MVP priorities: Atom creation; email verification; validated
 home region; optional alias; optional X; public Atom pages; secure owner
 access; mutually confirmed Bonds; Living Atom; exploration/My Atom;
 network/geographic reach; sharing/invitations; Emotional Pulse; 24-hour
-state; Feel the Network; emotional aggregation; regional emotional
+state; always-on authorized Living Emotional Network; emotional aggregation; regional emotional
 visualization; growth email capability; notification preferences.
 Anonymous distant introductions and Return Pulse may follow after the
 core network is proven.

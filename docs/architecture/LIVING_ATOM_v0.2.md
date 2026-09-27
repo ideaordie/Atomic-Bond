@@ -4,10 +4,14 @@ Current visual treatment: [Scientific Light Visual System](VISUAL_SYSTEM_v0.1.md
 supersedes the original gold/deep-space materials described in the historical
 spatial foundation below. Geometry, depth, motion and interaction remain intact.
 
-Current extension: [Emotional Pulse v0.1](EMOTIONAL_PULSE_v0.1.md) adds
-Task #5.2 state, visibility and full-component Pulse/Feel rendering. The
-eight-Bond horizon described below remains the default structural view; the
-original verification results below are historical.
+Current extension: [Living Emotional Network](EMOTIONAL_PULSE_v0.1.md), Task
+#8.1 / v0.8.1, makes authorized emotional materials always-on in MY ATOM.
+YOUR NETWORK NOW replaces the separate mode with a compact disclosure. Owner
+scenes retain full-component aggregate membership across Pulse changes; public
+views retain the structural horizon and receive no emotional state. Neutral
+owner materials are blue-gray; active materials crossfade while preserving
+sphere lighting and depth. CREATE BOND and PULSE remain the primary controls.
+Original spatial limits and verification records below are historical.
 
 Task #3 introduced application version 0.3.0; Task #3.1 patches it as 0.3.1.
 This is a Canvas 2D presentation extension

@@ -1,142 +1,129 @@
-# Emotional Pulse & Feel Your Network v0.1
+﻿# Living Emotional Network — Task #8.1 / v0.8.1
 
-## Task #6 persistence update
+Master Specification v0.2 remains authoritative, with the explicitly approved
+interaction revision. The v0.8.0 tag and baseline report remain historical.
 
-The original mock implementation below remains the deterministic development
-baseline. Production persistence, verified-owner gates, permanent activation-only
-Atom numbers, secure invitations and privacy rules are documented in
-[Supabase v0.1](SUPABASE_v0.1.md). Supabase adapters are asynchronous and expose
-only controlled RPCs. Production verification/delivery and owner-session UI
-integration remain Task #7; mock verification cannot activate real accounts.
+## Default experience and model
 
-Task #5.2, application version 0.5.2. Master Product Specification v0.2
-remains authoritative. This implementation is a local simulation.
-Task #5.4 (0.5.4) adds the approved Curious vocabulary and green definition;
-the vocabulary-driven fixture now includes active Curious submissions.
+Authenticated MY ATOM automatically displays the latest authorized non-expired
+Emotional Pulse for its connected network. There is no Feel Your Network toggle.
+The eight centralized EmotionDefinitions remain Joy/gold, Calm/teal,
+Excited/orange, Curious/green, Sad/blue, Anxious/pink, Angry/red and Afraid/purple.
+Absent or expired states use scientific blue-gray. Dimensional sphere shading,
+lighting, depth and motion remain; emotional materials crossfade over 450ms.
+Reduced motion applies changes immediately.
 
-## Model and lifecycle
+Pulse is explicitly selected, never inferred, scored or ranked. One current
+state replaces the prior state and expires after 24 hours. The server timestamps
+and enforces persistent expiry; the client schedules exact expiry deadlines,
+minute age updates, and focus/visibility reconciliation. There is no emotional
+history or new database schema. MockPulseService and deterministic eight-state
+fixtures remain available only in explicit development/test mode.
 
-`src/types/emotional-pulse.ts` defines `EmotionalPulse`: `id`, `atomId`,
-`emotion`, `createdAt`, `expiresAt`. Timestamps are epoch milliseconds.
-An active record satisfies `createdAt <= now < expiresAt`, with expiration
-exactly 24 hours after creation. `MockPulseService` keeps only the latest
-record per Atom; a new submission replaces the previous one without retaining
-an emotional history. Sending changes only the session owner's state.
+PULSE opens the existing composer. Successful persistence immediately updates
+own state and starts graph-distance propagation, capped at 15 seconds. Temporary
+propagation can illuminate recipients but never changes their stored emotions.
+Stopping propagation, changing perspective, or collapsing information does not
+clear the sender's 24-hour state. Selected context shows authorized active state
+and age, omitting the row for absent/expired state.
 
-The composer requires an explicit selection before sending. It collects no
-explanation, diagnosis, inferred cause, prediction or interpretation. All eight
-states have equal interaction and lifecycle rules; there are no scores or ranks.
-The centralized `emotions.ts` configuration defines names, accessible labels,
-colors and visual parameters: Joy/gold, Calm/teal, Excited/orange, Curious/green, Sad/blue,
-Anxious/pink, Angry/red, Afraid/purple.
+## Your Network Now
 
-The injectable service clock supports deterministic tests. The UI schedules the
-next expiration deadline and refreshes age labels each minute, with focus and
-visibility checks after suspension. Expired states disappear from context,
-palettes and summary calculations. In Feel mode inactive Atoms are neutral;
-structural mode restores the existing non-emotional network styling.
+A compact informational disclosure is collapsed initially. It shows active
+Pulses and connected Atoms (including the viewer). Expanded details show all
+eight counts/percentages, known city/region/country reach, active regional counts
+and last-refresh age. Percentages divide by active visible submissions only.
+Zero yields zero percentages and a neutral message. One-Atom networks are valid;
+unknown geography is not invented. These are voluntary submissions within the
+connected network, never population sentiment or an emotional ranking.
 
-## Service and privacy boundary
+The same authorized snapshot drives colors, context and statistics. Local sends
+and expiration update immediately. Background refreshes retain the results DOM
+and scroll position. Expansion does not trigger an independent graph request.
+The disclosure exposes aria-expanded/aria-controls; close and Escape restore
+focus. The bounded scroll area leaves the graph and primary actions accessible.
+Text labels accompany colors throughout.
 
-`ParticipationExperience` composes the Pulse service and supplies already
-filtered active records to Living Atom. Emotional state is not added to
-`PublicAtom`, `GraphNode`, or unrestricted public Atom serialization.
-`PulseService.visible` binds this mock viewer to its session owner and filters
-records through actual connected graph membership and expiry. The selected
-Atom context consumes that same filtered collection. Email, authentication
-identity, preferences and precise location are not needed by the Pulse system.
+## Privacy and authorization
 
-This client-side mock gate is not production authorization. Fixture records
-are synthetic and shipped in the client bundle. There is no production storage,
-authentication, API or notification delivery. Refreshing resets local changes.
+PublicAtom and GraphNode remain emotion-free. Explicit public views, including
+an owner's own public URL, receive no Pulse query/results. LivingAtom additionally
+ignores emotional inputs when ownerMode is false. Production retrieval uses
+visibleOwnerPulses / refreshOwnerNetwork and existing requireOwner gates. The
+Supabase RPC derives the viewer from verified ownership, never the visual center.
+Recenter does not change the authorization context. Confirmed reach is intersected
+again locally; disconnected and expired submissions are removed. No global
+emotional-state feed, table grants, RLS weakening or browser Auth token is added.
 
-`data/mock/emotional-pulses.ts` authors synthetic submissions separately from
-the unchanged graph fixture. Given the same graph and epoch, the records and
-distribution are identical: some active, some expired, others absent. Index-based
-fixture construction is not inference about a person's real emotional state.
-The starting connected component contains 640 Atoms and 128 active submissions.
+## Bounded reconciliation instead of browser Realtime
 
-## Propagation and feedback
+Current application tables are default-deny, and Auth sessions are HttpOnly.
+A browser Postgres Changes subscription cannot read private Pulse tables with
+the existing grants/session boundary. Task #8.1 expressly permits a safe bounded
+refresh fallback. This implementation keeps existing owner-authorized server
+operations rather than introducing a global subscription or exposing tokens.
 
-PULSE opens the native emotion dialog. SEND PULSE stores the selected state,
-returns to the sender's perspective if necessary, and starts outgoing traversal.
-The existing breadth-first distances and Bond edges determine illumination;
-the selected color travels along actual paths. Recipients briefly illuminate
-and then return to their own representation without any state mutation.
+Visible/online owners refresh Pulse state every 30 seconds and topology every
+60 seconds. A known pending invitation temporarily checks topology every ten
+seconds until its expiration or a new direct Bond arrives. Reloading loses this
+optimization and returns to the normal minute cadence. Focus, visibility return
+and connectivity restoration request full reconciliation, with a five-second
+burst guard and one request in flight. Failures follow the same bounded retry
+cadence; hidden/offline tabs do not poll. This is eventual reconciliation, not
+instant delivery: another participant's Pulse may take roughly 30 seconds,
+and new topology roughly one minute, plus request time, to appear.
 
-Pulse and Feel mode use the complete reachable component rather than the normal
-eight-degree structural horizon. Distant layers remain aggregates; this does
-not create a DOM component per Atom. Completion reports actual connected reach
-(explicitly including the sender), known cities, regions and countries from
-graph metadata. Unknown cities are not invented. Disconnected components are
-excluded until a simulated confirmed Bond connects them.
+A full reconciliation replaces graph and authorized state together. Pulse-only
+responses replace visible state (not append), removing lost authorization.
+A send completed while a refresh was in flight wins over that older response.
+On failure/offline, emotional data is cleared and explicitly marked unavailable;
+the last confirmed structural graph remains. Reconnection restores authorized
+state. No synthetic fallback is possible. Existing server/database ownership and
+expiry checks apply to every request.
 
-Pulse presentation stops 15 seconds after sending. Graph-degree steps use at most
-600 ms and shorten for deeper networks to fit full traversal within that window.
-Feel Your Network stays on until the user clicks its button again, independently
-of Pulse. Toggling the view does not clear the 24-hour emotional state.
-Traversal time is measured from its start, so delayed
-timers catch up. Ambient motion, Pause/Resume and reduced-motion preferences
-remain independent of graph propagation. Changing perspective cancels traversal
-but preserves the sender's active state.
+## Performance and limits
 
-## Feel Your Network and aggregation
+Topology and state are separate: unchanged graph snapshots retain object identity;
+sending/updating Pulse does not rebuild layout, move the camera or reset ambient
+motion. Full owner scene membership is stable during both active state and
+outgoing propagation. Distant Atoms retain the existing progressive aggregates.
+Color interpolation runs only during the short transition, outside React state.
+There is no per-second React graph recomputation or full-network request.
 
-The toggle emphasizes current visible states within the viewer's component.
-Nearby people retain individual colors; medium and far representations use the
-existing particle clouds and regional constellations. Precomputed member palettes
-mix emotional colors with neutral particles. The renderer samples those palettes
-without graph traversal or per-frame React state updates.
-
-The compact summary shows active submissions and total connected coverage.
-Results percentages use active visible submissions only, never all connected
-Atoms. Empty distributions display zero rather than invalid percentages.
-Regional totals use coarse graph metadata and describe participating connected
-people, not the population of a geographic region. Regional clouds display
-active counts. No happiness ranking or regional emotional judgment is made.
-
-## Accessibility and mobile
-
-Native labelled radio controls, visible focus, a modal dialog, Escape/Cancel,
-and an initially disabled Send button support keyboard and screen-reader use.
-Text labels accompany color in the composer, summary, owner state and selected
-context; Explore Atoms also exposes active state text in Feel mode. The toggle
-announces its pressed state. Reduced motion preserves degree-based information
-without requiring animated particle travel. Network emotion results open automatically
-in a bounded, scrollable panel with a persistent close button. The network and
-primary actions remain accessible on mobile; the existing context retains its
-bounded height and accessible View their network action.
-
-## Future integration boundaries (not implemented)
-
-Supabase persistence should enforce authenticated ownership, allowed emotion
-values, server timestamps, a unique current record per Atom, and replacement
-atomically. RLS or an authorized server query must enforce connected-network
-visibility; expiry must be enforced on reads, independently of eventual cleanup.
-Do not move Pulse state into unrestricted public Atom responses. Minimize history
-retention and re-evaluate visibility when graph membership changes.
-
-The existing `PulsePresentation.direction` distinguishes `outgoing` and
-`returning` as presentation intents. A future event envelope can reference the
-canonical Pulse ID, originating Atom and optional received-Pulse correlation.
-A Return Pulse requires the recipient to select their own emotion and create
-their own record. It must never copy the sender's emotion automatically.
-No Return Pulse action or communication is implemented here.
-
-Future NotificationService methods may include `sendPulseReachedNotification()`
-and `sendPulseActivitySummary()`. These must consume authorized events, honor
-private preferences and deduplication/rate limits, and keep delivery identity
-outside graph/render data. Possible neutral copy: “A Pulse reached your Atom.”
-or “Your network is active right now.” No messages or emails are sent.
+The early-stage RPC still returns at most 5,000 graph nodes; the server fails
+clearly above that cap. Pulse retrieval still computes authorized reach in SQL.
+This bounded fallback is not a claim of unlimited scale. A future authorized
+invalidation channel could replace polling after a separately reviewed RLS/session
+design; periodic reconciliation would still be needed for missed events/expiry.
 
 ## Verification
 
-Unit tests cover all eight states, exact expiry, replacement, deterministic
-fixtures, visibility, active-only percentages, regional totals, graph traversal,
-neutral/mixed palettes and public serialization. Browser coverage exercises the
-selector, every emotional color, full reach, Feel zoom modes, context omissions
-and mounted expiry with controlled time, alongside existing regressions.
-Captures are generated at 390 × 844, 768 × 1024 and 1440 × 900 under ignored
-`test-results/`. Physical-device and hosted-preview acceptance remain separate.
+The local suites cover all eight states, deterministic fixtures, exact expiry,
+replacement, public exclusion, connected membership changes, recenter authorization,
+neutral palettes, material transition, request cadence/coalescing, persistent
+Auth/QR/Bond flow, and the disclosure's responsive scrolling/focus behavior.
+Local verification requires no live email, production data mutation or migration.
+The owner approved v0.8.1 product review and publication separately; deployment
+uses the existing GitHub/Vercel workflow without hosted schema changes.
 
-FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the initial local connected-network calculation. The open report refreshes from the latest authorized inputs once per minute, keeping its result DOM mounted and preserving scroll position during background updates. Reopening measures immediately. The report may lag live Pulse changes/expiry by up to one minute; the underlying 24-hour lifecycle, live visualization and network polling are unchanged. The scrollable panel remains open when Feel Your Network is toggled off until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.
+### Task #8.1 local verification record
+
+Verified on Windows on 2026-09-27: production build, formatting, lint,
+TypeScript, 157 unit/graph/service/security/integration tests, native PostgreSQL
+concurrency/restart checks, and 90 browser cases (69 mock, 18 Auth/QR, 3 public
+persistence). Additional targeted runs refreshed visual captures and exercised
+asynchronous reconciliation and settled canvas expiry without weakening checks.
+
+The 1,000-Atom deterministic fixture represents its 640 connected Atoms using
+191 glyphs at network scale. Sixty state-only calculation/paint-map updates
+measured 1.71ms median and 3.14ms p95 locally. These are host microbenchmarks,
+not physical-device or hosted latency claims. Scene creation is outside that
+measurement because state-only updates retain the existing scene.
+
+Reference viewports: 390 × 844, 768 × 1024 and 1440 × 900. Captures cover neutral,
+active, owner/selected state, disclosure, propagation, expiry, and isolated
+persistent small-network/public views. Local review captures are in ignored
+`test-results/` and `artifacts/task81-review/`. Initial checks found an inherited
+section-padding hit area and a reconnect burst-guard edge case; both were fixed.
+Paused-clock browser tests install the clock before application timers are
+created, then explicitly wait for real server work and scheduled canvas paints. No physical-device or hosted Task #8.1 acceptance is claimed.

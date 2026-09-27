@@ -20,7 +20,6 @@ import "./living-atom.css";
 import "./controls.css";
 import { PulseComposer } from "../components/pulse/PulseComposer";
 import { NetworkEmotionResults } from "../components/pulse/NetworkEmotionResults";
-import { EmotionalSummary } from "../components/pulse/EmotionalSummary";
 import { EMOTION_DEFINITIONS } from "./pulse/emotions";
 import { emotionPaint } from "./pulse/emotion-presentation";
 import { emotionalNetwork } from "../graph/metrics/emotional-network";
@@ -36,6 +35,8 @@ export interface LivingAtomProps {
     pulses: readonly EmotionalPulse[];
     now: number;
     send: (emotion: Emotion) => void | Promise<void>;
+    updatedAt?: number;
+    status?: "ready" | "refreshing" | "unavailable" | "offline";
   };
   graph: GraphData;
   originalAtomId: string;
@@ -62,9 +63,7 @@ export function LivingAtom({
   const [paused, setPaused] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [feelNetwork, setFeelNetwork] = useState(false);
-  const [resultsOpen, setResultsOpen] = useState(false);
-  const feelButton = useRef<HTMLButtonElement>(null);
+  const emotionalView = ownerMode && Boolean(emotional);
   const [sentEmotion, setSentEmotion] = useState<Emotion | null>(null);
   const pulseButton = useRef<HTMLButtonElement>(null);
   const traversalStartedAt = useRef(0);
@@ -73,13 +72,8 @@ export function LivingAtom({
   );
   const reducedMotion = useReducedMotion();
   const baseScene = useMemo(
-    () =>
-      createScene(
-        graph,
-        selection.selectedId,
-        feelNetwork || sentEmotion !== null,
-      ),
-    [graph, selection.selectedId, feelNetwork, sentEmotion],
+    () => createScene(graph, selection.selectedId, emotionalView),
+    [graph, selection.selectedId, emotionalView],
   );
   const mode = viewScale(camera.zoom);
   const scene = useMemo(
@@ -92,15 +86,20 @@ export function LivingAtom({
       emotionalNetwork(
         graph,
         originalAtomId,
-        emotional?.pulses ?? [],
+        emotionalView ? (emotional?.pulses ?? EMPTY_PULSES) : EMPTY_PULSES,
         emotional?.now ?? 0,
       ),
-    [graph, originalAtomId, emotional?.pulses, emotional?.now],
+    [graph, originalAtomId, emotional?.pulses, emotional?.now, emotionalView],
   );
   const paints = useMemo(
     () =>
-      emotionPaint(scene, emotionalSummary.active, feelNetwork, originalAtomId),
-    [scene, emotionalSummary.active, feelNetwork, originalAtomId],
+      emotionPaint(
+        scene,
+        emotionalSummary.active,
+        emotionalView,
+        originalAtomId,
+      ),
+    [scene, emotionalSummary.active, emotionalView, originalAtomId],
   );
   const reach = useMemo(
     () => networkReach(graph, originalAtomId),
@@ -192,7 +191,7 @@ export function LivingAtom({
       <div className="atom-stage">
         <AtomCanvas
           emotions={paints}
-          feelNetwork={feelNetwork}
+          feelNetwork={emotionalView}
           {...(sentEmotion
             ? { pulseColor: EMOTION_DEFINITIONS[sentEmotion].color }
             : {})}
@@ -211,7 +210,7 @@ export function LivingAtom({
         />
       </div>
 
-      {!feelNetwork && (
+      {
         <div className="reach-readout" aria-label="Network information">
           <div>
             <span>{isMine ? "MY BONDS" : "THEIR BONDS"}</span>
@@ -238,18 +237,14 @@ export function LivingAtom({
               : "Coarse geography"}
           </p>
         </div>
-      )}
-      {feelNetwork && <EmotionalSummary summary={emotionalSummary} />}
-      {resultsOpen && (
+      }
+      {emotionalView && (
         <NetworkEmotionResults
-          graph={graph}
-          viewerId={originalAtomId}
-          pulses={emotional?.pulses ?? EMPTY_PULSES}
+          summary={emotionalSummary}
+          reach={reach}
           now={emotional?.now ?? 0}
-          onClose={() => {
-            setResultsOpen(false);
-            feelButton.current?.focus({ preventScroll: true });
-          }}
+          updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
+          status={emotional?.status ?? "ready"}
         />
       )}
       <div className="perspective-label" aria-live="polite">
@@ -332,7 +327,7 @@ export function LivingAtom({
           <button
             type="button"
             className="pulse-button"
-            disabled={!emotional}
+            disabled={!emotionalView}
             ref={pulseButton}
             onClick={() => {
               if (running) setPulse(idlePulse(selection.selectedId));
@@ -347,19 +342,6 @@ export function LivingAtom({
               ◉
             </span>
             {running ? "Stop Pulse" : "Pulse"}
-          </button>
-          <button
-            className="feel-network"
-            disabled={!emotional}
-            type="button"
-            aria-pressed={feelNetwork}
-            ref={feelButton}
-            onClick={() => {
-              setFeelNetwork((value) => !value);
-              if (!feelNetwork) setResultsOpen(true);
-            }}
-          >
-            FEEL YOUR NETWORK
           </button>
         </div>
         <p
@@ -467,7 +449,7 @@ export function LivingAtom({
               {individualNodes.map((node) => (
                 <option key={node.id} value={node.members[0]}>
                   {node.label}
-                  {feelNetwork
+                  {emotionalView
                     ? ` · ${paints.get(node.id)?.label ?? "No active Pulse"}`
                     : ""}
                   {node.distance === 0

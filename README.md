@@ -2,22 +2,22 @@
 
 **See how connected we already are.**
 
-**Current frozen release: v0.8.0 — first functional Atomic Bond MVP baseline.**
+**Frozen MVP baseline: v0.8.0 — first functional Atomic Bond MVP baseline.**
 See the [baseline report](docs/architecture/BASELINE_v0.8.0.md) for included
 functionality, verification evidence and known limitations. The `v0.8.0` Git tag
 is permanent; future changes receive subsequent versions.
 
-Version 0.5.3 groups Create Bond, Pulse and Feel Your Network in a responsive
-action dock. Local Emotional Pulse, public identity context, optional X profiles,
-Atom onboarding and simulated Bond creation are available in the
-Living Atom Spatial Experience v0.2 at `/explore`: a
-Canvas 2D human network with perspective depth, irregular local orbits, regional
-particle clouds and graph-aware Pulse. Select someone to inspect their connection,
-then choose View their network. It uses the unchanged deterministic synthetic
-fixture as its starting point. Create Bond opens the development participation
-loop: canonical home region, private email, simulated verification, explicit
-confirmation, and deterministic network growth. No production accounts, Bonds,
-email delivery, or database exist. Participation data resets on refresh.
+Current release: **0.8.1 — Living Emotional Network**. Authenticated
+MY ATOM shows authorized active emotional states automatically. CREATE BOND and
+PULSE are the primary actions; **YOUR NETWORK NOW** expands current coverage and
+distribution. See [Emotional Pulse architecture](docs/architecture/EMOTIONAL_PULSE_v0.1.md)
+for privacy, refresh cadence and limitations. Public viewing remains emotion-free.
+
+The Living Atom retains scientific light materials, perspective depth, calm
+orbits and progressive regional aggregation. Select an Atom to inspect context,
+then choose View their network to recenter. Explicit mock mode retains the
+1,000-Atom deterministic fixture and simulated participation for development;
+Supabase mode uses verified ownership and persistent QR Bonds.
 
 ## Authority
 
@@ -49,9 +49,10 @@ pan; use the wheel, pinch or zoom buttons to change scale. **Recenter** resets
 the camera. People, Networks and Regions emphasize different levels of detail.
 **PULSE** asks how you feel; select one of eight states and **Send Pulse** to
 propagate through your connected network. Your latest state lasts 24 hours or
-until replaced. **FEEL YOUR NETWORK** shows active voluntary states, neutral
-inactive Atoms and a compact coverage summary. Pulse animation stops automatically after 15 seconds. Feel Your Network stays on
-until its button is clicked again; the selected emotion still lasts 24 hours. Pulse data resets on refresh.
+until replaced. Authorized emotional state is visible automatically in MY ATOM.
+**YOUR NETWORK NOW** expands coverage and distribution without changing the view.
+Pulse animation stops after 15 seconds; the selected emotion still lasts 24 hours.
+Only mock-mode Pulse data resets on refresh.
 Motion controls are in Explore Atoms and respect the system's reduced-motion
 preference. All data and geography in this demonstration are synthetic.
 
@@ -120,7 +121,10 @@ privacy rules, state transitions, and Task #4 verification.
 See [Emotional Pulse v0.1](docs/architecture/EMOTIONAL_PULSE_v0.1.md) for the
 lifecycle, connected-network visibility boundary, aggregation and future integration plans.
 
-FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. A measuring indicator precedes the initial calculation; the report then updates once per minute without replacing its contents or resetting scrolling. Reopening measures immediately. The panel stays open until closed, even when Feel Your Network is turned off. Closing returns keyboard focus to FEEL YOUR NETWORK.
+YOUR NETWORK NOW starts collapsed and retains its scroll position while expanded.
+Counts update with authorized state and expiry. Close or Escape collapses details
+and restores keyboard focus to the disclosure. See the architecture document for
+bounded refresh cadence and offline behavior.
 
 ## Supabase persistence ? Task #6
 

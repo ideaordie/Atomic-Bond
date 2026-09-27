@@ -6,6 +6,11 @@ toggle, results open only on activation and remain independently closable, and
 outgoing Pulse presentation lasts 15 seconds. This task does not change those
 interactions or implement Task #7 authentication/email delivery.
 
+Task #8.1 now uses the unchanged authorized RPC boundary for always-on owner
+emotional presentation and bounded reconciliation. Public profiles remain emotion-free;
+no Realtime table grants or schema changes were added. See
+[Living Emotional Network](EMOTIONAL_PULSE_v0.1.md) for the current frontend behavior.
+
 ## Runtime and service boundaries
 
 `ATOMIC_BOND_DATA_MODE=mock` explicitly selects the unchanged in-memory

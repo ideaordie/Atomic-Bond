@@ -12,7 +12,7 @@ import { INITIAL_CAMERA } from "../../src/living-atom/interaction/camera";
 
 const graph = generateMockGraph();
 const scene = createSpatialScene(
-  createScene(graph, mockAtomId(0)),
+  createScene(graph, mockAtomId(0), true),
   graph,
   "networks",
 );
@@ -34,8 +34,10 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
   await expect(page.getByTestId("reachable-count")).toHaveText("640");
   await page.getByRole("button", { name: "Explore Atoms" }).click();
   await page.getByText("Network details", { exact: true }).click();
-  await expect(page.getByTestId("represented-count")).toHaveText("221");
-  await expect(page.getByTestId("max-degree")).toHaveText("8");
+  await expect(page.getByTestId("represented-count")).toHaveText("640");
+  await expect(page.getByTestId("max-degree")).toHaveText(
+    String(scene.maxDistance),
+  );
   await expect(
     page.getByRole("button", { name: "Motion reduced" }),
   ).toBeDisabled();

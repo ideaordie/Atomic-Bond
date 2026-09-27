@@ -1,3 +1,4 @@
+import { LivingAtom } from "../../src/living-atom/LivingAtom";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
@@ -218,4 +219,71 @@ describe("Emotional Pulse lifecycle and boundaries", () => {
       /emotion|expiresAt|email|authentication|notificationPreferences/,
     );
   });
+});
+
+it("always-on owner information stays separate from public viewing, including accidental supplied state", () => {
+  const small: GraphData = {
+    nodes: [{ id: "1", publicId: "1", degree: 0 }],
+    edges: [],
+  };
+  const pulse: EmotionalPulse = {
+    id: "p",
+    atomId: "1",
+    emotion: "curious",
+    createdAt: epoch,
+    expiresAt: epoch + PULSE_LIFETIME_MS,
+  };
+  const props = {
+    graph: small,
+    originalAtomId: "1",
+    synthetic: false,
+    emotional: { pulses: [pulse], now: epoch, send: () => {} },
+  };
+  const owner = renderToStaticMarkup(<LivingAtom {...props} />);
+  expect(owner).toContain("YOUR NETWORK NOW");
+  expect(owner).toContain("1 active Pulse");
+  expect(owner).toContain("Curious");
+  expect(owner).not.toContain("FEEL YOUR NETWORK");
+  const publicView = renderToStaticMarkup(
+    <LivingAtom {...props} ownerMode={false} />,
+  );
+  expect(publicView).not.toContain("YOUR NETWORK NOW");
+  expect(publicView).not.toContain("Curious");
+  expect(publicView).toContain('data-emotional-view="structural"');
+});
+it("reconciled Bond membership adds and removes visibility without changing the viewer on recenter", () => {
+  const small: GraphData = {
+    nodes: ["a", "b", "c"].map((id) => ({ id, publicId: id, degree: 0 })),
+    edges: [{ id: "ab", source: "a", target: "b" }],
+  };
+  const pulses: EmotionalPulse[] = ["a", "b", "c"].map((atomId) => ({
+    id: atomId,
+    atomId,
+    emotion: "curious",
+    createdAt: epoch,
+    expiresAt: epoch + PULSE_LIFETIME_MS,
+  }));
+  const initial = emotionalNetwork(small, "a", pulses, epoch);
+  expect(initial.active).toHaveLength(2);
+  const recentered = createSpatialScene(
+    createScene(small, "b", true),
+    small,
+    "people",
+  );
+  expect(
+    [...emotionPaint(recentered, initial.active, true, "a").values()].reduce(
+      (sum, p) => sum + p.activeCount,
+      0,
+    ),
+  ).toBe(2);
+  const joined = {
+    ...small,
+    edges: [...small.edges, { id: "bc", source: "b", target: "c" }],
+  };
+  expect(emotionalNetwork(joined, "a", pulses, epoch).active).toHaveLength(3);
+  expect(
+    emotionalNetwork({ ...small, edges: [] }, "a", pulses, epoch).active.map(
+      (p) => p.atomId,
+    ),
+  ).toEqual(["a"]);
 });

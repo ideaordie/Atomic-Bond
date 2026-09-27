@@ -33,8 +33,8 @@ test("Supabase mode retrieves only real public projection and has no simulated o
     page.getByRole("button", { name: "Pulse", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "FEEL YOUR NETWORK", exact: true }),
-  ).toBeDisabled();
+    page.getByRole("button", { name: /YOUR NETWORK NOW/ }),
+  ).toHaveCount(0);
   await expect(
     page.getByText("Coarse, synthetic geography", { exact: true }),
   ).toHaveCount(0);
