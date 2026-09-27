@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 - Task #6 / Supabase Persistence & Identity
+
+- Added reproducible schema, default-deny RLS and controlled identity, graph, Bond, invitation, Pulse and preference operations.
+- Enforced unique normalized identity, activation-only permanent bigint Atom numbers, reusable single active invitation, and unique unordered Bonds.
+- Added explicit mock/Supabase configuration, safe public projections and asynchronous adapters; production owner access remains restrictive pending Task #7.
+- Preserved deterministic mocks and current frontend behavior; added real SQL security and native concurrent-connection/restart tests.
+- Documented migration/deployment workflow, lifecycle, privacy, token encryption/hash boundaries and Task #7 handoff. No hosted schema changes or email delivery.
+
 ## Network results activation fix
 
 - Open NETWORK EMOTION RESULTS only when turning Feel Your Network on. Turning it off no longer reopens a dismissed panel; an already open panel remains independently closable.

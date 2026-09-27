@@ -2,6 +2,29 @@
 
 Application milestone: 0.5.0 / Task #5, 2026-09-22.
 
+## Current Task #6 deployment requirements
+
+The following Task #5 record is historical. Version 0.6.0 introduces the persistent
+service boundary documented in [Supabase v0.1](SUPABASE_v0.1.md). Production runtime
+must explicitly set `ATOMIC_BOND_DATA_MODE=mock` for the existing synthetic preview
+or `supabase` for the real database. Supabase mode also needs the public project
+URL and anon/publishable key, with repository migrations applied to that project.
+Do not configure a service-role key. The `/explore` route is now dynamic; missing
+configuration fails instead of falling back to mock data. The build itself does
+not need credentials because it does not read production data at build time.
+
+CI remains credential-free and selects mock mode for browser regressions. It now
+runs PostgreSQL migration/RLS and native concurrency tests before the build.
+Apply reviewed migrations through one chosen deployment authority (CLI or the
+Supabase GitHub integration); inspect migration state rather than assuming the
+GitHub connection applied SQL. The dedicated hosted project exists, but no live
+schema or environment was changed in this task. Configure Vercel variables
+manually for each environment and redeploy. Test real empty-network and public
+read behavior after migration. Auth/email verification and owner UI activation
+remain deferred to Task #7. Database rollback requires a forward migration and
+backup plan; Vercel rollback alone does not undo database state. Preserve the
+public-number sequence and retired-number ledger across restores.
+
 ## Scope and baseline
 
 This is a deployable synthetic demonstration, with no production backend,

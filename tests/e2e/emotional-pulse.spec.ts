@@ -23,8 +23,8 @@ async function capture(page: Page, info: TestInfo, name: string) {
 async function setup(page: Page) {
   await page.clock.install({ time: new Date("2026-09-23T12:00:00Z") });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/explore");
   await page.clock.pauseAt(new Date("2026-09-23T12:00:02Z"));
+  await page.goto("/explore");
   await page.clock.runFor(20);
 }
 test("explicit emotion selection, eight visual states, replacement and full graph reach", async ({

@@ -8,6 +8,7 @@ describe("deployment publication boundaries", () => {
       .split(/\r?\n/)
       .filter((line) => line.trim() && !line.startsWith("#"));
     expect(entries).toEqual([
+      "ATOMIC_BOND_DATA_MODE=",
       "NEXT_PUBLIC_SUPABASE_URL=",
       "NEXT_PUBLIC_SUPABASE_ANON_KEY=",
       "RESEND_API_KEY=",

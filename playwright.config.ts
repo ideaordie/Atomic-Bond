@@ -17,6 +17,7 @@ export default defineConfig({
     { name: "desktop", use: { viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
+    env: { ATOMIC_BOND_DATA_MODE: "mock" },
     command: "pnpm start --port 3100",
     url: "http://127.0.0.1:3100",
     reuseExistingServer: false,

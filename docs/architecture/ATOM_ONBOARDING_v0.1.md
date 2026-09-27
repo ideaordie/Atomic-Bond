@@ -1,5 +1,14 @@
 # Atom Onboarding v0.1 — Task #4
 
+## Task #6 persistence update
+
+The original mock implementation below remains the deterministic development
+baseline. Production persistence, verified-owner gates, permanent activation-only
+Atom numbers, secure invitations and privacy rules are documented in
+[Supabase v0.1](SUPABASE_v0.1.md). Supabase adapters are asynchronous and expose
+only controlled RPCs. Production verification/delivery and owner-session UI
+integration remain Task #7; mock verification cannot activate real accounts.
+
 ## Public identity context — Task #5.1
 
 The public profile contract remains unchanged: `PublicAtom.alias` maps to

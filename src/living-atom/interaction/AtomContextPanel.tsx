@@ -16,6 +16,7 @@ export function AtomContextPanel({
   onClose,
   activePulse,
   pulseNow = 0,
+  ownerMode = true,
 }: {
   graph: GraphData;
   centerId: string;
@@ -25,6 +26,7 @@ export function AtomContextPanel({
   onClose: () => void;
   activePulse?: EmotionalPulse;
   pulseNow?: number;
+  ownerMode?: boolean;
 }) {
   const [openedAt, setOpenedAt] = useState(() => Date.now());
   useEffect(() => {
@@ -98,13 +100,15 @@ export function AtomContextPanel({
         {...(activePulse ? { pulse: activePulse } : {})}
         now={pulseNow}
       />
-      <p
-        className="context-relationship"
-        data-testid="relationship"
-        aria-label={`Connection to you: ${relationship}`}
-      >
-        {relationship}
-      </p>
+      {ownerMode && (
+        <p
+          className="context-relationship"
+          data-testid="relationship"
+          aria-label={`Connection to you: ${relationship}`}
+        >
+          {relationship}
+        </p>
+      )}
       <dl className="context-metrics">
         <div>
           <dt>Network</dt>
@@ -119,7 +123,7 @@ export function AtomContextPanel({
           </dd>
         </div>
       </dl>
-      {context.distance !== undefined && context.distance > 1 && (
+      {ownerMode && context.distance !== undefined && context.distance > 1 && (
         <p
           className="relationship-path"
           aria-label={`Relationship path: ${pathLabels.join(" to ")}`}
@@ -127,7 +131,7 @@ export function AtomContextPanel({
           {compactPath.join(" → ")}
         </p>
       )}
-      {context.bondedAt && (
+      {ownerMode && context.bondedAt && (
         <p className="bond-date">
           Bond created:{" "}
           {Math.abs(openedAt - Date.parse(context.bondedAt)) < 60_000

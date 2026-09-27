@@ -30,6 +30,7 @@ import type { Emotion, EmotionalPulse } from "../types/emotional-pulse";
 const EMPTY_PULSES: readonly EmotionalPulse[] = [];
 
 export interface LivingAtomProps {
+  ownerMode?: boolean;
   emotional?: {
     pulses: readonly EmotionalPulse[];
     now: number;
@@ -47,6 +48,7 @@ export function LivingAtom({
   onCreateBond,
   arrivalId,
   emotional,
+  ownerMode = true,
 }: LivingAtomProps) {
   const [selection, setSelection] = useState({
     originalId: originalAtomId,
@@ -106,7 +108,7 @@ export function LivingAtom({
     (p) => p.atomId === originalAtomId,
   );
   const running = pulse.distance !== null;
-  const isMine = selection.selectedId === originalAtomId;
+  const isMine = ownerMode && selection.selectedId === originalAtomId;
 
   useEffect(() => {
     if (!running) return;
@@ -199,7 +201,7 @@ export function LivingAtom({
           pulseDistance={pulse.distance}
           pulseStartedAt={pulse.stepStartedAt}
           pulseDirection={pulse.direction}
-          originalId={originalAtomId}
+          originalId={ownerMode ? originalAtomId : ""}
           inspectedId={inspectedId}
           arrivalId={arrivalId ?? null}
           onSelect={inspect}
@@ -228,7 +230,9 @@ export function LivingAtom({
             </strong>
             <small>{scene.countryCount} countries</small>
           </div>
-          <p>Coarse, synthetic geography</p>
+          <p>
+            {ownerMode ? "Coarse, synthetic geography" : "Coarse geography"}
+          </p>
         </div>
       )}
       {feelNetwork && <EmotionalSummary summary={emotionalSummary} />}
@@ -277,13 +281,14 @@ export function LivingAtom({
           type="button"
           className="my-atom"
           onClick={home}
-          aria-label="My Atom"
+          aria-label={ownerMode ? "My Atom" : "Starting Atom"}
         >
-          <span>My Atom</span>
+          <span>{ownerMode ? "My Atom" : "Starting Atom"}</span>
         </button>
       </div>
       {inspectedId && (
         <AtomContextPanel
+          ownerMode={ownerMode}
           graph={graph}
           centerId={selection.selectedId}
           originalId={originalAtomId}
@@ -323,6 +328,7 @@ export function LivingAtom({
           <button
             type="button"
             className="pulse-button"
+            disabled={!emotional}
             ref={pulseButton}
             onClick={() => {
               if (running) setPulse(idlePulse(selection.selectedId));
@@ -340,6 +346,7 @@ export function LivingAtom({
           </button>
           <button
             className="feel-network"
+            disabled={!emotional}
             type="button"
             aria-pressed={feelNetwork}
             ref={feelButton}
@@ -530,7 +537,8 @@ export function LivingAtom({
         </p>
       )}
       <p className="simulation-label">
-        Synthetic network <span aria-hidden="true">·</span>{" "}
+        {ownerMode ? "Synthetic network" : "Public network"}{" "}
+        <span aria-hidden="true">·</span>{" "}
         {reducedMotion
           ? "Reduced motion"
           : paused

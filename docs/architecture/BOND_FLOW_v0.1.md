@@ -1,5 +1,14 @@
 # Bond Flow v0.1 — Task #4
 
+## Task #6 persistence update
+
+The original mock implementation below remains the deterministic development
+baseline. Production persistence, verified-owner gates, permanent activation-only
+Atom numbers, secure invitations and privacy rules are documented in
+[Supabase v0.1](SUPABASE_v0.1.md). Supabase adapters are asynchronous and expose
+only controlled RPCs. Production verification/delivery and owner-session UI
+integration remain Task #7; mock verification cannot activate real accounts.
+
 Version 0.4.0 adds a complete in-memory participation loop. It does not change
 the frozen Master Specification or Build Blueprint and does not begin Task #5.
 

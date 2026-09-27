@@ -1,5 +1,14 @@
 # Emotional Pulse & Feel Your Network v0.1
 
+## Task #6 persistence update
+
+The original mock implementation below remains the deterministic development
+baseline. Production persistence, verified-owner gates, permanent activation-only
+Atom numbers, secure invitations and privacy rules are documented in
+[Supabase v0.1](SUPABASE_v0.1.md). Supabase adapters are asynchronous and expose
+only controlled RPCs. Production verification/delivery and owner-session UI
+integration remain Task #7; mock verification cannot activate real accounts.
+
 Task #5.2, application version 0.5.2. Master Product Specification v0.2
 remains authoritative. This implementation is a local simulation.
 Task #5.4 (0.5.4) adds the approved Curious vocabulary and green definition;

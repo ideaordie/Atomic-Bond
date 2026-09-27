@@ -33,7 +33,7 @@ pnpm test:e2e:install
 pnpm dev
 ```
 
-Open http://127.0.0.1:3000. No environment variables or service credentials are
+Open http://127.0.0.1:3000. Development defaults to mock services; no service credentials are
 needed. On Linux, install browser system dependencies with
 `pnpm exec playwright install --with-deps chromium`.
 
@@ -116,3 +116,28 @@ See [Emotional Pulse v0.1](docs/architecture/EMOTIONAL_PULSE_v0.1.md) for the
 lifecycle, connected-network visibility boundary, aggregation and future integration plans.
 
 FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open when Feel Your Network is toggled off until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.
+
+## Supabase persistence ? Task #6
+
+Version 0.6.0 adds version-controlled database migrations and asynchronous Supabase
+adapters while preserving the existing mock frontend. See
+[Supabase architecture and migration workflow](docs/architecture/SUPABASE_v0.1.md).
+
+For a hosted synthetic preview, explicitly set `ATOMIC_BOND_DATA_MODE=mock`.
+For real data, set it to `supabase` and configure `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` with a public anon/publishable key. Copy the blank
+`.env.example` to ignored `.env.local` for local values. Production has no implicit
+mock fallback. A GitHub-connected Supabase project does not configure Vercel's
+variables. Never use a service-role key in the application.
+
+`pnpm check` includes local PostgreSQL migration/RLS tests and genuine concurrent
+connection tests, followed by the production build and existing browser suite.
+`pnpm test:db` runs migration/security tests alone; `pnpm test:db:concurrency` runs
+the disposable native PostgreSQL race/persistence tests. No hosted credentials
+or synthetic production seed is required. See the architecture document for
+local Supabase CLI setup and reviewed hosted migration commands.
+
+Supabase-mode public exploration reads real confirmed graph data. Owner mutations
+are implemented behind verified Auth-gated RPCs, but production login, verification
+and delivery UI integration remain Task #7; they cannot be simulated in real mode.
+No emails are sent. Both modes retain the current Living Atom layout.

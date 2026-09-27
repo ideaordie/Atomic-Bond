@@ -21,3 +21,7 @@ artifacts/
 .npmrc.local
 .idea/
 .vscode/
+
+# Supabase local state and linked project metadata
+supabase/.temp/
+supabase/.branches/
