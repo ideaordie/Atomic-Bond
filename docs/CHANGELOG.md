@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.2 — Task #8.2 / UI clarity and fit-and-finish
+
+- Began the feature freeze from approved v0.8.1; no product mechanics, authentication services, database migrations or Master Specification changes.
+- Clarified QR handoff/consent/expiry, recipient choices, required and optional registration fields, canonical location selection and email continuation; retained non-disclosing email responses.
+- Added specific pending button labels, immediate Pulse-sent feedback, empty-network guidance and human-readable route failure/recovery surfaces.
+- Refined shared form spacing, mobile input sizing, panel typography, identity hierarchy, long-content wrapping, responsive QR layout and safe-area padding within the scientific/light theme.
+- Added breakpoint/orientation/short-viewport and long-content browser checks, field-error association and a manual physical-device checklist in `architecture/UI_UX_v0.8.2.md`.
+
 ## 0.8.1 — Task #8.1 / Living Emotional Network
 
 - Made authorized connected Emotional Pulses visible by default in MY ATOM; removed the separate FEEL YOUR NETWORK control.

@@ -8,6 +8,7 @@ export function ConfirmAccess() {
       null,
     ),
     [pending, setPending] = useState(false),
+    [linkChecked, setLinkChecked] = useState(false),
     [error, setError] = useState("");
   const [result, setResult] = useState<{
     next: string;
@@ -18,6 +19,7 @@ export function ConfirmAccess() {
     const readLink = () => {
       const p = new URLSearchParams(window.location.hash.slice(1));
       const token = p.get("token_hash");
+      queueMicrotask(() => setLinkChecked(true));
       if (!token) return;
       window.history.replaceState(null, "", "/auth/confirm");
       queueMicrotask(() => {
@@ -37,11 +39,16 @@ export function ConfirmAccess() {
           ? result.returning
             ? "WELCOME BACK"
             : "YOUR ATOM IS READY"
-          : "Access your Atom"}
+          : "ACCESS MY ATOM"}
       </h1>
       {result ? (
         <>
           <p>ATOM #{result.publicId}</p>
+          <p>
+            {result.returning
+              ? "You're securely signed in on this device."
+              : "Email verified. Your Atom has been created."}
+          </p>
           <Link className="explore-link" href={result.next}>
             {result.next.startsWith("/bond/")
               ? "Continue to Bond confirmation"
@@ -51,8 +58,9 @@ export function ConfirmAccess() {
       ) : (
         <>
           <p>
-            Confirm to securely verify your email and open your Atom on this
-            device.
+            {linkChecked && !link
+              ? "Open the secure link in your Atomic Bond email to continue, or request a new link below."
+              : "Confirm to securely verify your email and open your Atom on this device."}
           </p>
           <button
             className="flow-primary"

@@ -54,8 +54,8 @@ export function PulseComposer({
         <p className="emotion-eyebrow">YOUR EMOTIONAL PULSE</p>
         <h2 id="emotion-heading">How are you feeling?</h2>
         <p>
-          A voluntary signal, visible to your connected network for 24 hours. A
-          new Pulse replaces it.
+          Share how you feel now with your connected network for 24 hours. A new
+          Pulse replaces your previous state.
         </p>
         <fieldset>
           <legend>Choose one emotional state</legend>
@@ -88,7 +88,7 @@ export function PulseComposer({
             Cancel
           </button>
           <button type="submit" disabled={!emotion || pending}>
-            Send Pulse
+            {pending ? "Sending Pulse…" : "Send Pulse"}
           </button>
         </div>
         {error && <p role="alert">{error}</p>}

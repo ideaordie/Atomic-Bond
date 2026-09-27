@@ -12,7 +12,7 @@
   overflow-wrap: anywhere;
 }
 .public-x-profile small {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text);
 }
 .public-x-profile a {

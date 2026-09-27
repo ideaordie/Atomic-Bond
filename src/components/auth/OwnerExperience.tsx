@@ -136,6 +136,7 @@ export function OwnerExperience({
         graph={graph}
         originalAtomId={publicId}
         synthetic={false}
+        creatingBond={creating}
         arrivalId={arrival}
         emotional={{ pulses, now, send, updatedAt, status }}
         onCreateBond={() => {

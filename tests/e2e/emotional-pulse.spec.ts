@@ -105,7 +105,7 @@ test("Living emotional network coverage, progressive clouds, selected state and 
 
   await expect(
     page.getByText(
-      "Percentages use 128 active visible Pulses only. Others remain neutral.",
+      "Percentages use 128 active visible Pulses only. Atoms without an active Pulse remain neutral.",
     ),
   ).toBeVisible();
   await capture(page, info, "coverage");

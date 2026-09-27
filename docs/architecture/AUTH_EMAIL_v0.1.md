@@ -1,5 +1,10 @@
 # Verified email identity and passwordless ownership v0.1
 
+Task #8.2 presentation refinements are documented in [UI clarity](UI_UX_v0.8.2.md).
+Create my Atom / Access my Atom labels, explicit field requirements and loading,
+email and validation feedback use the same server actions and non-disclosing
+access response. No ownership, delivery, session or verification policy changed.
+
 Task #7, application 0.7.0. Master Spec v0.2 and the Task #6 invariants remain unchanged.
 
 ## Ownership and registration

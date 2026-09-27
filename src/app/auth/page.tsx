@@ -19,7 +19,11 @@ export default async function AuthPage({
         <section className="auth-panel">
           <h1>WELCOME BACK</h1>
           <p>ATOM #{atom!.publicId}</p>
-          <Link href={next}>MY ATOM / CONTINUE</Link>
+          <Link href={next}>
+            {next.startsWith("/bond/")
+              ? "Continue to Bond confirmation"
+              : "MY ATOM"}
+          </Link>
         </section>
       </main>
     );

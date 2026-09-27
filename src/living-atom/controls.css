@@ -162,3 +162,77 @@
   filter: brightness(0.96);
   border-color: var(--accent);
 }
+.living-atom .primary-actions > button {
+  font-size: 13px;
+}
+.living-atom .secondary-actions > button,
+.secondary-actions .my-atom span {
+  font-size: 12px;
+}
+.spatial-dock > .pulse-status {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.living-atom .spatial-dock {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+.living-atom .simulation-label {
+  bottom: 190px;
+}
+.living-atom .atom-context {
+  width: min(350px, calc(100% - 32px));
+}
+.context-title h2 {
+  overflow-wrap: anywhere;
+}
+.context-metrics {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+}
+.context-metrics dt,
+.context-metrics dd,
+.relationship-path,
+.bond-date,
+.context-relationship {
+  font-size: 12px;
+}
+.context-title {
+  padding-right: 32px;
+}
+.perspective-label {
+  max-width: 30%;
+  overflow-wrap: anywhere;
+}
+.reach-readout strong {
+  overflow-wrap: anywhere;
+}
+.explorer-tools select {
+  font-size: 16px;
+}
+.explorer-tools p,
+.explorer-tools li,
+.explorer-tools label,
+.explorer-tools summary {
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .perspective-label {
+    max-width: 29%;
+  }
+  .living-atom .secondary-actions > button {
+    padding: 8px;
+  }
+  .context-metrics dd,
+  .context-title h2 {
+    font-size: 12px;
+  }
+  .living-atom .atom-context {
+    bottom: 195px;
+    max-height: min(42svh, calc(100% - 490px));
+  }
+  .living-atom .atom-stage {
+    bottom: 180px;
+  }
+  .living-atom .primary-actions > button {
+    font-size: 12px;
+  }
+}

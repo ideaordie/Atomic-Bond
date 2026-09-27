@@ -30,7 +30,9 @@ async function register(page: Page, request: APIRequestContext, email: string) {
 async function invitation(page: Page) {
   await page.getByRole("button", { name: "CREATE BOND", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "CREATE BOND", exact: true });
-  await expect(dialog.getByRole("timer")).toContainText("Expires in:");
+  await expect(dialog.getByRole("timer")).toContainText(
+    "Invitation expires in:",
+  );
   const src = await dialog.getByRole("img").getAttribute("src");
   const png = PNG.sync.read(Buffer.from(src!.split(",")[1]!, "base64"));
   const qr = jsQR(new Uint8ClampedArray(png.data), png.width, png.height);
@@ -67,6 +69,29 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   const original = await invitation(page);
   const qrBox = await original.dialog.getByRole("img").boundingBox();
   expect(qrBox!.width).toBeGreaterThanOrEqual(250);
+  await expect(original.dialog.getByText(/other person scan/)).toBeVisible();
+  await expect(
+    original.dialog.getByText(/Keep this screen open/),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 844, height: 390 });
+  const qrImage = original.dialog.getByRole("img");
+  await qrImage.scrollIntoViewIfNeeded();
+  expect(
+    await qrImage.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return [
+        [r.left + 2, r.top + 2],
+        [r.right - 2, r.bottom - 2],
+        [r.left + r.width / 2, r.top + r.height / 2],
+      ].every(([x, y]) => document.elementFromPoint(x!, y!) === el);
+    }),
+  ).toBe(true);
+  await page.screenshot({
+    path: info.outputPath("qr-landscape-redacted.png"),
+    mask: [qrImage],
+    fullPage: true,
+  });
+  await page.setViewportSize(info.project.use.viewport!);
   await page.screenshot({
     path: info.outputPath("qr-layout-redacted.png"),
     mask: [original.dialog.getByRole("img")],
@@ -228,7 +253,9 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   await page.clock.install();
   await page.clock.fastForward(301000);
   await expect(expiring.dialog.getByRole("img")).toHaveCount(0);
-  await expect(expiring.dialog.getByText(/Invitation expired/)).toBeVisible();
+  await expect(
+    expiring.dialog.getByText(/THIS BOND INVITATION HAS EXPIRED/),
+  ).toBeVisible();
   await request.get("http://127.0.0.1:54330/__test/expire-invites");
   await receiver.goto(expiring.url);
   await expect(

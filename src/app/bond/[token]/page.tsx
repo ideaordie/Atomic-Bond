@@ -26,7 +26,7 @@ export default async function BondPage({
             This invitation is invalid, expired, cancelled or already accepted.
             Ask the other person for a new Bond invitation.
           </p>
-          <Link href="/explore">Explore</Link>
+          <Link href="/explore">Return to Atomic Bond</Link>
         </section>
       </main>
     );
@@ -76,18 +76,24 @@ export default async function BondPage({
               <Link href="/explore">MY ATOM</Link>
             </>
           ) : (
-            <div className="entry-actions">
-              <Link
-                href={`/auth?mode=register&next=${encodeURIComponent(`/bond/${token}`)}`}
-              >
-                CREATE MY ATOM
-              </Link>
-              <Link
-                href={`/auth?mode=access&next=${encodeURIComponent(`/bond/${token}`)}`}
-              >
-                I ALREADY HAVE AN ATOM
-              </Link>
-            </div>
+            <>
+              <p>
+                A Bond confirms that you know or choose to connect with this
+                person. Create or access your Atom, then confirm the Bond.
+              </p>
+              <div className="entry-actions">
+                <Link
+                  href={`/auth?mode=register&next=${encodeURIComponent(`/bond/${token}`)}`}
+                >
+                  CREATE MY ATOM
+                </Link>
+                <Link
+                  href={`/auth?mode=access&next=${encodeURIComponent(`/bond/${token}`)}`}
+                >
+                  ACCESS MY ATOM
+                </Link>
+              </div>
+            </>
           )}
           {!ownerId && (
             <Link href="/" replace>

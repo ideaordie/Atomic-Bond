@@ -3,6 +3,7 @@ import { useState } from "react";
 import { requestAccess, finishRegistration } from "../../services/auth/actions";
 import type { Location } from "../../services/participation/contracts";
 import "./auth.css";
+import { normalizeXHandle, X_HANDLE_ERROR } from "../../utils/x-profile";
 export function AccessForm({
   locations,
   next,
@@ -16,6 +17,9 @@ export function AccessForm({
 }) {
   const [mode, setMode] = useState(initialMode),
     [message, setMessage] = useState(""),
+    [sent, setSent] = useState(false),
+    [xError, setXError] = useState(""),
+    [locationId, setLocationId] = useState(""),
     [pending, setPending] = useState(false);
   return (
     <section className="auth-panel">
@@ -23,43 +27,78 @@ export function AccessForm({
         {verified
           ? "Complete your Atom"
           : mode === "register"
-            ? "CREATE YOUR ATOM"
-            : "Access your Atom"}
+            ? "CREATE MY ATOM"
+            : "ACCESS MY ATOM"}
       </h1>
+      <p className="auth-intro">
+        {verified
+          ? "Your email is verified. Choose your home region to finish creating your Atom."
+          : mode === "register"
+            ? "Start with your email and home region. Your name and X handle are optional."
+            : "Enter the email linked to your Atom. We'll send a secure access link — no password needed."}
+      </p>
       {!verified && (
         <div className="auth-tabs">
           <button
-            onClick={() => setMode("register")}
+            disabled={pending}
+            onClick={() => {
+              setMode("register");
+              setMessage("");
+              setSent(false);
+            }}
             aria-pressed={mode === "register"}
+            aria-label="Switch to Create my Atom"
           >
-            New Atom
+            Create my Atom
           </button>
           <button
-            onClick={() => setMode("access")}
+            disabled={pending}
+            onClick={() => {
+              setMode("access");
+              setMessage("");
+              setSent(false);
+            }}
             aria-pressed={mode === "access"}
+            aria-label="Switch to Access my Atom"
           >
-            I already have an Atom
+            Access my Atom
           </button>
         </div>
       )}
       <form
         className="atom-form"
+        aria-busy={pending}
         onSubmit={async (event) => {
           event.preventDefault();
+          if (pending) return;
+          const form = new FormData(event.currentTarget);
+          if (verified || mode === "register") {
+            try {
+              normalizeXHandle(String(form.get("xHandle") || ""));
+            } catch {
+              setXError(X_HANDLE_ERROR);
+              event.currentTarget
+                .querySelector<HTMLInputElement>("#access-x")
+                ?.focus();
+              return;
+            }
+          }
           setPending(true);
           setMessage("");
+          setSent(false);
           try {
-            const form = new FormData(event.currentTarget);
             const result = verified
               ? await finishRegistration(form)
               : await requestAccess(form);
             if ("next" in result && result.next)
               window.location.assign(result.next);
-            else
+            else {
+              setSent("message" in result);
               setMessage(
                 ("message" in result ? result.message : result.error) ||
                   "Please try again.",
               );
+            }
           } catch {
             setMessage("Unable to connect. Please try again.");
           } finally {
@@ -72,7 +111,7 @@ export function AccessForm({
         {!verified && (
           <>
             <label htmlFor="access-email">
-              Email <span>Private — never public</span>
+              Email <span>(required · private)</span>
             </label>
             <input
               id="access-email"
@@ -80,29 +119,52 @@ export function AccessForm({
               type="email"
               required
               autoComplete="email"
+              autoCapitalize="none"
+              spellCheck={false}
+              aria-describedby="email-help"
             />
+            <small id="email-help">
+              Used privately for verification, secure access and Atomic Bond
+              notifications. Never public.
+            </small>
           </>
         )}
         {(verified || mode === "register") && (
           <>
             <label htmlFor="access-alias">Name / alias (optional)</label>
-            <input id="access-alias" name="alias" maxLength={60} />
+            <input
+              id="access-alias"
+              name="alias"
+              maxLength={60}
+              autoComplete="nickname"
+            />
             <label htmlFor="access-x">X handle (optional · public)</label>
             <input
               id="access-x"
               name="xHandle"
               placeholder="@username"
-              aria-describedby="x-help"
+              autoCapitalize="none"
+              spellCheck={false}
+              aria-invalid={Boolean(xError)}
+              aria-describedby={xError ? "x-help x-error" : "x-help"}
+              onChange={() => setXError("")}
             />
             <small id="x-help">
               Handle only, not a URL. X ownership is not verified.
             </small>
-            <label htmlFor="access-region">Home region</label>
+            {xError && (
+              <p id="x-error" className="flow-error" role="alert">
+                {xError}
+              </p>
+            )}
+            <label htmlFor="access-region">Home region (required)</label>
             <select
               id="access-region"
               name="locationId"
               required
-              defaultValue=""
+              value={locationId}
+              onChange={(event) => setLocationId(event.target.value)}
+              aria-describedby="region-help selected-region"
             >
               <option value="" disabled>
                 Select your city / region
@@ -113,22 +175,41 @@ export function AccessForm({
                 </option>
               ))}
             </select>
-            <small>
-              Initial location coverage is limited. Select only your actual home
-              region.
+            <small id="region-help">
+              Choose your home region from the list. Available places are
+              limited; no exact address is needed.
             </small>
+            <p
+              id="selected-region"
+              className="selected-region"
+              hidden={!locationId}
+            >
+              Selected:{" "}
+              {locations.find((place) => place.id === locationId)?.displayName}
+            </p>
           </>
         )}
         <button className="flow-primary" disabled={pending}>
           {pending
-            ? "Please wait…"
+            ? verified
+              ? "Creating your Atom…"
+              : "Sending email…"
             : verified
               ? "Complete my Atom"
               : mode === "register"
                 ? "Create my Atom"
                 : "Email me an access link"}
         </button>
-        <p role="status">{message}</p>
+        <div role="status" className={message ? "auth-feedback" : undefined}>
+          {sent && <strong>CHECK YOUR EMAIL</strong>}
+          {message && <p>{message}</p>}
+          {sent && (
+            <p>
+              Open the secure link to continue. Check spam or junk too. You can
+              leave this page; the email link brings you back.
+            </p>
+          )}
+        </div>
       </form>
     </section>
   );

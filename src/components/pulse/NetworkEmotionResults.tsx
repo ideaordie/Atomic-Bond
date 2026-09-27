@@ -85,8 +85,8 @@ export function NetworkEmotionResults({
           >
             {!available ? (
               <p>
-                Emotional colors are hidden until authorized state can be
-                refreshed. Your last confirmed connections remain visible.
+                Emotional colors are hidden until we can update your network.
+                Your last confirmed connections remain visible.
               </p>
             ) : (
               <>
@@ -109,7 +109,8 @@ export function NetworkEmotionResults({
                   <p>Your network begins with you. Create a Bond to connect.</p>
                 )}
                 <p>
-                  Recent voluntary submissions only. Not population sentiment.
+                  Recent feelings voluntarily shared in your connected network,
+                  not the general population.
                 </p>
                 <ul>
                   {EMOTIONS.map((emotion) => (
@@ -131,12 +132,16 @@ export function NetworkEmotionResults({
                 </ul>
                 <p>
                   Percentages use {summary.active.length} active visible Pulses
-                  only. Others remain neutral.
+                  only. Atoms without an active Pulse remain neutral.
                 </p>
                 <p>
-                  Known network reach: {reach.cities.length} cities ·{" "}
-                  {reach.regions.length} regions · {reach.countries.length}{" "}
-                  countries. Geography may be incomplete.
+                  Known network reach: {reach.cities.length}{" "}
+                  {reach.cities.length === 1 ? "city" : "cities"} ·{" "}
+                  {reach.regions.length}{" "}
+                  {reach.regions.length === 1 ? "region" : "regions"} ·{" "}
+                  {reach.countries.length}{" "}
+                  {reach.countries.length === 1 ? "country" : "countries"}.
+                  Geography may be incomplete.
                 </p>
                 {summary.regions.map((region) => (
                   <p key={region.key}>

@@ -96,10 +96,6 @@ export function AtomContextPanel({
         </div>
       </div>
       <PublicXProfile profiles={context.selected.socialProfiles} />
-      <CurrentPulse
-        {...(activePulse ? { pulse: activePulse } : {})}
-        now={pulseNow}
-      />
       {ownerMode && (
         <p
           className="context-relationship"
@@ -109,6 +105,11 @@ export function AtomContextPanel({
           {relationship}
         </p>
       )}
+      <CurrentPulse
+        {...(activePulse ? { pulse: activePulse } : {})}
+        now={pulseNow}
+      />
+      {homeRegion && <p className="bond-date">Home region: {homeRegion}</p>}
       <dl className="context-metrics">
         <div>
           <dt>Network</dt>
@@ -119,7 +120,10 @@ export function AtomContextPanel({
           <dd>
             {context.cityCount} known{" "}
             {context.cityCount === 1 ? "city" : "cities"} ·{" "}
-            {context.regionCount} regions · {context.countryCount} countries
+            {context.regionCount}{" "}
+            {context.regionCount === 1 ? "region" : "regions"} ·{" "}
+            {context.countryCount}{" "}
+            {context.countryCount === 1 ? "country" : "countries"}
           </dd>
         </div>
       </dl>
@@ -139,7 +143,6 @@ export function AtomContextPanel({
             : context.bondedAt.slice(0, 10)}
         </p>
       )}
-      {homeRegion && <p className="bond-date">Home region: {homeRegion}</p>}
       <button
         type="button"
         className="view-network"

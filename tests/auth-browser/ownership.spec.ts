@@ -93,9 +93,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
     await request.get("http://127.0.0.1:54330/__test/invite")
   ).json();
   await page.goto(`/bond/${anotherInvite.token}`);
-  await page
-    .getByRole("link", { name: "I ALREADY HAVE AN ATOM", exact: true })
-    .click();
+  await page.getByRole("link", { name: "ACCESS MY ATOM", exact: true }).click();
   await expect(page.getByLabel("Home region")).toHaveCount(0);
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Email me an access link" }).click();
@@ -146,7 +144,7 @@ test("expired access link cannot establish an owner session or allocate an Atom"
     "expired",
   );
   await page.goto("/owner");
-  await expect(page.getByRole("heading")).toHaveText("CREATE YOUR ATOM");
+  await expect(page.getByRole("heading")).toHaveText("CREATE MY ATOM");
   expect(
     await (await request.get("http://127.0.0.1:54330/__test/counts")).json(),
   ).toEqual(before);

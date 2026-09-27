@@ -41,6 +41,7 @@ export interface LivingAtomProps {
   graph: GraphData;
   originalAtomId: string;
   onCreateBond?: () => void;
+  creatingBond?: boolean;
   arrivalId?: string | null;
 }
 
@@ -48,6 +49,7 @@ export function LivingAtom({
   graph,
   originalAtomId,
   onCreateBond,
+  creatingBond = false,
   arrivalId,
   emotional,
   ownerMode = true,
@@ -179,11 +181,13 @@ export function LivingAtom({
   const pulseMessage =
     pulse.distance !== null
       ? pulse.distance === 0
-        ? "Your Pulse begins here."
+        ? "PULSE SENT · Your Pulse begins here."
         : `Reaching through Bonds · ${reached} people illuminated`
       : pulse.completed
         ? `Pulse complete · PULSE SENT · ${reach.people} connected Atoms reached, including you · ${reach.cities.length} known cities · ${reach.regions.length} regions · ${reach.countries.length} countries`
-        : "One connection opens another world.";
+        : isMine && scene.directCount === 0
+          ? "Your network begins here. Create your first Bond with someone you know."
+          : "One connection opens another world.";
 
   return (
     <div className="living-atom spatial-shell" data-testid="living-atom">
@@ -227,9 +231,13 @@ export function LivingAtom({
           <div>
             <span>REGIONAL REACH</span>
             <strong>
-              {scene.regionCount} <em>regions</em>
+              {scene.regionCount}{" "}
+              <em>{scene.regionCount === 1 ? "region" : "regions"}</em>
             </strong>
-            <small>{scene.countryCount} countries</small>
+            <small>
+              {scene.countryCount}{" "}
+              {scene.countryCount === 1 ? "country" : "countries"}
+            </small>
           </div>
           <p>
             {synthetic && ownerMode
@@ -281,6 +289,11 @@ export function LivingAtom({
           className="my-atom"
           onClick={home}
           aria-label={ownerMode ? "My Atom" : "Starting Atom"}
+          title={
+            ownerMode
+              ? "Return to your own network perspective"
+              : "Return to the starting Atom"
+          }
         >
           <span>{ownerMode ? "My Atom" : "Starting Atom"}</span>
         </button>
@@ -319,8 +332,10 @@ export function LivingAtom({
               type="button"
               className="create-bond"
               onClick={onCreateBond}
+              disabled={creatingBond}
+              aria-busy={creatingBond}
             >
-              CREATE BOND
+              {creatingBond ? "Creating invitation…" : "CREATE BOND"}
             </button>
           )}
 
@@ -524,7 +539,11 @@ export function LivingAtom({
         </p>
       )}
       <p className="simulation-label">
-        {synthetic && ownerMode ? "Synthetic network" : "Public network"}{" "}
+        {synthetic && ownerMode
+          ? "Synthetic network"
+          : ownerMode
+            ? "Your connected network"
+            : "Public network"}{" "}
         <span aria-hidden="true">·</span>{" "}
         {reducedMotion
           ? "Reduced motion"

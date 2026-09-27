@@ -7,11 +7,14 @@ See the [baseline report](docs/architecture/BASELINE_v0.8.0.md) for included
 functionality, verification evidence and known limitations. The `v0.8.0` Git tag
 is permanent; future changes receive subsequent versions.
 
-Current release: **0.8.1 — Living Emotional Network**. Authenticated
+Approved release: **0.8.2 — UI/UX Clarity & Fit-and-Finish**. Authenticated
 MY ATOM shows authorized active emotional states automatically. CREATE BOND and
 PULSE are the primary actions; **YOUR NETWORK NOW** expands current coverage and
 distribution. See [Emotional Pulse architecture](docs/architecture/EMOTIONAL_PULSE_v0.1.md)
 for privacy, refresh cadence and limitations. Public viewing remains emotion-free.
+
+Product and real-device review passed; the feature freeze remains in effect.
+See the [UI audit and real-device checklist](docs/architecture/UI_UX_v0.8.2.md).
 
 The Living Atom retains scientific light materials, perspective depth, calm
 orbits and progressive regional aggregation. Select an Atom to inspect context,

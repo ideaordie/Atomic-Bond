@@ -300,6 +300,64 @@
   width: 300px;
   max-height: min(42svh, 380px);
 }
+.pulse-composer {
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+.pulse-composer p,
+.pulse-composer legend {
+  font-size: var(--helper-size);
+}
+.emotion-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.emotion-options label {
+  min-width: 0;
+  padding: 10px 8px;
+  gap: 7px;
+}
+.emotion-options input,
+.emotion-dot {
+  flex-shrink: 0;
+}
+.emotion-actions {
+  flex-wrap: wrap;
+}
+.emotion-actions button {
+  flex: 1;
+  white-space: nowrap;
+}
+.current-pulse > span,
+.current-pulse small {
+  font-size: 12px;
+}
+.network-now-toggle > span,
+.network-now-toggle strong {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.network-now .network-emotion-results {
+  top: calc(100% + 8px);
+}
+.network-emotion-results .emotion-distribution {
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.emotion-distribution li > span {
+  min-width: 0;
+}
+.measurement-status {
+  font-size: 12px;
+}
+.emotion-distribution li > span:last-child {
+  text-align: right;
+}
+@media (max-height: 550px) {
+  .network-now .network-emotion-results {
+    max-height: 240px;
+  }
+}
 @media (max-width: 600px) {
   .network-now {
     top: 210px;
@@ -307,7 +365,7 @@
     width: 230px;
   }
   .network-now .network-emotion-results {
-    top: 62px;
+    top: calc(100% + 8px);
     width: min(330px, calc(100vw - 32px));
     max-height: min(34svh, calc(100svh - 455px));
   }

@@ -16,8 +16,8 @@ export function CurrentPulse({
     minutes < 1
       ? "just now"
       : minutes < 60
-        ? `${minutes} minutes ago`
-        : `${Math.floor(minutes / 60)} hours ago`;
+        ? `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`
+        : `${Math.floor(minutes / 60)} ${minutes < 120 ? "hour" : "hours"} ago`;
   const definition = EMOTION_DEFINITIONS[pulse.emotion];
   return (
     <p className="current-pulse" data-testid="current-pulse">

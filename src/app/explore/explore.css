@@ -46,7 +46,7 @@ main.explore-page {
 }
 .auth-entry a {
   color: var(--text);
-  min-height: 24px;
+  min-height: 44px;
   display: flex;
   align-items: center;
 }

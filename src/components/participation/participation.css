@@ -303,3 +303,20 @@
 .location-results li:hover {
   background: var(--surface-muted);
 }
+.bond-dialog {
+  overflow-wrap: anywhere;
+  max-height: calc(
+    100dvh - max(28px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)
+  );
+}
+.bond-dialog .field-help,
+.atom-form label span {
+  font-size: var(--helper-size);
+}
+.location-results strong,
+.location-results span,
+.location-selected strong,
+.location-selected span {
+  overflow-wrap: anywhere;
+  font-size: var(--helper-size);
+}

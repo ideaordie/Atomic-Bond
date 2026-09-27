@@ -28,7 +28,7 @@ export function LocationField({
   };
   return (
     <div className="location-field">
-      <label htmlFor={id}>Home region</label>
+      <label htmlFor={id}>Home region (required)</label>
       <input
         id={id}
         role="combobox"
@@ -36,6 +36,7 @@ export function LocationField({
         placeholder="Start typing your city…"
         value={query}
         aria-autocomplete="list"
+        aria-required="true"
         aria-expanded={open && results.length > 0}
         aria-controls={`${id}-results`}
         aria-activedescendant={
@@ -123,8 +124,8 @@ export function LocationField({
         </p>
       )}
       <p id={`${id}-help`} className="field-help">
-        Your home region helps show how far your network reaches. Atomic Bond
-        does not require your exact address.
+        Start typing your city, then select it from the list. No exact address
+        is needed.
       </p>
     </div>
   );

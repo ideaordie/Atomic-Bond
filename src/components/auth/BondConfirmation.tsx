@@ -41,6 +41,7 @@ export function BondConfirmation({
         not imply agreement or trust in their other connections.
       </p>
       <button
+        className="flow-primary"
         disabled={pending}
         onClick={async () => {
           setPending(true);
@@ -57,7 +58,7 @@ export function BondConfirmation({
           }
         }}
       >
-        CONFIRM BOND
+        {pending ? "Confirming Bond…" : "CONFIRM BOND"}
       </button>
       <Link className="decline-bond" href="/explore" replace>
         DECLINE

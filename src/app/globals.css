@@ -7,6 +7,13 @@
   --border: #9aafbf;
   --accent: #285b83;
   --focus: #12619b;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --helper-size: 0.875rem;
+  --control-height: 44px;
 }
 :root {
   color-scheme: light;
@@ -116,4 +123,32 @@ a {
 input::placeholder {
   color: var(--muted);
   opacity: 1;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a,
+input,
+select {
+  touch-action: manipulation;
+}
+input,
+select,
+textarea {
+  scroll-margin-block: 24px;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+@media (max-width: 767px) {
+  main {
+    padding: max(24px, env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right))
+      max(24px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+  }
 }

@@ -1,5 +1,10 @@
 # First Real QR Bond v0.1 — Task #8
 
+Task #8.2 clarifies the other-person camera handoff, waiting/expiry instructions,
+recipient Create my Atom / Access my Atom labels and responsive panel layout.
+QR generation, expiration and both parties' consent mechanics are unchanged.
+See [UI clarity and physical-device checklist](UI_UX_v0.8.2.md).
+
 Status: included in the owner-approved v0.8.0 functional MVP baseline, frozen
 2026-09-27. See [baseline evidence](BASELINE_v0.8.0.md). The owner reported successful
 use and explicitly requested this freeze. Detailed physical-device results remain
