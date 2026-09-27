@@ -1,11 +1,11 @@
 {
   "name": "atomic-bond",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "engines": {
-    "node": ">=24 <25"
+    "node": "\u003e=24 \u003c25"
   },
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
@@ -14,21 +14,25 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "next typegen && tsc --noEmit",
+    "typecheck": "next typegen \u0026\u0026 tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:db:concurrency && pnpm build && pnpm test:e2e && pnpm test:e2e:persistence",
+    "check": "pnpm format:check \u0026\u0026 pnpm lint \u0026\u0026 pnpm typecheck \u0026\u0026 pnpm test \u0026\u0026 pnpm test:db:concurrency \u0026\u0026 pnpm build \u0026\u0026 pnpm test:e2e \u0026\u0026 pnpm test:e2e:persistence \u0026\u0026 pnpm test:e2e:auth",
     "test:db": "vitest run tests/integration/database.test.ts",
     "test:db:concurrency": "node scripts/test-db-concurrency.mjs",
-    "test:e2e:persistence": "playwright test --config playwright.persistence.config.ts"
+    "test:e2e:persistence": "playwright test --config playwright.persistence.config.ts",
+    "test:e2e:auth": "playwright test --config playwright.auth.config.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "next": "16.3.5",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "standardwebhooks": "^1.1.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

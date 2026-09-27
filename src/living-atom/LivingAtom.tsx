@@ -31,10 +31,11 @@ const EMPTY_PULSES: readonly EmotionalPulse[] = [];
 
 export interface LivingAtomProps {
   ownerMode?: boolean;
+  synthetic?: boolean;
   emotional?: {
     pulses: readonly EmotionalPulse[];
     now: number;
-    send: (emotion: Emotion) => void;
+    send: (emotion: Emotion) => void | Promise<void>;
   };
   graph: GraphData;
   originalAtomId: string;
@@ -49,6 +50,7 @@ export function LivingAtom({
   arrivalId,
   emotional,
   ownerMode = true,
+  synthetic = true,
 }: LivingAtomProps) {
   const [selection, setSelection] = useState({
     originalId: originalAtomId,
@@ -231,7 +233,9 @@ export function LivingAtom({
             <small>{scene.countryCount} countries</small>
           </div>
           <p>
-            {ownerMode ? "Coarse, synthetic geography" : "Coarse geography"}
+            {synthetic && ownerMode
+              ? "Coarse, synthetic geography"
+              : "Coarse geography"}
           </p>
         </div>
       )}
@@ -413,12 +417,13 @@ export function LivingAtom({
 
       {composerOpen && (
         <PulseComposer
+          synthetic={synthetic}
           onClose={() => {
             setComposerOpen(false);
             pulseButton.current?.focus();
           }}
-          onSend={(emotion) => {
-            emotional?.send(emotion);
+          onSend={async (emotion) => {
+            await emotional?.send(emotion);
             if (!isMine) home();
             setSentEmotion(emotion);
             traversalStartedAt.current = performance.now();
@@ -537,7 +542,7 @@ export function LivingAtom({
         </p>
       )}
       <p className="simulation-label">
-        {ownerMode ? "Synthetic network" : "Public network"}{" "}
+        {synthetic && ownerMode ? "Synthetic network" : "Public network"}{" "}
         <span aria-hidden="true">·</span>{" "}
         {reducedMotion
           ? "Reduced motion"

@@ -185,3 +185,7 @@ through a tested pull request so the next push does not reintroduce it. Avoid
 force-pushing shared history. This mock has no database migrations to reverse;
 future persistent services will require a separate data rollback plan.
 See [Instant Rollback](https://vercel.com/docs/instant-rollback).
+
+## Task #7 auth/email release
+
+Follow [AUTH_EMAIL_v0.1.md](AUTH_EMAIL_v0.1.md) before enabling real signup. Apply the additive owner-access migration through the CLI, deploy the reviewed application, configure the server-only Resend and signed-hook secrets, and then enable the Supabase Send Email Hook. Use `https://atomic-bond.vercel.app` as the production APP_ORIGIN and exact preview callback allowlists. Never enable a hook pointing to an undeployed endpoint. No keys belong in GitHub or public environment variables. Supabase Auth remains the token authority. Local automated email simulation is not proof of inbox delivery; complete real verification/access acceptance before declaring Task #7 done.

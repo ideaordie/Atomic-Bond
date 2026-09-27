@@ -301,6 +301,23 @@ describe("migrations and production database invariants", () => {
     );
     expect(await rpc("connected_emotional_pulses", a.user)).toHaveLength(0);
   });
+  it("resolves only the authenticated owner without private identity serialization", async () => {
+    const a = await active(),
+      b = await active();
+    const mine = await rpc("my_atom", a.user),
+      theirs = await rpc("my_atom", b.user);
+    expect(mine.publicId).toBe(a.number);
+    expect(theirs.publicId).toBe(b.number);
+    expect(JSON.stringify(mine)).not.toMatch(
+      /email|auth_user|notification|token|emotion/,
+    );
+    await expect(
+      call("select public.my_atom()", [], null, "anon"),
+    ).rejects.toThrow("permission denied");
+    await rpc("update_my_atom", a.user, ["Owner alias", "@owner", location]);
+    expect((await rpc("my_atom", a.user)).alias).toBe("Owner alias");
+    expect((await rpc("my_atom", b.user)).alias).not.toBe("Owner alias");
+  });
   it("denies anonymous/private access and direct mutations even with guessed UUIDs", async () => {
     const a = await active(),
       b = await active();

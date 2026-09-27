@@ -33,6 +33,23 @@ main.explore-page {
   letter-spacing: 0.07em;
   color: #91b5ca;
 }
+.explore-nav:has(.auth-entry) > span {
+  display: none;
+}
+.auth-entry {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 14px;
+  font-size: 11px;
+  max-width: 190px;
+}
+.auth-entry a {
+  color: #c9ecff;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
 @media (max-width: 600px) {
   .explore-nav {
     padding: 0 18px;

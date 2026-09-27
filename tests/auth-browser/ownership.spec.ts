@@ -1,0 +1,164 @@
+import { expect, test } from "@playwright/test";
+test("new invitation verification, owner actions, logout and cross-device same Atom restoration", async ({
+  page,
+  browser,
+  request,
+}, info) => {
+  const email = `owner-${info.project.name}@example.invalid`;
+  const invite = await (
+    await request.get("http://127.0.0.1:54330/__test/invite")
+  ).json();
+  await page.goto(`/bond/${invite.token}`);
+  await page.getByRole("link", { name: "CREATE YOUR ATOM / SIGN IN" }).click();
+  await page.getByLabel("Email").fill(email.toUpperCase());
+  await page.getByLabel("Name / alias").fill("Verified owner");
+  await page.getByLabel("X handle").fill("@curious_owner");
+  await page.getByLabel("Home region").selectOption({ index: 1 });
+  await page.screenshot({
+    path: info.outputPath("registration.png"),
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Create my Atom", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("secure link");
+  const { link } = await (
+    await request.get(`http://127.0.0.1:54330/__test/mail?email=${email}`)
+  ).json();
+  expect(link).toBeTruthy();
+  const fresh = await browser.newContext({
+    viewport: info.project.use.viewport ?? { width: 390, height: 844 },
+  });
+  const receiver = await fresh.newPage();
+  await receiver.goto(link);
+  await receiver
+    .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
+    .click();
+  await expect(receiver.getByRole("heading")).toHaveText("YOUR ATOM IS READY");
+  const number = (
+    await receiver.locator(".auth-panel p").first().innerText()
+  ).replace("ATOM #", "");
+  await receiver
+    .getByRole("link", { name: "Continue to Bond confirmation" })
+    .click();
+  await receiver.getByRole("button", { name: "CONFIRM BOND" }).click();
+  await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
+  await receiver.reload();
+  await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
+  await receiver.screenshot({
+    path: info.outputPath("owner-network.png"),
+    fullPage: true,
+  });
+  await receiver.getByRole("button", { name: "Pulse", exact: true }).click();
+  await receiver.getByRole("radio", { name: "Curious", exact: true }).check();
+  await receiver
+    .getByRole("button", { name: "Send Pulse", exact: true })
+    .click();
+  await expect(
+    receiver.getByRole("dialog", { name: "How are you feeling?" }),
+  ).toHaveCount(0);
+  await receiver.getByRole("link", { name: "Profile & preferences" }).click();
+  await receiver.getByLabel("Name / alias").fill("Updated owner");
+  await receiver.getByLabel("Growth digest").selectOption("weekly");
+  await receiver.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(receiver.getByRole("status")).toContainText("saved");
+  await receiver.screenshot({
+    path: info.outputPath("owner-settings.png"),
+    fullPage: true,
+  });
+  expect(
+    await receiver.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await receiver
+    .getByRole("button", { name: "Sign out on this device" })
+    .click();
+  await expect(receiver.getByRole("heading")).toHaveText("CREATE YOUR ATOM");
+  await receiver.goto(link);
+  await receiver
+    .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
+    .click();
+  await expect(receiver.getByRole("main").getByRole("alert")).toContainText(
+    "already used",
+  );
+  const anotherInvite = await (
+    await request.get("http://127.0.0.1:54330/__test/invite")
+  ).json();
+  await page.goto(`/bond/${anotherInvite.token}`);
+  await page.getByRole("link", { name: "CREATE YOUR ATOM / SIGN IN" }).click();
+  await page.getByRole("button", { name: "I already have an Atom" }).click();
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Email me an access link" }).click();
+  await expect(page.getByRole("status")).toContainText("secure link");
+  const returning = await (
+    await request.get(`http://127.0.0.1:54330/__test/mail?email=${email}`)
+  ).json();
+  await receiver.goto(returning.link);
+  await receiver
+    .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
+    .click();
+  await expect(receiver.getByRole("heading")).toHaveText("WELCOME BACK");
+  await expect(receiver.locator(".auth-panel")).toContainText(
+    `ATOM #${number}`,
+  );
+  await receiver
+    .getByRole("link", { name: "Continue to Bond confirmation" })
+    .click();
+  await expect(
+    receiver.getByRole("button", { name: "CONFIRM BOND" }),
+  ).toBeVisible();
+  await receiver.goto("/explore");
+  await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
+  expect(await receiver.content()).not.toContain(email);
+  await receiver.goto(`/bond/${invite.token}`);
+  await expect(receiver.getByRole("heading")).toHaveText(
+    "Invitation unavailable",
+  );
+  await fresh.close();
+});
+test("expired access link cannot establish an owner session or allocate an Atom", async ({
+  page,
+  request,
+}, info) => {
+  const email = `expired-${info.project.name}@example.invalid`;
+  const before = await (
+    await request.get("http://127.0.0.1:54330/__test/counts")
+  ).json();
+  await request.post(
+    "http://127.0.0.1:54330/auth/v1/otp?redirect_to=" +
+      encodeURIComponent("http://127.0.0.1:3104/auth/confirm"),
+    { data: { email, create_user: true } },
+  );
+  const { link } = await (
+    await request.get(`http://127.0.0.1:54330/__test/mail?email=${email}`)
+  ).json();
+  await request.get("http://127.0.0.1:54330/__test/expire-access");
+  await page.goto(link);
+  await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
+  await expect(page.getByRole("main").getByRole("alert")).toContainText(
+    "expired",
+  );
+  await page.goto("/owner");
+  await expect(page.getByRole("heading")).toHaveText("CREATE YOUR ATOM");
+  expect(
+    await (await request.get("http://127.0.0.1:54330/__test/counts")).json(),
+  ).toEqual(before);
+});
+test("expired invitation stays expired and malformed access fails safely", async ({
+  page,
+  request,
+}) => {
+  const invite = await (
+    await request.get("http://127.0.0.1:54330/__test/invite")
+  ).json();
+  await request.get("http://127.0.0.1:54330/__test/expire-invites");
+  await page.goto(`/bond/${invite.token}`);
+  await expect(page.getByRole("heading")).toHaveText("Invitation unavailable");
+  await page.goto("/auth/confirm#token_hash=invalid&next=https://evil.example");
+  await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
+  await expect(page.getByRole("main").getByRole("alert")).toContainText(
+    "could not be completed",
+  );
+  expect(page.url()).toContain("/auth/confirm");
+});

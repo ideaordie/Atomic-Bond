@@ -7,10 +7,14 @@ import "./emotional-pulse.css";
 export function PulseComposer({
   onSend,
   onClose,
+  synthetic = true,
 }: {
-  onSend: (emotion: Emotion) => void;
+  synthetic?: boolean;
+  onSend: (emotion: Emotion) => void | Promise<void>;
   onClose: () => void;
 }) {
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
   const [emotion, setEmotion] = useState<Emotion | null>(null);
   useEffect(() => {
@@ -33,9 +37,18 @@ export function PulseComposer({
       }}
     >
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          if (emotion) onSend(emotion);
+          if (!emotion || pending) return;
+          setPending(true);
+          setError("");
+          try {
+            await onSend(emotion);
+          } catch {
+            setError("Pulse could not be sent. Please retry.");
+          } finally {
+            setPending(false);
+          }
         }}
       >
         <p className="emotion-eyebrow">YOUR EMOTIONAL PULSE</p>
@@ -74,11 +87,14 @@ export function PulseComposer({
           <button type="button" onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" disabled={!emotion}>
+          <button type="submit" disabled={!emotion || pending}>
             Send Pulse
           </button>
         </div>
-        <small>Local simulation · no notifications · resets on refresh</small>
+        {error && <p role="alert">{error}</p>}
+        {synthetic && (
+          <small>Local simulation · no notifications · resets on refresh</small>
+        )}
       </form>
     </dialog>
   );

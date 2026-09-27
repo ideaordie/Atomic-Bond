@@ -12,6 +12,11 @@ describe("deployment publication boundaries", () => {
       "NEXT_PUBLIC_SUPABASE_URL=",
       "NEXT_PUBLIC_SUPABASE_ANON_KEY=",
       "RESEND_API_KEY=",
+      "RESEND_FROM_EMAIL=",
+      "SUPABASE_AUTH_HOOK_SECRET=",
+      "APP_ORIGIN=",
+      "AUTH_ALLOWED_ORIGINS=",
+      "AUTH_ALLOW_LOCALHOST=",
       "LOCATION_PROVIDER_API_KEY=",
     ]);
   });

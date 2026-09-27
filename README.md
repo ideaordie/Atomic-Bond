@@ -141,3 +141,7 @@ Supabase-mode public exploration reads real confirmed graph data. Owner mutation
 are implemented behind verified Auth-gated RPCs, but production login, verification
 and delivery UI integration remain Task #7; they cannot be simulated in real mode.
 No emails are sent. Both modes retain the current Living Atom layout.
+
+## Task #7 passwordless ownership (0.7.0)
+
+See [Auth and email architecture](docs/architecture/AUTH_EMAIL_v0.1.md) for signup, cookie sessions, invitation continuation, the signed Supabase email hook, Resend delivery and required hosted configuration. Run `pnpm test:e2e:auth` for the isolated Auth browser tests; `pnpm check` includes them. Real ownership requires Supabase mode and the new `202609270001_owner_access.sql` migration. The existing mock flows remain available. Live email acceptance must be verified separately from deterministic tests.
