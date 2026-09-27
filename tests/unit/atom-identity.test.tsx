@@ -76,7 +76,8 @@ describe("public Atom identity context", () => {
     expect(html).toContain("2 Bonds from you");
     expect(html).toContain("YOU → ● → ATOM #3");
     expect(html).toContain("Relationship path: YOU to ATOM #2 to ATOM #3");
-    expect(html).toContain("1 known city");
+    expect(html).toContain("1 region");
+    expect(html).not.toContain("known city");
   });
   it("does not render extra private data or arbitrary profile URLs", () => {
     const graph = {

@@ -8,6 +8,60 @@
   color: var(--text);
   overflow-wrap: anywhere;
 }
+.home-region {
+  border: 0;
+  padding: 0;
+  margin: 16px 0 0;
+  min-width: 0;
+}
+.home-region legend {
+  font-weight: 700;
+}
+.home-region > p {
+  font-size: 14px;
+}
+.region-select {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+.region-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: min(220px, 35dvh);
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-y: auto;
+  background: var(--surface);
+}
+.auth-panel .region-options button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background: var(--surface);
+  color: var(--text);
+  border: 0;
+  border-radius: 6px;
+  margin: 0;
+}
+.auth-panel .region-options button[aria-selected="true"] {
+  background: var(--surface-muted);
+  box-shadow: inset 3px 0 var(--accent);
+}
+.region-options small {
+  display: block;
+  color: var(--muted);
+}
 .auth-panel h1 {
   font-size: 1.6rem;
   line-height: 1.3;

@@ -12,7 +12,7 @@ test("light entry and registration remain readable without overflow", async ({
     fullPage: true,
   });
   await page.getByRole("link", { name: "CREATE MY ATOM", exact: true }).click();
-  await expect(page.getByLabel("Home region")).toBeVisible();
+  await expect(page.getByLabel("Country", { exact: false })).toBeVisible();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

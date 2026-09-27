@@ -1,6 +1,7 @@
 import type { GraphData, GraphNode } from "../../types/graph";
 import type { PublicAtomProfile } from "../../types/atom";
 import { normalizeXHandle } from "../../utils/x-profile";
+import { COUNTRIES } from "../../services/locations/canonical-regions";
 
 export function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
@@ -33,6 +34,12 @@ export function publicAtom(value: unknown): PublicAtomProfile {
     location: {
       region: string(metadata.region),
       countryCode: string(metadata.countryCode),
+      ...(typeof metadata.countryName === "string"
+        ? { countryName: metadata.countryName }
+        : {}),
+      ...(typeof metadata.subdivisionCode === "string"
+        ? { subdivisionCode: metadata.subdivisionCode }
+        : {}),
     },
   };
 }
@@ -45,6 +52,13 @@ export function publicGraph(value: unknown): GraphData {
       raw = record(value);
     if (!Number.isSafeInteger(raw.degree) || Number(raw.degree) < 0)
       throw new Error("Invalid graph degree");
+    // Legacy city rows keep their UUID/association; map known region names only in the public projection.
+    const country = COUNTRIES.find((c) => c.code === atom.location.countryCode);
+    const subdivision = country?.subdivisions.find(
+      (s) =>
+        s.code === atom.location.subdivisionCode ||
+        s.name === atom.location.region,
+    );
     return {
       id: atom.publicId,
       publicId: atom.publicId,
@@ -62,8 +76,14 @@ export function publicGraph(value: unknown): GraphData {
         : {}),
       metadata: {
         region: atom.location.region,
-        homeRegion: atom.location.region,
+        homeRegion: [atom.location.region, atom.location.countryName]
+          .filter(Boolean)
+          .join(", "),
         countryCode: atom.location.countryCode,
+        ...(atom.location.countryName
+          ? { countryName: atom.location.countryName }
+          : {}),
+        ...(subdivision ? { subdivisionCode: subdivision.code } : {}),
       },
     };
   });

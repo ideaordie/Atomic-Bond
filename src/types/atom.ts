@@ -4,7 +4,12 @@ export interface PublicAtomProfile {
   readonly publicId: string;
   readonly displayName?: string;
   readonly xHandle?: string;
-  readonly location: { readonly region: string; readonly countryCode: string };
+  readonly location: {
+    readonly region: string;
+    readonly countryCode: string;
+    readonly countryName?: string;
+    readonly subdivisionCode?: string;
+  };
   readonly createdAt: string;
 }
 export interface NotificationPreferences {

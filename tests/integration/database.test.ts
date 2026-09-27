@@ -389,3 +389,53 @@ describe("migrations and production database invariants", () => {
     });
   });
 });
+
+describe("coarse region migration", () => {
+  it("seeds the full canonical catalog without replacing legacy places", async () => {
+    const rows = await db.query<{ count: number }>(
+      "select count(*)::int as count from public.locations where canonical_key like 'iso3166:%'",
+    );
+    expect(rows.rows[0]!.count).toBe(3639);
+    const legacy = await db.query(
+      "select * from public.locations where city='Boynton Beach'",
+    );
+    expect(legacy.rows).toHaveLength(1);
+    const region = await rpc("canonical_location", null, [
+      "ab830000-0000-4000-8000-55532d464c00",
+    ]);
+    expect(region).toMatchObject({
+      city: "",
+      region: "Florida",
+      country: "United States",
+      country_code: "US",
+      subdivision_code: "US-FL",
+    });
+  });
+  it("persists canonical registration and publishes no city or private identity", async () => {
+    const user = randomUUID();
+    await db.query("insert into auth.users values($1,$2,now())", [
+      user,
+      `${user}@example.invalid`,
+    ]);
+    await rpc("begin_atom", user, [
+      "ab830000-0000-4000-8000-55532d464c00",
+      "Region test",
+      null,
+    ]);
+    const atom = await rpc("activate_atom", user);
+    const graph = await rpc("public_graph", null, [atom.publicId]);
+    const nodes = graph.nodes as {
+      publicId: string;
+      metadata: Record<string, unknown>;
+    }[];
+    const node = nodes.find((n) => n.publicId === atom.publicId)!;
+    expect(node.metadata).toMatchObject({
+      region: "Florida",
+      countryName: "United States",
+      countryCode: "US",
+      subdivisionCode: "US-FL",
+    });
+    expect(node.metadata).not.toHaveProperty("city");
+    expect(JSON.stringify(node)).not.toContain("@example.invalid");
+  });
+});

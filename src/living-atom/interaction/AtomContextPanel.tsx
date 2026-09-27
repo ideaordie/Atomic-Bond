@@ -118,8 +118,6 @@ export function AtomContextPanel({
         <div>
           <dt>Reach</dt>
           <dd>
-            {context.cityCount} known{" "}
-            {context.cityCount === 1 ? "city" : "cities"} ·{" "}
             {context.regionCount}{" "}
             {context.regionCount === 1 ? "region" : "regions"} ·{" "}
             {context.countryCount}{" "}

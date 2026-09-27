@@ -1,3 +1,4 @@
+import { selectHomeRegion } from "./home-region";
 import { expect, test } from "@playwright/test";
 
 test("entry, isolated owner sessions, explicit public viewing and empty real network", async ({
@@ -7,7 +8,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
 }, info) => {
   await page.goto("/");
   await page.getByRole("link", { name: "ACCESS MY ATOM", exact: true }).click();
-  await expect(page.getByLabel("Home region")).toHaveCount(0);
+  await expect(page.getByLabel("Country", { exact: false })).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Email me an access link" }),
   ).toBeVisible();
@@ -15,7 +16,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   await page.getByRole("link", { name: "CREATE MY ATOM", exact: true }).click();
   const email = `isolated-${info.project.name}@example.invalid`;
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Home region").selectOption({ index: 1 });
+  await selectHomeRegion(page);
   await page
     .getByRole("button", { name: "Create my Atom", exact: true })
     .click();

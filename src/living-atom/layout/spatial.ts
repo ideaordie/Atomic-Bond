@@ -14,7 +14,10 @@ import { stableHash } from "./scene";
 export const regionKey = (node: GraphNode) =>
   JSON.stringify([
     node.metadata?.countryCode ?? "",
-    node.metadata?.region ?? "Unspecified region",
+    node.metadata?.subdivisionCode ||
+      node.metadata?.region ||
+      node.metadata?.countryCode ||
+      "Unspecified region",
   ]);
 export const viewScale = (zoom: number): ViewScale =>
   zoom < 0.86 ? "regions" : zoom >= 1.4 ? "people" : "networks";
@@ -62,7 +65,11 @@ export function createSpatialScene(
     const first = perspective.nodes.get(ids[0]!)!;
     return {
       key,
-      label: first.metadata?.region ?? "Unspecified region",
+      label:
+        first.metadata?.region ||
+        first.metadata?.countryName ||
+        first.metadata?.countryCode ||
+        "Unspecified region",
       countryCode: first.metadata?.countryCode,
       reachableCount: ids.length,
       representedCount: ids.filter((id) => represented.has(id)).length,

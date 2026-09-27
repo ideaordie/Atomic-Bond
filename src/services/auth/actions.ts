@@ -12,6 +12,7 @@ import {
 import { EMOTIONS, type Emotion } from "../../types/emotional-pulse";
 import { invitationPresentation } from "../bonds/qr-invitation";
 import { bondRelationship } from "../bonds/relationship";
+import { isCanonicalRegionId } from "../locations/canonical-regions";
 
 async function sameOrigin() {
   const h = await headers();
@@ -24,6 +25,10 @@ export async function requestAccess(form: FormData) {
     const input = accessRequest(Object.fromEntries(form));
     const { client, services } = await ownerContext();
     if (input.details) {
+      if (!isCanonicalRegionId(input.details.locationId))
+        return {
+          error: "Select a country and an applicable region from the lists.",
+        };
       const place = await services.locations.resolve(input.details.locationId);
       if (!place || place.displayName === "Verification only")
         return { error: "Select a home region from the available locations." };
@@ -91,6 +96,7 @@ export async function finishRegistration(form: FormData) {
     const context = await ownerContext();
     if (!context.user?.email_confirmed_at) throw new Error();
     const details = registration(Object.fromEntries(form));
+    if (!isCanonicalRegionId(details.locationId)) throw new Error();
     const place = await context.services.locations.resolve(details.locationId);
     if (!place || place.displayName === "Verification only") throw new Error();
     await context.services.atoms.create(details);

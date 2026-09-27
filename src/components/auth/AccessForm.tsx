@@ -1,16 +1,14 @@
 "use client";
 import { useState } from "react";
 import { requestAccess, finishRegistration } from "../../services/auth/actions";
-import type { Location } from "../../services/participation/contracts";
+import { HomeRegion } from "./HomeRegion";
 import "./auth.css";
 import { normalizeXHandle, X_HANDLE_ERROR } from "../../utils/x-profile";
 export function AccessForm({
-  locations,
   next,
   verified = false,
   initialMode = "register",
 }: {
-  locations: readonly Location[];
   next: string;
   verified?: boolean;
   initialMode?: "register" | "access";
@@ -19,7 +17,6 @@ export function AccessForm({
     [message, setMessage] = useState(""),
     [sent, setSent] = useState(false),
     [xError, setXError] = useState(""),
-    [locationId, setLocationId] = useState(""),
     [pending, setPending] = useState(false);
   return (
     <section className="auth-panel">
@@ -157,36 +154,7 @@ export function AccessForm({
                 {xError}
               </p>
             )}
-            <label htmlFor="access-region">Home region (required)</label>
-            <select
-              id="access-region"
-              name="locationId"
-              required
-              value={locationId}
-              onChange={(event) => setLocationId(event.target.value)}
-              aria-describedby="region-help selected-region"
-            >
-              <option value="" disabled>
-                Select your city / region
-              </option>
-              {locations.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.displayName}
-                </option>
-              ))}
-            </select>
-            <small id="region-help">
-              Choose your home region from the list. Available places are
-              limited; no exact address is needed.
-            </small>
-            <p
-              id="selected-region"
-              className="selected-region"
-              hidden={!locationId}
-            >
-              Selected:{" "}
-              {locations.find((place) => place.id === locationId)?.displayName}
-            </p>
+            <HomeRegion />
           </>
         )}
         <button className="flow-primary" disabled={pending}>

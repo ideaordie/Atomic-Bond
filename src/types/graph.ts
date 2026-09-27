@@ -14,6 +14,8 @@ export interface GraphNode {
     readonly homeRegion?: string;
     readonly region?: string;
     readonly countryCode?: string;
+    readonly countryName?: string;
+    readonly subdivisionCode?: string;
     readonly clusterId?: string;
     readonly synthetic?: boolean;
   };

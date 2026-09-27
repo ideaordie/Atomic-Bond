@@ -19,7 +19,8 @@ export function networkReach(graph: GraphData, id: string): NetworkReach {
     regions: unique(
       nodes.map((n) =>
         n.metadata?.region
-          ? `${n.metadata.region}, ${n.metadata.countryCode}`
+          ? (n.metadata.subdivisionCode ??
+            `${n.metadata.region}, ${n.metadata.countryCode}`)
           : undefined,
       ),
     ),

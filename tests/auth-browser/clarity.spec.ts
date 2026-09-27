@@ -1,3 +1,4 @@
+import { selectHomeRegion } from "./home-region";
 import { expect, test } from "@playwright/test";
 
 test("registration clarity, field errors, long places and keyboard-sized viewport", async ({
@@ -8,7 +9,10 @@ test("registration clarity, field errors, long places and keyboard-sized viewpor
     page.getByRole("heading", { name: "CREATE MY ATOM" }),
   ).toBeVisible();
   await expect(page.getByLabel("Email")).toHaveAttribute("required", "");
-  await expect(page.getByLabel("Home region")).toHaveAttribute("required", "");
+  await expect(page.getByLabel("Country", { exact: false })).toHaveAttribute(
+    "required",
+    "",
+  );
   await expect(page.getByLabel("Name / alias")).not.toHaveAttribute("required");
   await expect(page.getByLabel("X handle")).not.toHaveAttribute("required");
   await page
@@ -16,7 +20,7 @@ test("registration clarity, field errors, long places and keyboard-sized viewpor
     .fill(`clarity-${info.project.name}@example.invalid`);
   await page.getByLabel("Name / alias").fill("Alexandra".repeat(6));
   await page.getByLabel("X handle").fill("https://x.com/not_a_handle");
-  await page.getByLabel("Home region").selectOption({ index: 1 });
+  await selectHomeRegion(page);
   await page
     .getByRole("button", { name: "Create my Atom", exact: true })
     .click();
@@ -70,6 +74,6 @@ test("registration clarity, field errors, long places and keyboard-sized viewpor
   });
   await page.getByRole("button", { name: "Switch to Access my Atom" }).click();
   await expect(page.getByText(/no password needed/)).toBeVisible();
-  await expect(page.getByLabel("Home region")).toHaveCount(0);
+  await expect(page.getByLabel("Country", { exact: false })).toHaveCount(0);
   await expect(page.getByRole("status")).toBeEmpty();
 });

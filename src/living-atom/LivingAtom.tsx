@@ -184,7 +184,7 @@ export function LivingAtom({
         ? "PULSE SENT · Your Pulse begins here."
         : `Reaching through Bonds · ${reached} people illuminated`
       : pulse.completed
-        ? `Pulse complete · PULSE SENT · ${reach.people} connected Atoms reached, including you · ${reach.cities.length} known cities · ${reach.regions.length} regions · ${reach.countries.length} countries`
+        ? `Pulse complete · PULSE SENT · ${reach.people} connected Atoms reached, including you · ${reach.regions.length} regions · ${reach.countries.length} countries`
         : isMine && scene.directCount === 0
           ? "Your network begins here. Create your first Bond with someone you know."
           : "One connection opens another world.";
@@ -524,8 +524,8 @@ export function LivingAtom({
             </ul>
             <p>
               Regional clouds summarize people in view. Background stars are
-              decorative. City coverage is partial; distance and weekly growth
-              are unavailable. Indirect connection does not imply trust.
+              decorative. Geography is coarse; distance and weekly growth are
+              unavailable. Indirect connection does not imply trust.
             </p>
           </details>
         </aside>

@@ -10,7 +10,7 @@ export default async function AuthPage({
 }) {
   await connection();
   const context = await ownerContext();
-  const { user, atom, services } = context;
+  const { user, atom } = context;
   const query = await searchParams;
   const next = nextPath(query.next);
   if (ownedPublicId(context))
@@ -30,7 +30,6 @@ export default async function AuthPage({
   return (
     <main>
       <AccessForm
-        locations={await services.locations.search("")}
         next={next}
         verified={Boolean(user?.email_confirmed_at)}
         initialMode={query.mode === "access" ? "access" : "register"}

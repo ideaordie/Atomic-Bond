@@ -20,6 +20,7 @@ const postgres = new EmbeddedPostgres({
   password: randomBytes(32).toString("hex"),
   persistent: true,
   createPostgresUser: false,
+  initdbFlags: ["--encoding=UTF8", "--locale=C"],
   postgresFlags: ["-h", "127.0.0.1"],
   onLog: () => {},
   onError: () => {},

@@ -1,3 +1,4 @@
+import { selectHomeRegion } from "./home-region";
 import {
   expect,
   test,
@@ -10,7 +11,7 @@ import { PNG } from "pngjs";
 async function register(page: Page, request: APIRequestContext, email: string) {
   await page.goto("/auth?mode=register");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Home region").selectOption({ index: 1 });
+  await selectHomeRegion(page);
   await page
     .getByRole("button", { name: "Create my Atom", exact: true })
     .click();

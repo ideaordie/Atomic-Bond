@@ -103,7 +103,6 @@ deployment. See [Vercel environment variables](https://vercel.com/docs/environme
 | `NEXT_PUBLIC_SUPABASE_URL`      | Public future project URL                                             |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anonymous client key; never an administrative/service-role key |
 | `RESEND_API_KEY`                | Server-only future notification adapter                               |
-| `LOCATION_PROVIDER_API_KEY`     | Server-only future location adapter                                   |
 
 These names reserve boundaries, not integrations. Future Supabase work must
 choose the supported key model and enforce RLS before exposing data. Never put
@@ -195,3 +194,7 @@ See [Instant Rollback](https://vercel.com/docs/instant-rollback).
 ## Task #7 auth/email release
 
 Follow [AUTH_EMAIL_v0.1.md](AUTH_EMAIL_v0.1.md) before enabling real signup. Apply the additive owner-access migration through the CLI, deploy the reviewed application, configure the server-only Resend and signed-hook secrets, and then enable the Supabase Send Email Hook. Use `https://atomic-bond.vercel.app` as the production APP_ORIGIN and exact preview callback allowlists. Never enable a hook pointing to an undeployed endpoint. No keys belong in GitHub or public environment variables. Supabase Auth remains the token authority. Local automated email simulation is not proof of inbox delivery; complete real verification/access acceptance before declaring Task #7 done.
+
+## Task #8.3 geography deployment
+
+Apply reviewed migration `202609280001_coarse_regions.sql` before deploying v0.8.3. It seeds canonical country/subdivision choices while preserving historical location associations. No external location provider or location API key is required. See [Home Region](LOCATION_v0.1.md) for snapshot maintenance and compatibility.

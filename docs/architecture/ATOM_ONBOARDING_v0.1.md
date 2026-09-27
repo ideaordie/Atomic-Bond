@@ -82,10 +82,10 @@ of comprehensive coverage.
 The accessible combobox supports arrows, Enter, Escape, pointer selection, and
 announces the selected city/region/country. Editing its text immediately clears
 the selected canonical ID. The service accepts only IDs resolved by the provider;
-free text and fabricated IDs are rejected. A production location provider should
-implement search/resolve with stable IDs and validate the selected result on the
-server. UI presentation can remain the same; an asynchronous production adapter
-will need loading/cancellation/error handling. No external provider is selected.
+free text and fabricated IDs are rejected. Task #8.3 production registration now
+uses bundled canonical country/subdivision choices, with no city or external
+provider. The legacy mock catalog remains deterministic for simulation tests.
+See [Home Region architecture](LOCATION_v0.1.md).
 
 ## Verification and notification boundary
 

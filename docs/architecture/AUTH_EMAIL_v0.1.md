@@ -143,7 +143,9 @@ Connected-network Pulse retrieval stays separate from unrestricted public graph 
 The additive migration `202609270001_owner_access.sql` adds `my_atom()` and five
 curated real places for initial signup. Location coverage is explicitly limited:
 Boynton Beach, Miami, New York, Toronto and London. No synthetic people or network
-are seeded. A production location provider remains deferred. The prior hosted
+are seeded. Task #8.3 replaces this initial signup limitation with the bundled
+country/subdivision catalog in [Home Region architecture](LOCATION_v0.1.md).
+Existing location associations remain valid. The prior hosted
 verification-only location is excluded from the signup search.
 
 ## Configuration and release checklist

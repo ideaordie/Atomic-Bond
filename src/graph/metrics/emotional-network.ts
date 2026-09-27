@@ -37,14 +37,18 @@ export function emotionalNetwork(
   for (const pulse of active) {
     counts[pulse.emotion]++;
     const node = perspective.nodes.get(pulse.atomId)!;
-    const label = [
-      node.metadata?.region ?? "Unspecified region",
-      node.metadata?.countryCode,
-    ]
-      .filter(Boolean)
-      .join(", ");
-    const region = regions.get(label) ?? {
-      key: label,
+    const label =
+      [
+        node.metadata?.region || undefined,
+        node.metadata?.countryName ?? node.metadata?.countryCode,
+      ]
+        .filter(Boolean)
+        .join(", ") || "Unspecified region";
+    const key =
+      node.metadata?.subdivisionCode ??
+      (node.metadata?.region ? label : (node.metadata?.countryCode ?? label));
+    const region = regions.get(key) ?? {
+      key,
       label,
       count: 0,
       counts: Object.fromEntries(
@@ -53,7 +57,7 @@ export function emotionalNetwork(
     };
     region.count++;
     region.counts[pulse.emotion]++;
-    regions.set(label, region);
+    regions.set(key, region);
   }
   return {
     active,

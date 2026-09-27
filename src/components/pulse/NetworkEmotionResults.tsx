@@ -135,9 +135,7 @@ export function NetworkEmotionResults({
                   only. Atoms without an active Pulse remain neutral.
                 </p>
                 <p>
-                  Known network reach: {reach.cities.length}{" "}
-                  {reach.cities.length === 1 ? "city" : "cities"} ·{" "}
-                  {reach.regions.length}{" "}
+                  Known network reach: {reach.regions.length}{" "}
                   {reach.regions.length === 1 ? "region" : "regions"} ·{" "}
                   {reach.countries.length}{" "}
                   {reach.countries.length === 1 ? "country" : "countries"}.

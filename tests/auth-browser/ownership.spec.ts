@@ -1,3 +1,4 @@
+import { selectHomeRegion } from "./home-region";
 import { expect, test } from "@playwright/test";
 test("new invitation verification, owner actions, logout and cross-device same Atom restoration", async ({
   page,
@@ -14,7 +15,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await page.getByLabel("Email").fill(email.toUpperCase());
   await page.getByLabel("Name / alias").fill("Verified owner");
   await page.getByLabel("X handle").fill("@curious_owner");
-  await page.getByLabel("Home region").selectOption({ index: 1 });
+  await selectHomeRegion(page);
   await page.screenshot({
     path: info.outputPath("registration.png"),
     fullPage: true,
@@ -94,7 +95,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
   ).json();
   await page.goto(`/bond/${anotherInvite.token}`);
   await page.getByRole("link", { name: "ACCESS MY ATOM", exact: true }).click();
-  await expect(page.getByLabel("Home region")).toHaveCount(0);
+  await expect(page.getByLabel("Country", { exact: false })).toHaveCount(0);
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Email me an access link" }).click();
   await expect(page.getByRole("status")).toContainText("secure link");

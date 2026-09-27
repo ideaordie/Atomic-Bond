@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.3 - Global coarse Home Region
+
+- Replaced the five-place production signup selector with bundled searchable country/subdivision choices based on ISO 3166 identifiers.
+- No Geoapify, external geocoder, location key, city, address or GPS dependency. Country-only selection is available where subdivisions do not apply.
+- Added an additive canonical-location migration, preserving existing real Atom locations and private/public boundaries.
+- Regional grouping and public network reach use regions/countries; new registrations never fabricate city information.
+- Added catalog, migration, registration and responsive accessibility coverage. Migration and publication approved. Hosted migration 202609280001 applied and verified; existing Atom locations and privacy boundaries preserved.
+
 ## 0.8.2 — Task #8.2 / UI clarity and fit-and-finish
 
 - Began the feature freeze from approved v0.8.1; no product mechanics, authentication services, database migrations or Master Specification changes.

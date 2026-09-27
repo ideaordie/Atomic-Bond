@@ -17,7 +17,6 @@ describe("deployment publication boundaries", () => {
       "APP_ORIGIN=",
       "AUTH_ALLOWED_ORIGINS=",
       "AUTH_ALLOW_LOCALHOST=",
-      "LOCATION_PROVIDER_API_KEY=",
     ]);
   });
 
