@@ -4,6 +4,12 @@ Task #7, application 0.7.0. Master Spec v0.2 and the Task #6 invariants remain u
 
 ## Ownership and registration
 
+Task #8 refinement: successful verification with an allowlisted Bond destination
+now automatically returns to the original invitation. The explicit VERIFY /
+ACCESS MY ATOM step remains, so email scanners cannot trigger authentication by
+merely fetching a link. Existing-owner resolution remains unchanged. See
+[QR Bond](QR_BOND_v0.1.md) for recipient consent and recovery semantics.
+
 Supabase Auth is the authority for email control and sessions. A private unique
 `auth_user_id` maps to exactly one private identity and Atom. No UI accepts an
 owner UUID. `my_atom()` derives ownership from `auth.uid()` and matching normalized

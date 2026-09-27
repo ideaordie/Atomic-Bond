@@ -1,45 +1,80 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { BondInvitation, type DisplayInvitation } from "./BondInvitation";
 import type { GraphData } from "../../types/graph";
 import type { EmotionalPulse, Emotion } from "../../types/emotional-pulse";
 import { LivingAtom } from "../../living-atom/LivingAtom";
 import {
   createOwnerInvitation,
   sendOwnerPulse,
-  visibleOwnerPulses,
+  refreshOwnerNetwork,
 } from "../../services/auth/actions";
 import "./auth.css";
 export function OwnerExperience({
-  graph,
+  graph: initialGraph,
   publicId,
   initialPulses,
+  initialArrivalId = null,
 }: {
   graph: GraphData;
   publicId: string;
   initialPulses: readonly EmotionalPulse[];
+  initialArrivalId?: string | null;
 }) {
+  const [graph, setGraph] = useState(initialGraph);
+  const [arrival, setArrival] = useState(initialArrivalId);
+  const graphRef = useRef(initialGraph);
+  const [creating, setCreating] = useState(false);
+  const creatingRef = useRef(false);
+  const [notice, setNotice] = useState(initialArrivalId ? "BOND CREATED" : "");
   const [pulses, setPulses] = useState(initialPulses),
     [now, setNow] = useState(0),
-    [invite, setInvite] = useState<{ token: string; expiresAt: string } | null>(
-      null,
-    ),
+    [invite, setInvite] = useState<DisplayInvitation | null>(null),
     [error, setError] = useState("");
-  const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     let cancelled = false;
+    let loading = false;
     const refresh = async () => {
+      if (loading) return;
+      loading = true;
       try {
-        const p = await visibleOwnerPulses();
-        if (!cancelled) setPulses(p);
+        const result = await refreshOwnerNetwork();
+        if (!cancelled) {
+          setError("");
+          const added = result.graph.edges.find(
+            (e) =>
+              !graphRef.current.edges.some((old) => old.id === e.id) &&
+              (e.source === publicId || e.target === publicId),
+          );
+          if (added) {
+            setArrival(added.source === publicId ? added.target : added.source);
+            setNotice("BOND CREATED");
+            setInvite(null);
+          }
+          if (
+            JSON.stringify(graphRef.current) !== JSON.stringify(result.graph)
+          ) {
+            graphRef.current = result.graph;
+            setGraph(result.graph);
+          }
+          setPulses(result.pulses);
+        }
       } catch {
-        if (!cancelled) setPulses([]);
+        if (!cancelled)
+          setError(
+            "Network update unavailable. Your last confirmed view is shown; reconnect or refresh to retry.",
+          );
+      } finally {
+        loading = false;
       }
     };
     const timer = setInterval(() => {
       setNow(Date.now());
     }, 1000);
-    const poll = setInterval(() => void refresh(), 30000);
+    const poll = setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 10000);
     window.addEventListener("focus", refresh);
     return () => {
       cancelled = true;
@@ -47,10 +82,7 @@ export function OwnerExperience({
       clearInterval(poll);
       window.removeEventListener("focus", refresh);
     };
-  }, []);
-  useEffect(() => {
-    if (invite) dialog.current?.showModal();
-  }, [invite]);
+  }, [publicId]);
   async function send(emotion: Emotion) {
     const pulse = await sendOwnerPulse(emotion);
     setPulses((p) => [...p.filter((x) => x.atomId !== publicId), pulse]);
@@ -62,8 +94,12 @@ export function OwnerExperience({
         graph={graph}
         originalAtomId={publicId}
         synthetic={false}
+        arrivalId={arrival}
         emotional={{ pulses, now, send }}
         onCreateBond={() => {
+          if (creatingRef.current) return;
+          creatingRef.current = true;
+          setCreating(true);
           setError("");
           void createOwnerInvitation()
             .then(setInvite)
@@ -71,36 +107,23 @@ export function OwnerExperience({
               setError(
                 "Unable to create an invitation. Sign in again or retry.",
               ),
-            );
+            )
+            .finally(() => {
+              creatingRef.current = false;
+              setCreating(false);
+            });
         }}
       />
       {error && <p role="alert">{error}</p>}
+      <p className="bond-update" role="status">
+        {creating ? "Preparing your invitation…" : notice}
+      </p>
       {invite && (
-        <dialog
-          ref={dialog}
-          className="bond-dialog"
-          aria-labelledby="owner-invite-title"
-          onCancel={() => setInvite(null)}
-        >
-          <h2 id="owner-invite-title">CREATE BOND</h2>
-          <p>
-            Share this single-use invitation with the person you want to connect
-            with.
-          </p>
-          <a className="invitation-url" href={`/bond/${invite.token}`}>
-            {typeof window !== "undefined" ? window.location.origin : ""}/bond/
-            {invite.token}
-          </a>
-          <p>Expires at {new Date(invite.expiresAt).toLocaleTimeString()}.</p>
-          <button
-            onClick={() => {
-              dialog.current?.close();
-              setInvite(null);
-            }}
-          >
-            Close invitation
-          </button>
-        </dialog>
+        <BondInvitation
+          invite={invite}
+          publicId={publicId}
+          close={() => setInvite(null)}
+        />
       )}
     </>
   );

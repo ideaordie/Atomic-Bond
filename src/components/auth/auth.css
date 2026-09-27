@@ -106,3 +106,35 @@
 .auth-panel small {
   color: var(--muted);
 }
+
+.real-bond-invitation {
+  width: min(100% - 2rem, 28rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  text-align: center;
+}
+.real-bond-invitation .bond-qr {
+  display: block;
+  width: min(100%, 320px);
+  height: auto;
+  margin: 0.75rem auto;
+  background: #fff;
+  image-rendering: pixelated;
+}
+.real-bond-invitation button {
+  min-height: 44px;
+  margin: 0.3rem;
+}
+.real-bond-invitation p {
+  line-height: 1.5;
+}
+.bond-update {
+  text-align: center;
+  color: var(--text);
+}
+.auth-panel .decline-bond {
+  display: block;
+  padding: 0.85rem;
+  text-align: center;
+  margin-top: 0.75rem;
+}

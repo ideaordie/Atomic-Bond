@@ -1,5 +1,11 @@
 # Bond Flow v0.1 — Task #4
 
+## Task #8 QR candidate
+
+See [First Real QR Bond](QR_BOND_v0.1.md) for the current production QR,
+mutual consent, verified recipient continuation, graph refresh and physical
+verification procedure. The original simulated Task #4 flow below is historical.
+
 ## Task #6 persistence update
 
 The original mock implementation below remains the deterministic development

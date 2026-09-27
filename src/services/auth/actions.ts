@@ -10,6 +10,8 @@ import {
   isAuthTokenHash,
 } from "./policy";
 import { EMOTIONS, type Emotion } from "../../types/emotional-pulse";
+import { invitationPresentation } from "../bonds/qr-invitation";
+import { bondRelationship } from "../bonds/relationship";
 
 async function sameOrigin() {
   const h = await headers();
@@ -109,14 +111,49 @@ export async function signOut() {
 export async function createOwnerInvitation() {
   await sameOrigin();
   const { services } = await requireOwner();
-  return services.bonds.createInvitation();
+  const invite = await services.bonds.createInvitation();
+  return {
+    id: invite.id,
+    expiresAt: invite.expiresAt,
+    ...(await invitationPresentation(invite.token, process.env)),
+  };
+}
+export async function cancelOwnerInvitation(id: string) {
+  await sameOrigin();
+  const { services } = await requireOwner();
+  await services.bonds.cancel(id);
+}
+export async function refreshOwnerNetwork() {
+  const { services, atom } = await requireOwner();
+  return {
+    graph: await services.bonds.graph(atom!.publicId!),
+    pulses: await services.pulses.visible(),
+  };
 }
 export async function confirmOwnerBond(token: string) {
   await sameOrigin();
-  const { services } = await requireOwner();
   try {
+    const { services, atom } = await requireOwner();
+    const invite = await services.bonds.read(token);
+    const graph = await services.bonds.graph(atom!.publicId!);
+    const relationship = bondRelationship(
+      graph,
+      atom!.publicId,
+      invite.creatorPublicId,
+    );
+    if (relationship === "self")
+      return {
+        error: "This is your invitation. Share it with another person.",
+      };
+    if (relationship === "bonded") return { error: "YOU ARE ALREADY BONDED" };
     await services.bonds.confirm(token);
-    return { next: "/explore" };
+    return {
+      next: "/explore",
+      publicId: atom!.publicId!,
+      arrivalId: invite.creatorPublicId,
+      graph: await services.bonds.graph(atom!.publicId!),
+      pulses: await services.pulses.visible(),
+    };
   } catch {
     return {
       error:

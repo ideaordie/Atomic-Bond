@@ -144,4 +144,9 @@ No emails are sent. Both modes retain the current Living Atom layout.
 
 ## Task #7 passwordless ownership (0.7.0)
 
+The [Task #8 QR Bond candidate](docs/architecture/QR_BOND_v0.1.md) adds real QR
+transport, explicit mutual consent and persistent network refresh. It reuses
+APP_ORIGIN and the existing migrations. Physical production verification is
+required before declaring v0.8.0 complete; automated tests alone are insufficient.
+
 See [Auth and email architecture](docs/architecture/AUTH_EMAIL_v0.1.md) for signup, cookie sessions, invitation continuation, the signed Supabase email hook, Resend delivery and required hosted configuration. Run `pnpm test:e2e:auth` for the isolated Auth browser tests; `pnpm check` includes them. Real ownership requires Supabase mode and the new `202609270001_owner_access.sql` migration. The existing mock flows remain available. Live email acceptance must be verified separately from deterministic tests.

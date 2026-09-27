@@ -88,6 +88,7 @@ const methods = {
   create_bond_invitation: [],
   resolve_bond_invitation: ["p_token"],
   accept_bond_invitation: ["p_token"],
+  cancel_bond_invitation: ["p_id"],
   send_emotional_pulse: ["p_emotion"],
   connected_emotional_pulses: [],
   my_notification_preferences: [],

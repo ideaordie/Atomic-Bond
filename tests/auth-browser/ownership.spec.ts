@@ -35,14 +35,14 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await receiver
     .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
     .click();
-  await expect(receiver.getByRole("heading")).toHaveText("YOUR ATOM IS READY");
-  const number = (
-    await receiver.locator(".auth-panel p").first().innerText()
-  ).replace("ATOM #", "");
-  await receiver
-    .getByRole("link", { name: "Continue to Bond confirmation" })
-    .click();
+  await expect(receiver).toHaveURL(`/bond/${invite.token}`);
   await receiver.getByRole("button", { name: "CONFIRM BOND" }).click();
+  await expect(
+    receiver.getByText("BOND CREATED", { exact: true }),
+  ).toBeVisible();
+  const number = (
+    await receiver.getByTestId("selected-atom").innerText()
+  ).replace("#", "");
   await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await receiver.reload();
   await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
@@ -107,16 +107,13 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await receiver
     .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
     .click();
-  await expect(receiver.getByRole("heading")).toHaveText("WELCOME BACK");
-  await expect(receiver.locator(".auth-panel")).toContainText(
-    `ATOM #${number}`,
-  );
-  await receiver
-    .getByRole("link", { name: "Continue to Bond confirmation" })
-    .click();
+  await expect(receiver).toHaveURL(`/bond/${anotherInvite.token}`);
+  await expect(
+    receiver.getByText("YOU ARE ALREADY BONDED", { exact: true }),
+  ).toBeVisible();
   await expect(
     receiver.getByRole("button", { name: "CONFIRM BOND" }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await receiver.goto("/explore");
   await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
   expect(await receiver.content()).not.toContain(email);

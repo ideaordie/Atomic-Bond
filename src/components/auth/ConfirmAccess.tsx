@@ -64,6 +64,8 @@ export function ConfirmAccess() {
                 const r = await completeAccess(link.token, link.next);
                 setLink(null);
                 if ("error" in r) setError(r.error);
+                else if (r.next.startsWith("/bond/"))
+                  window.location.replace(r.next);
                 else setResult(r);
               } catch {
                 setError("Unable to complete access. Request a new link.");

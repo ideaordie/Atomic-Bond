@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Task #8 QR Bond candidate
+
+- Added server-generated standards-compliant QR invitations using the configured application origin, active invitation reuse, countdown, copy and cancellation controls.
+- Preserved initiator CREATE BOND consent and required separate recipient CONFIRM BOND; added decline, self-invitation and already-Bonded states.
+- New and returning recipients automatically return to their invitation after verified Auth access. No identity, RLS, sequence or database constraints changed.
+- Added BOND CREATED feedback and the existing arrival animation using persistent graph data, with visible-owner polling every ten seconds and refresh on focus.
+- Added independent QR decoding and isolated-session browser coverage for consent, reciprocal small networks, Pulse and invitation lifecycle protections.
+- Physical production two-device verification is pending. Application remains 0.7.3 until the v0.8.0 milestone is physically verified.
+
 ## 0.7.3 - Task #7.2 / Scientific Light Visual System
 
 - Visual review refinement: distinguish structural connection layers with muted brass, blue, lavender, sage and distant stone materials, retaining the silver-blue center. Emotional Pulse colors still override structural tones.
