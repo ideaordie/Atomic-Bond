@@ -115,7 +115,7 @@ privacy rules, state transitions, and Task #4 verification.
 See [Emotional Pulse v0.1](docs/architecture/EMOTIONAL_PULSE_v0.1.md) for the
 lifecycle, connected-network visibility boundary, aggregation and future integration plans.
 
-FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. An indeterminate measuring indicator precedes the local connected-network calculation; results refresh when visible Pulse data changes. The scrollable results panel remains open when Feel Your Network is toggled off until its close button is pressed. Closing returns keyboard focus to FEEL YOUR NETWORK.
+FEEL YOUR NETWORK automatically opens NETWORK EMOTION RESULTS. A measuring indicator precedes the initial calculation; the report then updates once per minute without replacing its contents or resetting scrolling. Reopening measures immediately. The panel stays open until closed, even when Feel Your Network is turned off. Closing returns keyboard focus to FEEL YOUR NETWORK.
 
 ## Supabase persistence ? Task #6
 

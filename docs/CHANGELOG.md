@@ -2,6 +2,8 @@
 
 ## Unreleased — Task #8 QR Bond candidate
 
+- Fixed NETWORK EMOTION RESULTS refreshing on every owner clock tick: measure immediately on opening, then once per minute, retaining the report DOM and scroll position during background updates. Pulse lifecycle and network polling remain unchanged.
+
 - Added server-generated standards-compliant QR invitations using the configured application origin, active invitation reuse, countdown, copy and cancellation controls.
 - Preserved initiator CREATE BOND consent and required separate recipient CONFIRM BOND; added decline, self-invitation and already-Bonded states.
 - New and returning recipients automatically return to their invitation after verified Auth access. No identity, RLS, sequence or database constraints changed.

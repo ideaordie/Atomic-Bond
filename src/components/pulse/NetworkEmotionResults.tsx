@@ -19,41 +19,50 @@ export function NetworkEmotionResults({
   onClose: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const latest = useRef({ graph, viewerId, pulses, now });
+  useEffect(() => {
+    latest.current = { graph, viewerId, pulses, now };
+  }, [graph, viewerId, pulses, now]);
   const [result, setResult] = useState<{
-    graph: GraphData;
-    pulses: readonly EmotionalPulse[];
-    now: number;
     viewerId: string;
     summary: ReturnType<typeof emotionalNetwork>;
   } | null>(null);
-  const measuring =
-    !result ||
-    result.graph !== graph ||
-    result.pulses !== pulses ||
-    result.now !== now ||
-    result.viewerId !== viewerId;
+  const measuring = !result || result.viewerId !== viewerId;
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, []);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
-    // Let the pending indicator paint before running the real local calculation.
-    const frame = requestAnimationFrame(() => {
-      timer = setTimeout(() => {
-        setResult({
-          graph,
-          pulses,
-          now,
-          viewerId,
-          summary: emotionalNetwork(graph, viewerId, pulses, now),
-        });
-      }, 0);
-    });
+    let frame: number;
+    // Measure on opening, then once per minute. Keep the result DOM mounted
+    // during background updates so scrolling and keyboard focus are preserved.
+    const measure = () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+      frame = requestAnimationFrame(() => {
+        timer = setTimeout(() => {
+          const current = latest.current;
+          setResult({
+            viewerId: current.viewerId,
+            summary: emotionalNetwork(
+              current.graph,
+              current.viewerId,
+              current.pulses,
+              // The owner clock uses zero until its first client tick.
+              current.now || Date.now(),
+            ),
+          });
+        }, 0);
+      });
+    };
+    measure();
+    const interval = setInterval(measure, 60_000);
     return () => {
+      clearInterval(interval);
       cancelAnimationFrame(frame);
       clearTimeout(timer);
     };
-  }, [graph, viewerId, pulses, now]);
+  }, [viewerId]);
   const summary = measuring ? null : result.summary;
   return (
     <section
@@ -76,7 +85,7 @@ export function NetworkEmotionResults({
       <p role="status" className="measurement-status">
         {measuring
           ? "Measuring your connected network…"
-          : "Results ready · updates automatically"}
+          : "Results ready · updates once per minute"}
       </p>
       <div className="emotion-distribution" aria-busy={measuring}>
         {measuring ? (

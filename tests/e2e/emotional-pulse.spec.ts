@@ -259,6 +259,37 @@ test("results measure automatically, refresh and stay open until closed", async 
   await expect(results).toBeVisible();
   await sendEmotionalPulse(page, "Curious");
   await page.clock.runFor(50);
+  // The open report is a stable snapshot until its next minute update.
+  await expect(results).toContainText("128 active Pulses");
+  const distribution = results.locator(".emotion-distribution");
+  const scrollTop = await distribution.evaluate((element) => {
+    element.scrollTop = 100;
+    element.querySelector("ul")!.setAttribute("data-stable-results", "true");
+    return element.scrollTop;
+  });
+  expect(scrollTop).toBe(
+    Math.min(
+      100,
+      await distribution.evaluate(
+        (element) => element.scrollHeight - element.clientHeight,
+      ),
+    ),
+  );
+  if (info.project.name === "mobile") expect(scrollTop).toBeGreaterThan(0);
+  await page.clock.runFor(1000);
+  await expect(results.getByRole("progressbar")).toHaveCount(0);
+  expect(await distribution.evaluate((element) => element.scrollTop)).toBe(
+    scrollTop,
+  );
+  await page.clock.fastForward(60_000);
+  await page.clock.runFor(50);
+  await expect(results.locator("ul")).toHaveAttribute(
+    "data-stable-results",
+    "true",
+  );
+  expect(await distribution.evaluate((element) => element.scrollTop)).toBe(
+    scrollTop,
+  );
   await expect(results).toContainText("129 active Pulses");
   await expect(
     results.locator("li").filter({ hasText: "Curious" }),
