@@ -2,7 +2,13 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { authClient, ownerContext, requireOwner } from "./server";
-import { accessRequest, appOrigin, nextPath, registration } from "./policy";
+import {
+  accessRequest,
+  appOrigin,
+  nextPath,
+  registration,
+  isAuthTokenHash,
+} from "./policy";
 import { EMOTIONS, type Emotion } from "../../types/emotional-pulse";
 
 async function sameOrigin() {
@@ -43,7 +49,7 @@ export async function requestAccess(form: FormData) {
 export async function completeAccess(tokenHash: string, next: string) {
   try {
     await sameOrigin();
-    if (!/^[a-f0-9]{32,128}$/i.test(tokenHash)) throw new Error();
+    if (!isAuthTokenHash(tokenHash)) throw new Error();
     const client = await authClient();
     const { error } = await client.auth.verifyOtp({
       token_hash: tokenHash,

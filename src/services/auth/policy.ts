@@ -70,13 +70,17 @@ export function accessRequest(value: Record<string, unknown>) {
   };
 }
 /** Fragment keeps Auth token hashes out of URL request/access logs and referrers. */
+export function isAuthTokenHash(value: string) {
+  return (
+    value === value.trim() && /^(?:pkce_)?[a-fA-F0-9]{32,128}$/.test(value)
+  );
+}
 export function emailLink(
   origin: string,
   tokenHash: string,
   redirectTo: string,
 ) {
-  if (!/^[a-f0-9]{32,128}$/i.test(tokenHash))
-    throw new Error("Invalid Auth token");
+  if (!isAuthTokenHash(tokenHash)) throw new Error("Invalid Auth token");
   const redirect = new URL(redirectTo);
   if (redirect.origin !== origin || redirect.pathname !== "/auth/confirm")
     throw new Error("Invalid callback destination");

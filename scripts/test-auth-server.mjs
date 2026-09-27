@@ -153,7 +153,9 @@ const server = createServer(async (req, res) => {
         ]);
       }
       if (user) {
-        const hash = randomBytes(32).toString("hex"),
+        const hash =
+            (body.code_challenge ? "pkce_" : "") +
+            randomBytes(32).toString("hex"),
           redirect = new URL(url.searchParams.get("redirect_to"));
         const link = `${redirect.origin}/auth/confirm#${new URLSearchParams({ token_hash: hash, next: redirect.searchParams.get("next") || "/explore" })}`;
         links.set(hash, { user, expires: Date.now() + 3600000 });

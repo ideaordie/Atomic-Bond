@@ -23,6 +23,9 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   const { link } = await (
     await request.get(`http://127.0.0.1:54330/__test/mail?email=${email}`)
   ).json();
+  expect(
+    new URLSearchParams(new URL(link).hash.slice(1)).get("token_hash"),
+  ).toMatch(/^pkce_[a-f0-9]+$/);
   await page.goto(link);
   await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
   await expect(page.getByRole("heading")).toHaveText("YOUR ATOM IS READY");

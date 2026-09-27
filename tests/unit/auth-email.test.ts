@@ -7,6 +7,7 @@ import {
   hookOrigin,
   nextPath,
   registration,
+  isAuthTokenHash,
 } from "../../src/services/auth/policy";
 import { deliverAuthEmail } from "../../src/services/auth/email-hook";
 import { ResendNotificationService } from "../../src/services/notifications/resend-notification-service";
@@ -87,52 +88,77 @@ describe("passwordless email boundaries", () => {
       ),
     ).toThrow();
   });
-  it("only delivers valid signed, timely Auth hooks and uses provider idempotency", async () => {
-    const secret = Buffer.from("test-only-signing-key-32-bytes-long").toString(
-      "base64",
-    );
-    const webhook = new Webhook(secret),
-      send = vi.fn(async () => {});
-    const service = new ResendNotificationService(
-      { send },
-      "Atomic Bond <connect@atomicbond.ideaordie.com>",
-    );
-    const payload = JSON.stringify({
-      user: { email: "test@example.invalid" },
-      email_data: {
-        token_hash: token,
-        email_action_type: "magiclink",
-        redirect_to: `${origin}/auth/confirm`,
-      },
-    });
-    const now = new Date(),
-      id = "test-hook-id";
-    const headers = {
-      "webhook-id": id,
-      "webhook-timestamp": String(Math.floor(now.getTime() / 1000)),
-      "webhook-signature": webhook.sign(id, now, payload),
-    };
-    await deliverAuthEmail(payload, headers, secret, origin, service);
-    expect(send).toHaveBeenCalledOnce();
-    expect(send.mock.calls[0]).toHaveLength(2);
-    await expect(
-      deliverAuthEmail(payload + " ", headers, secret, origin, service),
-    ).rejects.toThrow();
-    const old = new Date(now.getTime() - 600000);
-    await expect(
-      deliverAuthEmail(
-        payload,
-        {
-          ...headers,
-          "webhook-timestamp": String(Math.floor(old.getTime() / 1000)),
-          "webhook-signature": webhook.sign(id, old, payload),
+  it.each(["", "pkce_"])(
+    "only delivers valid signed Auth hashes with prefix %s",
+    async (prefix) => {
+      const secret = Buffer.from(
+        "test-only-signing-key-32-bytes-long",
+      ).toString("base64");
+      const webhook = new Webhook(secret),
+        send = vi.fn(async () => {});
+      const service = new ResendNotificationService(
+        { send },
+        "Atomic Bond <connect@atomicbond.ideaordie.com>",
+      );
+      const payload = JSON.stringify({
+        user: { email: "test@example.invalid" },
+        email_data: {
+          token_hash: prefix + token,
+          email_action_type: "magiclink",
+          redirect_to: `${origin}/auth/confirm`,
         },
-        secret,
-        origin,
-        service,
-      ),
-    ).rejects.toThrow();
-    expect(send).toHaveBeenCalledOnce();
+      });
+      const now = new Date(),
+        id = "test-hook-id";
+      const headers = {
+        "webhook-id": id,
+        "webhook-timestamp": String(Math.floor(now.getTime() / 1000)),
+        "webhook-signature": webhook.sign(id, now, payload),
+      };
+      await deliverAuthEmail(payload, headers, secret, origin, service);
+      expect(send).toHaveBeenCalledOnce();
+      expect(send.mock.calls[0]).toHaveLength(2);
+      await expect(
+        deliverAuthEmail(payload + " ", headers, secret, origin, service),
+      ).rejects.toThrow();
+      const old = new Date(now.getTime() - 600000);
+      await expect(
+        deliverAuthEmail(
+          payload,
+          {
+            ...headers,
+            "webhook-timestamp": String(Math.floor(old.getTime() / 1000)),
+            "webhook-signature": webhook.sign(id, old, payload),
+          },
+          secret,
+          origin,
+          service,
+        ),
+      ).rejects.toThrow();
+      expect(send).toHaveBeenCalledOnce();
+    },
+  );
+  it("preserves supported Auth hash prefixes and rejects malformed tokens", () => {
+    for (const value of [token, `pkce_${token}`]) {
+      expect(isAuthTokenHash(value)).toBe(true);
+      const link = new URL(emailLink(origin, value, `${origin}/auth/confirm`));
+      expect(new URLSearchParams(link.hash.slice(1)).get("token_hash")).toBe(
+        value,
+      );
+    }
+    for (const value of [
+      "pkce_",
+      "pkce_short",
+      `other_${token}`,
+      `pkce_pkce_${token}`,
+      `${token}\n`,
+      `pkce_${token}?next=evil`,
+    ]) {
+      expect(isAuthTokenHash(value)).toBe(false);
+      expect(() =>
+        emailLink(origin, value, `${origin}/auth/confirm`),
+      ).toThrow();
+    }
   });
   it("requires Auth-generated links and respects disabled growth delivery", async () => {
     const send = vi.fn(async () => {}),

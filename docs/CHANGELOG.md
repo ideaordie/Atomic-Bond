@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.2 - Passwordless access email correction
+
+- Accept Supabase's supported PKCE-prefixed token hashes in signed email-hook link construction and callback validation, preserving the full hash for Supabase verification.
+- Added prefixed/unprefixed signed-hook and malformed-hash tests. Local Auth browser fixtures now model PKCE hashes when the SSR client supplies a code challenge.
+- No credentials, RLS, expiry, single-use rules or signature checks were changed.
+
 ## 0.7.1 - Task #7.1 / Production Entry & Owner Resolution
 
 - Replaced anonymous production entry with CREATE MY ATOM and ACCESS MY ATOM; authenticated root entry resolves the verified session's owned Atom.

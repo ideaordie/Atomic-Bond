@@ -86,6 +86,13 @@ before POSTing to a Server Action. This avoids passive email scanners consuming
 the link. No tokens are logged or rendered as text. Invalid, expired and reused
 links show a generic retry message. Server Actions enforce same-origin requests.
 
+Token hashes may carry Supabase's `pkce_` flow prefix. Both email construction and
+callback validation accept the supported prefix plus a bounded hexadecimal hash,
+preserve it unchanged, and defer actual validity/expiry/single-use enforcement to
+Supabase. The earlier hex-only validator rejected SSR access emails before Resend
+was contacted. Signed-hook tests cover both formats, and Auth browser fixtures use
+the prefixed format when the client supplies a PKCE code challenge.
+
 Only `/explore` and `/bond/<64 lowercase hex characters>` are accepted continuation
 paths. Hook destinations must match an exact configured origin; arbitrary URLs,
 protocol-relative paths and broad Vercel wildcard origins are rejected. The email
