@@ -63,6 +63,15 @@ export async function ownerContext() {
     services,
   };
 }
+export function ownedPublicId(
+  context: Awaited<ReturnType<typeof ownerContext>>,
+) {
+  return context.user?.email_confirmed_at &&
+    context.atom?.publicId &&
+    ["ACTIVE", "DORMANT"].includes(context.atom.status)
+    ? context.atom.publicId
+    : null;
+}
 export async function requireOwner() {
   const context = await ownerContext();
   if (

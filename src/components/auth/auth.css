@@ -76,3 +76,18 @@
   margin: 0;
   accent-color: #8edcff;
 }
+
+.entry-actions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.entry-actions a {
+  padding: 0.85rem 1rem;
+  border: 1px solid #80bedc;
+  border-radius: 1rem;
+  text-align: center;
+  text-decoration: none;
+  margin: 0;
+  background: #163d54;
+}

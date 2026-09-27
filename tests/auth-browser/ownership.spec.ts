@@ -9,7 +9,8 @@ test("new invitation verification, owner actions, logout and cross-device same A
     await request.get("http://127.0.0.1:54330/__test/invite")
   ).json();
   await page.goto(`/bond/${invite.token}`);
-  await page.getByRole("link", { name: "CREATE YOUR ATOM / SIGN IN" }).click();
+  await expect(page.getByText(/has invited you to connect/)).toBeVisible();
+  await page.getByRole("link", { name: "CREATE MY ATOM", exact: true }).click();
   await page.getByLabel("Email").fill(email.toUpperCase());
   await page.getByLabel("Name / alias").fill("Verified owner");
   await page.getByLabel("X handle").fill("@curious_owner");
@@ -74,7 +75,13 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await receiver
     .getByRole("button", { name: "Sign out on this device" })
     .click();
-  await expect(receiver.getByRole("heading")).toHaveText("CREATE YOUR ATOM");
+  await expect(
+    receiver.getByRole("link", { name: "ACCESS MY ATOM", exact: true }),
+  ).toBeVisible();
+  await receiver.reload();
+  await expect(
+    receiver.getByRole("link", { name: "CREATE MY ATOM", exact: true }),
+  ).toBeVisible();
   await receiver.goto(link);
   await receiver
     .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
@@ -86,8 +93,10 @@ test("new invitation verification, owner actions, logout and cross-device same A
     await request.get("http://127.0.0.1:54330/__test/invite")
   ).json();
   await page.goto(`/bond/${anotherInvite.token}`);
-  await page.getByRole("link", { name: "CREATE YOUR ATOM / SIGN IN" }).click();
-  await page.getByRole("button", { name: "I already have an Atom" }).click();
+  await page
+    .getByRole("link", { name: "I ALREADY HAVE AN ATOM", exact: true })
+    .click();
+  await expect(page.getByLabel("Home region")).toHaveCount(0);
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Email me an access link" }).click();
   await expect(page.getByRole("status")).toContainText("secure link");

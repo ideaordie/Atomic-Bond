@@ -34,6 +34,44 @@ access remain deferred; mismatched identity email fails closed.
 
 ## Sessions and callbacks
 
+### Production entry and public visibility (Task #7.1)
+
+Public visibility is not ownership. Previously an anonymous `/explore` request
+queried the default public graph and centered its first node. Owner actions were
+protected, but entering another person's network by default was misleading.
+
+- Anonymous `/` displays CREATE MY ATOM and ACCESS MY ATOM. The actions select
+  registration or returning access in the existing Auth form.
+- Authenticated `/` uses validated Supabase Auth plus `my_atom()` to resolve an
+  ACTIVE/DORMANT owned Atom and redirects to `/explore`. No client Atom number is
+  accepted as ownership proof. Unfinished registrations remain outside owner view.
+- `/explore` without an explicit target requires a verified owned Atom. Missing
+  ownership returns to entry; production graph composition rejects missing IDs.
+- `/a/<number>` is PUBLIC ATOM VIEW, even when the visitor owns that number.
+  Legacy `/explore?atom=<number>` also means explicit public viewing. Public views
+  receive no owner Bond/Pulse controls or private Pulse data. Profile navigation,
+  when present for signed-in visitors, always resolves their own identity.
+- `/bond/<secret>` resolves invitation validity/context before offering CREATE MY
+  ATOM or I ALREADY HAVE AN ATOM. Both retain the allowlisted invitation path through
+  email, callback and activation; returning users reuse their existing identity.
+- Sign-out is available in Profile & preferences and returns to `/`. A fresh browser
+  receives entry, never another browser's identity. An isolated owner with zero Bonds
+  remains a valid one-node network; absent targets never substitute synthetic data.
+
+Mock mode retains its deterministic landing/exploration flow. Server Actions and
+database ownership/RLS checks remain authoritative; no schema or credential changes
+are required. Tests use separate browser contexts for owner and anonymous visitor,
+including deliberate public viewing, root resolution, logout/reload and empty networks.
+
+Task #7.1 local verification: 144 unit/integration/security tests, native PostgreSQL
+concurrency checks, production build, formatting, lint and TypeScript passed.
+All 81 browser cases passed (66 mock regressions, 3 public-network checks, 12 Auth
+checks) across 390×844, 768×1024 and 1440×900. Anonymous entry and public Atom layouts
+were visually inspected at those sizes. Windows test cleanup initially encountered
+a locked temporary directory/orphaned test process; the unchanged concurrency suite
+completed successfully after cleanup. Production owner-browser and physical-device
+acceptance must be distinguished from these isolated local test sessions.
+
 `@supabase/ssr` stores cookie sessions; `src/proxy.ts` refreshes them and forwards
 updated cookies. Cookies are HttpOnly, SameSite=Lax and Secure in production.
 Every owner operation verifies the user with Auth `getUser`, and database RPCs

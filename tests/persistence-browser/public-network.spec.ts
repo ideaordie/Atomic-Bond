@@ -3,7 +3,24 @@ test("Supabase mode retrieves only real public projection and has no simulated o
   page,
 }, info) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/explore?atom=1");
+  await page.goto("/");
+  await expect(
+    page.getByRole("link", { name: "CREATE MY ATOM", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "ACCESS MY ATOM", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTestId("living-atom")).toHaveCount(0);
+  await page.screenshot({
+    path: info.outputPath("anonymous-entry.png"),
+    fullPage: true,
+  });
+  await page.goto("/explore");
+  await expect(page).toHaveURL("http://127.0.0.1:3102/");
+  await page.goto("/a/1");
+  await expect(
+    page.getByText("PUBLIC ATOM VIEW · ATOM #1", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByTestId("selected-atom")).toHaveText("#1");
   await expect(page.getByTestId("reachable-count")).toHaveText("1");
   await expect(

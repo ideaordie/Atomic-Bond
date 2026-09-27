@@ -98,7 +98,7 @@ export async function signOut() {
   await sameOrigin();
   const client = await authClient();
   await client.auth.signOut({ scope: "local" });
-  redirect("/auth");
+  redirect("/");
 }
 export async function createOwnerInvitation() {
   await sameOrigin();

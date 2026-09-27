@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 - Task #7.1 / Production Entry & Owner Resolution
+
+- Replaced anonymous production entry with CREATE MY ATOM and ACCESS MY ATOM; authenticated root entry resolves the verified session's owned Atom.
+- Removed the production first-Atom graph fallback. Anonymous `/explore` returns to entry; explicit `/a/<number>` and legacy `/explore?atom=<number>` remain clearly labeled public views without owner actions.
+- Preserved invitation context with separate registration and returning-access entry actions, and return to confirmation after verification.
+- Sign-out returns to anonymous entry. Added separate-browser session isolation, empty-owner network, explicit public-view and fallback-prevention regression coverage. Mock mode and server/database authorization remain intact.
+
 ## 0.7.0 - Task #7 / Verified Email Identity
 
 - Added Supabase passwordless registration/access, cookie-session refresh, verified activation, owner lookup and explicit invitation continuation across devices.

@@ -50,6 +50,12 @@ main.explore-page {
   display: flex;
   align-items: center;
 }
+.network-view-label {
+  margin: 4px 0 0;
+  font-size: 10px;
+  color: #b9e6ff;
+  overflow-wrap: anywhere;
+}
 @media (max-width: 600px) {
   .explore-nav {
     padding: 0 18px;

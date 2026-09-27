@@ -1,0 +1,88 @@
+import Link from "next/link";
+import { connection } from "next/server";
+import { exploreSource } from "../../services/participation/explore-source";
+import { LivingAtom } from "../../living-atom/LivingAtom";
+import { ParticipationExperience } from "../../components/participation/ParticipationExperience";
+import "../../app/explore/explore.css";
+import { ownerContext, ownedPublicId } from "../../services/auth/server";
+import { dataConfiguration } from "../../data/supabase/config";
+import { redirect, notFound } from "next/navigation";
+import { OwnerExperience } from "../../components/auth/OwnerExperience";
+import "../../components/participation/participation.css";
+
+export async function NetworkPage({
+  requested,
+  publicView = false,
+}: {
+  requested?: string | undefined;
+  publicView?: boolean;
+}) {
+  await connection();
+  const mode = dataConfiguration(process.env).mode;
+  const owner = mode === "supabase" ? await ownerContext() : null;
+  const ownerId = owner ? ownedPublicId(owner) : null;
+  if (mode === "supabase" && !requested && !ownerId) redirect("/");
+  if (mode === "supabase" && requested && !/^[1-9][0-9]*$/.test(requested))
+    notFound();
+  const source = await exploreSource(
+    process.env,
+    requested || ownerId || undefined,
+  );
+  const ownView =
+    !publicView && Boolean(ownerId && (!requested || requested === ownerId));
+  return (
+    <main className="explore-page">
+      <nav className="explore-nav" aria-label="Main navigation">
+        <div>
+          <Link href="/" className="wordmark">
+            ATOMIC BOND
+          </Link>
+          {source.mode === "supabase" && (
+            <p className="network-view-label">
+              {ownView
+                ? `MY ATOM #${ownerId}`
+                : `PUBLIC ATOM VIEW · ATOM #${requested}`}
+            </p>
+          )}
+        </div>
+        <span>See how connected we already are.</span>
+        {source.mode === "supabase" && (
+          <div className="auth-entry">
+            <Link href={ownerId ? "/explore" : "/auth"}>
+              {ownerId ? "MY ATOM" : "CREATE YOUR ATOM / SIGN IN"}
+            </Link>
+            {ownerId && (
+              <>
+                <Link href="/owner">Profile &amp; preferences</Link>
+              </>
+            )}
+          </div>
+        )}
+      </nav>
+      {source.mode === "mock" ? (
+        <ParticipationExperience
+          graph={source.graph}
+          originalAtomId={source.centerId}
+        />
+      ) : ownView && ownerId && owner ? (
+        <OwnerExperience
+          graph={source.graph}
+          publicId={ownerId}
+          initialPulses={await owner.services.pulses.visible()}
+        />
+      ) : source.centerId && source.graph.nodes.length ? (
+        <LivingAtom
+          graph={source.graph}
+          originalAtomId={source.centerId}
+          ownerMode={false}
+          synthetic={false}
+        />
+      ) : (
+        <p role="status">
+          No active Atoms are available yet. Create your Atom with a verified
+          email to begin.
+        </p>
+      )}
+    </main>
+  );
+}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { ownerContext } from "../../../services/auth/server";
+import { ownerContext, ownedPublicId } from "../../../services/auth/server";
 import { BondConfirmation } from "../../../components/auth/BondConfirmation";
 import "../../../components/auth/auth.css";
 export default async function BondPage({
@@ -10,7 +10,8 @@ export default async function BondPage({
 }) {
   await connection();
   const { token } = await params;
-  const { atom, services } = await ownerContext();
+  const context = await ownerContext();
+  const { services } = context;
   let invite;
   try {
     invite = await services.bonds.read(token);
@@ -32,15 +33,21 @@ export default async function BondPage({
       <section className="auth-panel">
         <h1>Confirm your Bond</h1>
         <p>Atom #{invite.creatorPublicId} has invited you to connect.</p>
-        {atom?.publicId ? (
+        {ownedPublicId(context) ? (
           <BondConfirmation token={token} />
         ) : (
-          <Link
-            className="explore-link"
-            href={`/auth?next=${encodeURIComponent(`/bond/${token}`)}`}
-          >
-            CREATE YOUR ATOM / SIGN IN
-          </Link>
+          <div className="entry-actions">
+            <Link
+              href={`/auth?mode=register&next=${encodeURIComponent(`/bond/${token}`)}`}
+            >
+              CREATE MY ATOM
+            </Link>
+            <Link
+              href={`/auth?mode=access&next=${encodeURIComponent(`/bond/${token}`)}`}
+            >
+              I ALREADY HAVE AN ATOM
+            </Link>
+          </div>
         )}
       </section>
     </main>

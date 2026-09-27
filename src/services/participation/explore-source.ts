@@ -17,11 +17,14 @@ export async function exploreSource(
       centerId: mockAtomId(0),
     };
   }
+  if (!publicId || !/^[1-9][0-9]*$/.test(publicId)) {
+    throw new Error("An explicit public Atom number is required.");
+  }
   const services = createSupabaseServices(supabaseTransport(config));
   const graph = await services.bonds.graph(publicId);
   return {
     mode: "supabase" as const,
     graph,
-    centerId: publicId ?? graph.nodes[0]?.id,
+    centerId: publicId,
   };
 }

@@ -7,12 +7,14 @@ export function AccessForm({
   locations,
   next,
   verified = false,
+  initialMode = "register",
 }: {
   locations: readonly Location[];
   next: string;
   verified?: boolean;
+  initialMode?: "register" | "access";
 }) {
-  const [mode, setMode] = useState("register"),
+  const [mode, setMode] = useState(initialMode),
     [message, setMessage] = useState(""),
     [pending, setPending] = useState(false);
   return (

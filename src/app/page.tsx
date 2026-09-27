@@ -1,6 +1,16 @@
 import Link from "next/link";
+import { connection } from "next/server";
+import { redirect } from "next/navigation";
+import { dataConfiguration } from "../data/supabase/config";
+import { ownerContext, ownedPublicId } from "../services/auth/server";
+import { EntryExperience } from "../components/auth/EntryExperience";
 
-export default function Home() {
+export default async function Home() {
+  await connection();
+  if (dataConfiguration(process.env).mode === "supabase") {
+    if (ownedPublicId(await ownerContext())) redirect("/explore");
+    return <EntryExperience />;
+  }
   return (
     <main>
       <p className="wordmark">ATOMIC BOND</p>
