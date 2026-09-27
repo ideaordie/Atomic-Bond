@@ -1,3 +1,4 @@
+import { SCIENTIFIC_PALETTE as palette } from "./scientific-palette";
 import { spatialPositions } from "../animation/spatial-motion";
 import { arrivalVisibility } from "../animation/bond-arrival";
 import { pulsePhase } from "../pulse/presentation";
@@ -10,12 +11,7 @@ import type {
 } from "../types/scene";
 import type { SpatialNode } from "../types/spatial";
 import { depthOrder, projectPoint } from "./projection";
-import {
-  createStarfield,
-  glow,
-  paintCore,
-  paintPerson,
-} from "./celestial-paint";
+import { createStarfield, glow, paintCore } from "./celestial-paint";
 
 function curvePoint(
   a: Point,
@@ -59,7 +55,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
     },
     draw(frame) {
       const { scene, camera } = frame;
-      const energyColor = frame.pulseColor ?? "#ffda8b";
+      const energyColor = frame.pulseColor ?? palette.bond;
       if (frame.arrival?.id !== arrivalKey) {
         arrivalKey = frame.arrival?.id;
         const previousMembers = new Set(
@@ -178,19 +174,15 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 : direct
                   ? 0.5
                   : sameLevel
-                    ? 0.035
+                    ? 0.06
                     : edge.distance <= 3
-                      ? 0.13
-                      : 0.09);
-            ctx.strokeStyle = active
-              ? energyColor
-              : direct
-                ? "#dcae64"
-                : end.tint;
+                      ? 0.22
+                      : 0.15);
+            ctx.strokeStyle = active ? energyColor : palette.bond;
             ctx.lineWidth = active && !sameLevel ? 1.3 : direct ? 0.95 : 0.5;
             if (direct || (active && !sameLevel)) {
-              ctx.shadowColor = active ? energyColor : "#dfa85b";
-              ctx.shadowBlur = active ? 8 : 4;
+              ctx.shadowColor = energyColor;
+              ctx.shadowBlur = active ? 5 : 0;
             }
             ctx.beginPath();
             ctx.moveTo(origin.x, origin.y);
@@ -328,7 +320,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                   point,
                   radius * 3.2,
                   tint,
-                  active ? 0.6 : node.distance === 1 ? 0.25 : 0.16,
+                  active ? 0.35 : node.distance === 1 ? 0.08 : 0.04,
                 );
                 const sphere = ctx.createRadialGradient(
                   point.x - radius * 0.3,
@@ -338,25 +330,23 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                   point.y,
                   radius,
                 );
-                sphere.addColorStop(0, `${tint}d9`);
-                sphere.addColorStop(0.6, `${tint}59`);
-                sphere.addColorStop(1, "#102238e6");
+                sphere.addColorStop(0, palette.highlight);
+                sphere.addColorStop(0.45, tint);
+                sphere.addColorStop(1, palette.shade);
+                ctx.shadowColor = "#29466330";
+                ctx.shadowBlur = radius * 0.45;
+                ctx.shadowOffsetY = radius * 0.2;
                 ctx.fillStyle = sphere;
-                ctx.strokeStyle = active ? energyColor : `${tint}cc`;
+                ctx.strokeStyle = active ? energyColor : palette.shade;
                 ctx.lineWidth = 0.8;
                 ctx.beginPath();
                 ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
                 ctx.stroke();
-                if (node.distance <= 2)
-                  paintPerson(
-                    ctx,
-                    point,
-                    radius,
-                    active ? "#fff8e0" : "#e4eff0cc",
-                  );
                 if (node.distance === 1) {
-                  ctx.strokeStyle = `${tint}19`;
+                  ctx.strokeStyle = `${palette.bond}45`;
                   ctx.lineWidth = 0.5;
                   ctx.beginPath();
                   ctx.ellipse(
@@ -372,7 +362,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 }
               }
               if (node.members[0] === frame.inspectedId) {
-                ctx.strokeStyle = "#def5ff";
+                ctx.strokeStyle = palette.bond;
                 ctx.lineWidth = 1;
                 ctx.setLineDash([3, 4]);
                 ctx.beginPath();
@@ -390,7 +380,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 ctx.globalAlpha = 1;
                 ctx.textAlign = "center";
                 ctx.font = "600 11px Arial";
-                ctx.fillStyle = "#f5deb6";
+                ctx.fillStyle = palette.text;
                 ctx.fillText(
                   scene.selected.id === frame.originalId
                     ? "YOU"
@@ -421,12 +411,12 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
             camera,
           ).point;
           ctx.textAlign = "center";
-          ctx.fillStyle = "#b9d6e4";
+          ctx.fillStyle = palette.text;
           ctx.font = `${width < 500 ? 10 : 11}px Arial`;
           const labelY = point.y + (region.anchor.y > 180 ? 76 : -57);
           ctx.fillText(region.label, point.x, labelY);
           if (width >= 500 || scene.mode === "regions") {
-            ctx.fillStyle = "#7898b0";
+            ctx.fillStyle = palette.muted;
             ctx.font = "10px Arial";
             ctx.fillText(
               frame.feelNetwork

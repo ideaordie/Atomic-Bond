@@ -1,5 +1,9 @@
 # Living Atom Spatial Experience v0.2
 
+Current visual treatment: [Scientific Light Visual System](VISUAL_SYSTEM_v0.1.md)
+supersedes the original gold/deep-space materials described in the historical
+spatial foundation below. Geometry, depth, motion and interaction remain intact.
+
 Current extension: [Emotional Pulse v0.1](EMOTIONAL_PULSE_v0.1.md) adds
 Task #5.2 state, visibility and full-component Pulse/Feel rendering. The
 eight-Bond horizon described below remains the default structural view; the

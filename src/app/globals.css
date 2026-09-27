@@ -1,7 +1,17 @@
 :root {
-  color-scheme: dark;
-  background: #09121a;
-  color: #edf5f6;
+  --page: #f3f6f8;
+  --surface: #fbfcfdf5;
+  --surface-muted: #e6eef4;
+  --text: #22364b;
+  --muted: #4e6478;
+  --border: #9aafbf;
+  --accent: #285b83;
+  --focus: #12619b;
+}
+:root {
+  color-scheme: light;
+  background: var(--surface);
+  color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
 }
 * {
@@ -29,7 +39,7 @@ section {
   margin: auto 0;
 }
 .eyebrow {
-  color: #9cd8ce;
+  color: var(--text);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -42,7 +52,7 @@ h1 {
 }
 .introduction {
   max-width: 620px;
-  color: #b5c6cf;
+  color: var(--text);
   font-size: 18px;
   line-height: 1.7;
 }
@@ -50,33 +60,33 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid #37534f;
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 10px 16px;
   margin: 24px 0 0;
-  color: #bde7dd;
+  color: var(--text);
   font-size: 14px;
 }
 .status span {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #9cd8ce;
+  background: var(--surface);
 }
 .explore-link {
-  color: #bde7dd;
+  color: var(--text);
   display: inline-block;
   padding: 14px 0;
   text-underline-offset: 5px;
 }
 .note,
 footer {
-  color: #a3b5c0;
+  color: var(--text);
   font-size: 13px;
   line-height: 1.6;
 }
 footer {
-  border-top: 1px solid #293a46;
+  border-top: 1px solid var(--border);
   padding-top: 20px;
 }
 footer span {
@@ -91,4 +101,19 @@ footer span {
   .desktop-break {
     display: none;
   }
+}
+
+body {
+  background: var(--page);
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+a {
+  color: var(--accent);
+}
+input::placeholder {
+  color: var(--muted);
+  opacity: 1;
 }

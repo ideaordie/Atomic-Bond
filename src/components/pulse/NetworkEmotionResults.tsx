@@ -100,7 +100,12 @@ export function NetworkEmotionResults({
               <ul>
                 {EMOTIONS.map((emotion) => (
                   <li key={emotion}>
-                    <span style={{ color: EMOTION_DEFINITIONS[emotion].color }}>
+                    <span
+                      className="emotion-label"
+                      style={{
+                        borderLeftColor: EMOTION_DEFINITIONS[emotion].color,
+                      }}
+                    >
                       {EMOTION_DEFINITIONS[emotion].label}
                     </span>
                     <span>

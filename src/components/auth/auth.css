@@ -2,10 +2,10 @@
   width: min(100% - 2rem, 32rem);
   margin: 3rem auto;
   padding: 1.5rem;
-  border: 1px solid #42657a;
+  border: 1px solid var(--border);
   border-radius: 1.4rem;
-  background: #0b1d2c;
-  color: #ecf6ff;
+  background: var(--surface);
+  color: var(--text);
   overflow-wrap: anywhere;
 }
 .auth-panel h1 {
@@ -27,16 +27,16 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.65rem;
-  background: #081622;
-  color: #ecf6ff;
-  border: 1px solid #68889b;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
 }
 .auth-panel button {
   padding: 0.65rem 1rem;
-  background: #163d54;
-  color: #fff;
-  border: 1px solid #80bedc;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   cursor: pointer;
 }
@@ -45,12 +45,12 @@
   cursor: wait;
 }
 .auth-panel :focus-visible {
-  outline: 2px solid #a5e6ff;
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 .auth-panel label span,
 .auth-panel small {
-  color: #b1ccdf;
+  color: var(--text);
 }
 .auth-tabs {
   display: flex;
@@ -58,7 +58,7 @@
   margin-bottom: 1rem;
 }
 .auth-panel a {
-  color: #b9e6ff;
+  color: var(--text);
   display: inline-block;
   margin-bottom: 0.8rem;
 }
@@ -74,7 +74,7 @@
   height: 22px;
   min-height: 22px;
   margin: 0;
-  accent-color: #8edcff;
+  accent-color: var(--accent);
 }
 
 .entry-actions {
@@ -84,10 +84,25 @@
 }
 .entry-actions a {
   padding: 0.85rem 1rem;
-  border: 1px solid #80bedc;
+  border: 1px solid var(--border);
   border-radius: 1rem;
   text-align: center;
   text-decoration: none;
   margin: 0;
-  background: #163d54;
+  background: var(--surface);
+}
+
+.auth-panel button,
+.entry-actions a {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.entry-actions a + a {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+.auth-panel label span,
+.auth-panel small {
+  color: var(--muted);
 }

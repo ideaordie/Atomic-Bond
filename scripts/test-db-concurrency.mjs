@@ -179,5 +179,11 @@ try {
   const target = resolve(directory);
   if (!target.startsWith(root + sep) || target === root)
     throw new Error("Unsafe test cleanup path");
-  await rm(target, { recursive: true, force: true });
+  // Windows can briefly retain the stopped PostgreSQL directory handle.
+  await rm(target, {
+    recursive: true,
+    force: true,
+    maxRetries: 5,
+    retryDelay: 200,
+  });
 }

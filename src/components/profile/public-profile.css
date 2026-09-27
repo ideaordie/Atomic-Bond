@@ -4,16 +4,16 @@
   align-items: center;
   margin: 12px 0;
   padding-top: 10px;
-  border-top: 1px solid #294153;
+  border-top: 1px solid var(--border);
 }
 .public-x-profile a > span:first-child {
   font-size: 13px;
-  color: #e0edf4;
+  color: var(--text);
   overflow-wrap: anywhere;
 }
 .public-x-profile small {
   font-size: 10px;
-  color: #aac0cd;
+  color: var(--text);
 }
 .public-x-profile a {
   display: flex;
@@ -22,9 +22,9 @@
   gap: 6px;
   min-height: 44px;
   padding: 8px;
-  border: 1px solid #5d8097;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: #d6efff;
+  color: var(--text);
   font-size: 10px;
   text-decoration: none;
 }
@@ -32,6 +32,6 @@
   flex-shrink: 0;
 }
 .public-x-profile a:focus-visible {
-  outline: 2px solid #b9e9ff;
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }

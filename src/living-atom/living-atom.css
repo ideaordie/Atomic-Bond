@@ -1,11 +1,11 @@
 .spatial-shell {
-  --ice: #a4d8ee;
+  --ice: var(--text);
   position: relative;
   width: 100%;
   height: 100svh;
   min-height: 650px;
-  background: #030a13;
-  color: #e7f0f6;
+  background: var(--surface);
+  color: var(--text);
   overflow: hidden;
 }
 .sr-only {
@@ -34,24 +34,24 @@
   cursor: grabbing;
 }
 .living-atom :focus-visible {
-  outline: 2px solid #a7daed;
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 .living-atom button,
 .living-atom select {
   min-height: 44px;
-  border: 1px solid #375169;
+  border: 1px solid var(--border);
   border-radius: 24px;
-  background: #0a192bdc;
-  color: #e5eff7;
+  background: var(--surface);
+  color: var(--text);
   font: inherit;
   font-size: 12px;
   padding: 10px 17px;
   cursor: pointer;
 }
 .living-atom button:hover {
-  border-color: #8fbed9;
-  background: #13273deb;
+  border-color: var(--border);
+  background: var(--surface);
 }
 .living-atom button:disabled {
   opacity: 0.5;
@@ -62,8 +62,8 @@
   top: 122px;
   left: 34px;
   padding: 8px 0 10px 17px;
-  border-left: 1px solid #335167;
-  background: linear-gradient(90deg, #05101dc9, transparent);
+  border-left: 1px solid var(--border);
+  background: var(--surface);
   pointer-events: none;
 }
 .reach-readout > div {
@@ -74,7 +74,7 @@
   gap: 4px;
 }
 .reach-readout > div > span {
-  color: #a2cee2;
+  color: var(--text);
   font-size: 10px;
   letter-spacing: 0.09em;
 }
@@ -90,11 +90,11 @@
 }
 .reach-readout small {
   font-size: 11px;
-  color: #9db4c8;
+  color: var(--text);
 }
 .reach-readout > p {
   font-size: 9px;
-  color: #7894aa;
+  color: var(--text);
   margin: 0;
 }
 .perspective-label {
@@ -110,20 +110,20 @@
 }
 .perspective-label > span {
   font-size: 9px;
-  color: #88aabc;
+  color: var(--text);
   letter-spacing: 0.17em;
 }
 .perspective-label strong {
   font-size: 12px;
   font-weight: 400;
-  color: #cfdfeb;
+  color: var(--text);
 }
 .living-atom .tools-toggle {
   position: absolute;
   right: 28px;
   top: 90px;
   font-size: 11px;
-  background: #0b1c2cb0;
+  background: var(--surface);
 }
 .tools-toggle span {
   margin-left: 16px;
@@ -140,9 +140,9 @@
   align-items: center;
   padding: 16px 32px 18px;
   gap: 16px;
-  border-top: 1px solid #294358;
-  background: linear-gradient(#061423eb, #030b15fa);
-  box-shadow: 0 -15px 60px #0208118a;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 6px 24px #29466312;
 }
 .dock-navigation {
   display: flex;
@@ -155,7 +155,7 @@
   height: 46px;
   position: relative;
   font-size: 23px;
-  background: #040e1ddd;
+  background: var(--surface);
 }
 .dock-navigation button span {
   position: absolute;
@@ -169,8 +169,8 @@
   padding-bottom: 18px;
 }
 .living-atom .my-atom {
-  border-color: #729db8;
-  color: #d5eafa;
+  border-color: var(--border);
+  color: var(--text);
 }
 .pulse-control {
   text-align: center;
@@ -185,12 +185,10 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border-radius: 38px;
-  border-color: #8fcbec;
-  background: radial-gradient(ellipse at bottom, #154970, #061827 75%);
-  box-shadow:
-    0 0 18px #57b5e82b,
-    inset 0 0 12px #64b9e736;
-  color: #c2ebff;
+  border-color: var(--border);
+  background: var(--surface);
+  box-shadow: 0 6px 24px #29466312;
+  color: var(--text);
   font-size: 13px;
 }
 .pulse-symbol {
@@ -200,7 +198,7 @@
 .pulse-status {
   min-height: 15px;
   font-size: 10px;
-  color: #96b1c3;
+  color: var(--text);
   line-height: 1.5;
   margin: 9px 0 0;
 }
@@ -215,7 +213,7 @@
   flex-basis: 100%;
   font-size: 9px;
   letter-spacing: 0.12em;
-  color: #86a7bb;
+  color: var(--text);
   margin: 0 0 6px 12px;
   text-align: right;
 }
@@ -228,16 +226,16 @@
   font-size: 11px;
 }
 .scale-controls button[aria-pressed="true"] {
-  background: #163449;
-  color: #c1eaff;
-  border-color: #325872;
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
 }
 .simulation-label {
   position: absolute;
   bottom: 132px;
   left: 32px;
   font-size: 10px;
-  color: #7c9bb1;
+  color: var(--text);
   pointer-events: none;
   margin: 0;
 }
@@ -250,11 +248,11 @@
   transform: translateX(-50%);
   bottom: 151px;
   width: 318px;
-  border: 1px solid #64839b;
+  border: 1px solid var(--border);
   border-radius: 17px;
   padding: 17px;
-  background: linear-gradient(140deg, #0c1f32f5, #030b15f7);
-  box-shadow: 0 10px 36px #0009;
+  background: var(--surface);
+  box-shadow: 0 6px 24px #29466312;
   z-index: 4;
 }
 .atom-context {
@@ -267,7 +265,7 @@
   min-width: 0;
 }
 .context-title .context-alias {
-  color: #f0f7fc;
+  color: var(--text);
   font-size: 20px;
   font-weight: 650;
   line-height: 1.2;
@@ -275,7 +273,7 @@
 }
 .context-relationship {
   font-size: 11px;
-  color: #c4e5f7;
+  color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 12px 0 0;
@@ -297,10 +295,10 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid #accfe4;
-  color: #d7effb;
+  border: 1px solid var(--border);
+  color: var(--text);
   font-size: 23px;
-  background: radial-gradient(#5180a9, #102c45);
+  background: var(--surface);
 }
 .context-title h2 {
   font-size: 13px;
@@ -309,7 +307,7 @@
 }
 .context-title p {
   margin: 0;
-  color: #a8c7db;
+  color: var(--text);
   font-size: 11px;
 }
 .living-atom .context-close {
@@ -322,7 +320,7 @@
   border: 0;
   background: transparent;
   font-size: 20px;
-  color: #a4bfd2;
+  color: var(--text);
 }
 .context-metrics {
   display: grid;
@@ -334,26 +332,26 @@
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #83a8c0;
+  color: var(--text);
   margin-bottom: 4px;
 }
 .context-metrics dd {
   margin: 0;
   font-size: 11px;
-  color: #d2e3ee;
+  color: var(--text);
 }
 .relationship-path,
 .bond-date {
   font-size: 9px;
-  color: #90aec4;
+  color: var(--text);
   line-height: 1.6;
   margin: 7px 0;
 }
 .living-atom .view-network {
   width: 100%;
   min-height: 44px;
-  background: linear-gradient(#20354a, #0b192a);
-  border-color: #6d8da6;
+  background: var(--surface);
+  border-color: var(--border);
   font-size: 11px;
 }
 .view-network span {
@@ -366,8 +364,8 @@
   width: 340px;
   max-height: calc(100% - 300px);
   overflow-y: auto;
-  background: #061423f5;
-  border: 1px solid #385a74;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
   z-index: 6;
@@ -395,7 +393,7 @@
   flex-direction: column;
   gap: 10px;
   font-size: 11px;
-  color: #accbdc;
+  color: var(--text);
 }
 .explorer-tools select {
   border-radius: 6px;
@@ -407,13 +405,13 @@
 .explorer-tools p,
 .explorer-tools li {
   font-size: 11px;
-  color: #a1bdcf;
+  color: var(--text);
   line-height: 1.7;
 }
 .explorer-tools summary {
   cursor: pointer;
   padding: 14px 0;
-  color: #c4dce9;
+  color: var(--text);
   font-size: 11px;
   min-height: 44px;
 }
@@ -434,7 +432,7 @@
   left: 20%;
   right: 20%;
   top: 40%;
-  color: #d8e8f0;
+  color: var(--text);
   line-height: 1.6;
   font-size: 13px;
 }
@@ -557,7 +555,7 @@
     justify-content: center;
     flex-wrap: nowrap;
     gap: 6px;
-    border-top: 1px solid #203647;
+    border-top: 1px solid var(--border);
     padding-top: 4px;
   }
   .scale-controls > span {
@@ -610,4 +608,31 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+.spatial-shell {
+  background: var(--page);
+}
+.living-atom button:hover {
+  background: var(--surface-muted);
+  border-color: var(--accent);
+}
+.reach-readout {
+  background: linear-gradient(90deg, #f3f6f8e6, #f3f6f800);
+}
+.spatial-dock {
+  background: #f8fafbee;
+  box-shadow: 0 -4px 24px #29466308;
+}
+.context-avatar {
+  background: radial-gradient(circle at 30% 25%, #fff, #8ba7bd 55%, #365470);
+  color: #fff;
+}
+.living-atom .view-network {
+  background: var(--accent);
+  color: #fff;
+}
+.scale-controls button[aria-pressed="true"] {
+  background: var(--surface-muted);
+  border-color: var(--accent);
 }

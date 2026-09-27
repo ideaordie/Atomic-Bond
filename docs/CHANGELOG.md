@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.3 - Task #7.2 / Scientific Light Visual System
+
+- Visual review refinement: distinguish structural connection layers with muted brass, blue, lavender, sage and distant stone materials, retaining the silver-blue center. Emotional Pulse colors still override structural tones.
+
+- Replaced dark space surfaces with a pale scientific palette, navy text, soft white panels and restrained blue controls while preserving the responsive action layout.
+- Added centralized neutral Canvas materials, dimensional silver/blue-gray spheres, soft shadows and clean blue Bonds; preserved spatial depth, orbital motion and graph-aware propagation.
+- Preserved all eight Emotional Pulse colors. Results and current-state labels now use dark text with colored markers for light-surface readability.
+- Added browser checks for action contrast, light surfaces, dimensional rendering, focus and entry/auth overflow at all three reference sizes. Existing behavioral and security regressions remain intact.
+- Documented the visual system in `docs/architecture/VISUAL_SYSTEM_v0.1.md`. No hosted changes or Master Specification edits.
+- Added bounded temporary-directory cleanup retries for Windows PostgreSQL test handles; concurrency assertions remain unchanged.
+
 ## 0.7.2 - Passwordless access email correction
 
 - Accept Supabase's supported PKCE-prefixed token hashes in signed email-hook link construction and callback validation, preserving the full hash for Supabase verification.

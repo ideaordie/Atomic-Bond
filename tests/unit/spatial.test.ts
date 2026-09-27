@@ -24,6 +24,18 @@ const base = createScene(graph, mockAtomId(0));
 const scene = createSpatialScene(base, graph, "networks");
 
 describe("spatial presentation preserves graph meaning", () => {
+  it("distinguishes connection layers consistently across regions", () => {
+    const colors = new Map<number, Set<string>>();
+    for (const node of scene.nodes) {
+      const layer = colors.get(node.distance) ?? new Set<string>();
+      layer.add(node.tint);
+      colors.set(node.distance, layer);
+    }
+    for (const layer of colors.values()) expect(layer.size).toBe(1);
+    expect(
+      new Set([0, 1, 2, 3, 4].map((d) => [...colors.get(d)!][0])).size,
+    ).toBe(5);
+  });
   it("is deterministic and gives direct Bonds varied depth and orbital geometry", () => {
     expect(createSpatialScene(base, graph, "networks")).toEqual(scene);
     const direct = scene.nodes.filter((node) => node.distance === 1);

@@ -1,3 +1,4 @@
+import { SCIENTIFIC_PALETTE, layerTint } from "../renderer/scientific-palette";
 import type { GraphData, GraphNode } from "../../types/graph";
 import { getPerspective } from "../../graph/degrees/perspective";
 import type { AtomScene, VisualEdge } from "../types/scene";
@@ -25,14 +26,7 @@ export const fraction = (id: string, salt: number) => {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967296;
 };
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
-const TINTS = [
-  "#65ccec",
-  "#b9a0ec",
-  "#77e3cf",
-  "#ecbf7e",
-  "#8eaeec",
-  "#d5b6e7",
-];
+const TINTS = SCIENTIFIC_PALETTE.regions;
 
 export function regionAnchor(index: number): Point3D {
   const angle = [-2.25, -0.25, 1.9, 0.9, -1.15, 2.9, 0.1][index % 7]!;
@@ -221,7 +215,7 @@ export function createSpatialScene(
           ? `Atom #${first.publicId}`
           : `${region.label} · ${group.members.length} people`,
       regionKey: group.region,
-      tint: group.distance <= 1 ? "#efc778" : region.tint,
+      tint: layerTint(group.distance),
       particles,
       orbit: {
         anchor,

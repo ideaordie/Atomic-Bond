@@ -22,7 +22,12 @@ export function CurrentPulse({
   return (
     <p className="current-pulse" data-testid="current-pulse">
       <span>CURRENT PULSE</span>
-      <strong style={{ color: definition.color }}>{definition.label}</strong>
+      <strong
+        className="emotion-label"
+        style={{ borderLeftColor: definition.color }}
+      >
+        {definition.label}
+      </strong>
       <small>Shared {age} · expires after 24 hours</small>
     </p>
   );
