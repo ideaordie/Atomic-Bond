@@ -1,9 +1,9 @@
 # Deployment foundation v0.1
 
-Task #8 QR candidate uses the existing HTTPS APP_ORIGIN and both existing
-migrations; it needs no new secret or schema change. Deploy the tested candidate
-before the mandatory physical two-device test, then finalize v0.8.0 only after
-that test succeeds. See [QR Bond release procedure](QR_BOND_v0.1.md). Never capture
+The frozen v0.8.0 MVP uses the existing HTTPS APP_ORIGIN and both existing
+migrations; it needs no new secret or schema change. See the
+[baseline report](BASELINE_v0.8.0.md) and [QR Bond procedure](QR_BOND_v0.1.md),
+which distinguish owner acceptance from recorded physical test evidence. Never capture
 live QR codes, authentication links or private identity values in release evidence.
 
 Application milestone: 0.5.0 / Task #5, 2026-09-22.

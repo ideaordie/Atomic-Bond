@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased — Task #8 QR Bond candidate
+## 0.8.0 — First functional Atomic Bond MVP baseline
+
+- Frozen on 2026-09-27 at the project owner's explicit request, following their report that the application was working and the results-panel scrolling correction.
+- Release scope and verification evidence are preserved in `docs/architecture/BASELINE_v0.8.0.md`. No application behavior, schema or product specification changed in the freeze.
 
 - Fixed NETWORK EMOTION RESULTS refreshing on every owner clock tick: measure immediately on opening, then once per minute, retaining the report DOM and scroll position during background updates. Pulse lifecycle and network polling remain unchanged.
 
@@ -9,7 +12,7 @@
 - New and returning recipients automatically return to their invitation after verified Auth access. No identity, RLS, sequence or database constraints changed.
 - Added BOND CREATED feedback and the existing arrival animation using persistent graph data, with visible-owner polling every ten seconds and refresh on focus.
 - Added independent QR decoding and isolated-session browser coverage for consent, reciprocal small networks, Pulse and invitation lifecycle protections.
-- Physical production two-device verification is pending. Application remains 0.7.3 until the v0.8.0 milestone is physically verified.
+- Owner acceptance establishes this MVP baseline. Detailed physical-device results, participant public numbers and production counts have not been recorded in the repository; do not represent them as independently verified.
 
 ## 0.7.3 - Task #7.2 / Scientific Light Visual System
 

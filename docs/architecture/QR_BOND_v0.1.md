@@ -1,8 +1,10 @@
-# First Real QR Bond v0.1 — Task #8 candidate
+# First Real QR Bond v0.1 — Task #8
 
-Status: implementation candidate. Physical production verification is pending.
-Do not describe this milestone as verified or release v0.8.0 until the two-device
-procedure below has succeeded. Master Specification v0.2 remains authoritative.
+Status: included in the owner-approved v0.8.0 functional MVP baseline, frozen
+2026-09-27. See [baseline evidence](BASELINE_v0.8.0.md). The owner reported successful
+use and explicitly requested this freeze. Detailed physical-device results remain
+unrecorded; the procedure below remains the acceptance checklist, not a claim that
+every step was independently witnessed. Master Specification v0.2 remains authoritative.
 
 Candidate verification (2026-09-27): formatting, lint, TypeScript, 150 unit/
 integration tests, native PostgreSQL concurrency/restart checks, 69 mock browser
@@ -11,7 +13,7 @@ passed. Redacted QR layouts were reviewed at all three reference sizes. Configur
 server secrets were absent from project files/browser bundles; the visible recent
 Vercel log sample contained no invitation/auth-token or private-email patterns.
 Both existing hosted migrations are applied. This evidence does not substitute
-for the pending physical production test.
+for a recorded physical production test.
 
 ## Architecture and consent
 
@@ -124,7 +126,8 @@ expire during onboarding; never bypass or silently renew it.
    recipient: YOU ARE ALREADY BONDED. Keep genuine participants and their Bond.
 8. Record deployment commit, device results, public numbers, active/confirmed
    counts and remaining limitations. Do not reset sequences or reuse retired
-   numbers. Only then finalize v0.8.0. Do not begin Task #9.
+   numbers. The owner-approved v0.8.0 freeze is recorded separately in the baseline
+   report; retain these detailed acceptance results when available. Do not begin Task #9.
 
 Automated checks cover QR decoding, reuse, isolated sessions, new/existing Auth
 continuation, decline, authoritative confirmation, reciprocal two-Atom reach,
