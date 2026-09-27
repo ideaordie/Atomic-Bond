@@ -172,8 +172,42 @@ network and preferences were inspected at 390×844, 768×1024 and 1440×900.
 The built browser JavaScript was checked against the configured Resend/hook secrets;
 neither was present. Master Spec v0.2 remains byte-for-byte unchanged.
 
-Hosted activation of this release and real inbox acceptance are separate from
-local automated verification and must be reported explicitly. Task #8 camera QR
+Hosted acceptance on 2026-09-27: a real email was delivered through the signed
+Supabase hook and production Resend configuration; the participant confirmed
+successful completion of the authentication callback. All required Vercel
+configuration names are present. `/auth` and `/auth/confirm` return HTTP 200;
+unsigned hook requests are rejected. No additional email was sent for finalization.
+
+Hosted database checks confirm Atom #3 is ACTIVE, has a verified private identity
+linked to verified Supabase Auth ownership, and references canonical Boynton Beach,
+Florida, United States. The production network contains one ACTIVE human Atom and
+zero confirmed Bonds. Numbers #1 and #2 remain permanently retired DELETED
+verification tombstones, excluded from public graph membership.
+
+Using the existing owner's database request context in a rolled-back transaction,
+`my_atom()`, repeat `begin_atom()` and `activate_atom()` resolve the same Atom #3
+without creating another Atom. Owner profile and preference access succeeds;
+cross-Atom direct writes, anonymous owner actions, and private identity reads are
+denied. The anonymous graph returns only the approved public fields. No temporary
+changes from these checks were retained and no sequence was reset.
+
+Verification boundary: the original production email/callback was completed by
+the participant. Final returning-identity and authorization checks exercise hosted
+database roles/RPCs, not a newly issued browser session. Fresh returning-email,
+cross-device session, expiry and replay flows are covered by automated local Auth
+browser tests; a second live inbox sign-in was not performed. The agent's separate
+browser session remained anonymous, so it does not independently attest the
+participant's cookie session.
+
+Finalization regression run: formatting, lint, TypeScript, all 142 unit/integration/
+security tests, native concurrency checks and production build passed. Of the 66
+existing browser regressions, 64 passed initially; the mobile/tablet Pulse traversal
+cases exceeded the 30-second wall-clock limit under four-worker contention. The
+unchanged traversal test passed at all three viewports with one worker. The three
+public-persistence and nine Auth browser checks also passed. No test assertions,
+timeouts or application behavior were changed for finalization.
+
+Task #8 camera QR
 scanning should encode the existing expiring `/bond/<secret>` URL; it must not
 introduce another identity or confirmation mechanism.
 

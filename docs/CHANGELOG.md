@@ -1,12 +1,14 @@
 # Changelog
 
-## 0.7.0 - Task #7 / Verified Email Identity (pending hosted acceptance)
+## 0.7.0 - Task #7 / Verified Email Identity
 
 - Added Supabase passwordless registration/access, cookie-session refresh, verified activation, owner lookup and explicit invitation continuation across devices.
 - Added signed Auth email-hook delivery through ResendNotificationService with the approved From identity, safe callback allowlists and token hashes kept out of request URLs.
 - Connected owner Bond/Pulse/profile/preference controls while retaining mock services and established Living Atom behavior.
 - Added an owner-access migration and a limited curated real-place catalog; preserved all Task #6 constraints and frozen Master Specification.
 - Added auth/security/database and cross-device browser regression coverage. No recurring jobs, DNS changes, automatic deletion or Task #8 work.
+- Completed production email delivery and user-confirmed callback acceptance. Atom #3 is ACTIVE with verified Auth-linked private identity and canonical home region; retired numbers #1 and #2 remain preserved.
+- Verified hosted returning-identity reuse, owner RPC resolution, authorized profile access, denied anonymous/cross-Atom writes, and safe public projection in rolled-back checks. Production contains one ACTIVE Atom and zero confirmed Bonds. Fresh returning-email/device flows remain covered by local automated tests rather than a second live email attempt.
 
 ## 0.6.0 - Task #6 / Supabase Persistence & Identity
 
