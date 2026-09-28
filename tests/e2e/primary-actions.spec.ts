@@ -56,11 +56,15 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(buttons.nth(1)).toBeFocused();
-  const disclosure = page.getByRole("button", { name: /YOUR NETWORK NOW/ });
+  const disclosure = page.getByRole("button", {
+    name: /YOUR NETWORK OVERVIEW/,
+  });
   await disclosure.focus();
   await page.keyboard.press("Enter");
   await expect(disclosure).toHaveAttribute("aria-expanded", "true");
-  await page.getByRole("button", { name: "Close Your Network Now" }).click();
+  await page
+    .getByRole("button", { name: "Close Your Network Overview" })
+    .click();
   await expect(disclosure).toBeFocused();
   await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
     "data-emotional-view",
@@ -70,5 +74,5 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
     page
       .getByRole("group", { name: "Network exploration" })
       .getByRole("button"),
-  ).toHaveCount(2);
+  ).toHaveCount(1);
 });

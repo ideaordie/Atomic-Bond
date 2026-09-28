@@ -77,7 +77,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   expect(moved.center[0]).toBeCloseTo(bounds.width / 2, 1);
   expect(moved.center[1]).toBeCloseTo(bounds.height / 2, 1);
 
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page.clock.runFor(50);
   const beforePause = await sample();
   await page.getByRole("button", { name: "Pause motion", exact: true }).click();
@@ -166,7 +166,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   expect((await pixels()) === reducedPixels).toBe(true);
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(canvas).toHaveAttribute("data-motion", "gentle");
-  await page.getByRole("button", { name: "Close exploration tools" }).click();
+  await page.getByTestId("atom-canvas").focus();
   await page.clock.runFor(50);
 
   // Selection uses the currently drawn position, not the static layout.

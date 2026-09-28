@@ -33,12 +33,12 @@ test("Supabase mode retrieves only real public projection and has no simulated o
     page.getByRole("button", { name: "Pulse", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: /YOUR NETWORK NOW/ }),
+    page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }),
   ).toHaveCount(0);
   await expect(
     page.getByText("Coarse, synthetic geography", { exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page.getByLabel("Select an Atom", { exact: true }).selectOption("1");
   const context = page.getByTestId("atom-context");
   await expect(context).toContainText("Public Test Atom");

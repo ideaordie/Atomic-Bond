@@ -36,7 +36,7 @@ for (const [name, alias, handle] of [
       .getByRole("button", { name: "Confirm Bond", exact: true })
       .click();
     await page.getByRole("button", { name: "See your network" }).click();
-    await page.getByRole("button", { name: "Explore Atoms" }).click();
+    await page.getByLabel("Select an Atom", { exact: true }).focus();
     await page
       .getByLabel("Select an Atom", { exact: true })
       .selectOption("session-atom-1001");
@@ -95,7 +95,7 @@ for (const [name, alias, handle] of [
     await expect(page.getByTestId("selected-atom")).toHaveText("#00001001");
     // An immediate neighbor of you is two Bonds from the newly centered Atom.
     // Relationship context must still describe the current user, not the camera.
-    await page.getByRole("button", { name: "Explore Atoms" }).click();
+    await page.getByLabel("Select an Atom", { exact: true }).focus();
     await page
       .getByLabel("Select an Atom", { exact: true })
       .selectOption("mock-atom-00000002");

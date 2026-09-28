@@ -103,7 +103,7 @@
   .living-atom .spatial-dock {
     padding: 10px 16px;
     gap: 5px 4px;
-    grid-template-columns: 132px 1fr;
+    grid-template-columns: 176px 1fr;
   }
   .primary-actions {
     gap: 7px;
@@ -235,4 +235,34 @@
   .living-atom .primary-actions > button {
     font-size: 12px;
   }
+}
+
+/* Keep non-pointer access without an exploration panel. Revealed only on keyboard focus. */
+.canvas-keyboard-selector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.canvas-keyboard-selector:focus-within {
+  clip-path: none;
+  width: min(320px, calc(100% - 32px));
+  height: auto;
+  right: 16px;
+  top: 200px;
+  z-index: 20;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.canvas-keyboard-selector select {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  font-size: 16px;
+}
+.dock-navigation button .motion-symbol {
+  font-size: 16px;
 }

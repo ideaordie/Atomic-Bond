@@ -212,9 +212,12 @@ Only **View their network** changes to that person's perspective. It resets the
 camera and cancels the previous Pulse. **My Atom** immediately restores the
 original perspective; **Recenter** (accessible label Fit) resets only the camera.
 Drag, wheel, two-finger pinch and canvas keyboard controls retain their existing
-behavior. The Explore Atoms drawer offers native selectors, paged grouped members,
-motion controls and secondary network details. Selecting via these controls uses
-the same inspect-then-view flow. Context headings receive focus when selected.
+behavior. The redundant Explore Atoms button and drawer have been removed.
+Pause/Resume Motion remains available beside the zoom and recenter controls.
+A native Atom selector appears on keyboard focus after the canvas, allowing access
+to represented individual and grouped Atoms through the same inspect-then-view
+flow. Context headings receive focus when selected; closing or viewing a context
+returns focus to the canvas.
 
 The mobile layout places metrics above the network and primary actions in a
 bottom dock. The context panel occupies less than one-third of each tested

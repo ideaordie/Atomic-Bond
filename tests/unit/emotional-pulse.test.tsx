@@ -240,14 +240,14 @@ it("always-on owner information stays separate from public viewing, including ac
     emotional: { pulses: [pulse], now: epoch, send: () => {} },
   };
   const owner = renderToStaticMarkup(<LivingAtom {...props} />);
-  expect(owner).toContain("YOUR NETWORK NOW");
+  expect(owner).toContain("YOUR NETWORK OVERVIEW");
   expect(owner).toContain("1 active Pulse");
   expect(owner).toContain("Curious");
   expect(owner).not.toContain("FEEL YOUR NETWORK");
   const publicView = renderToStaticMarkup(
     <LivingAtom {...props} ownerMode={false} />,
   );
-  expect(publicView).not.toContain("YOUR NETWORK NOW");
+  expect(publicView).not.toContain("YOUR NETWORK OVERVIEW");
   expect(publicView).not.toContain("Curious");
   expect(publicView).toContain('data-emotional-view="structural"');
 });

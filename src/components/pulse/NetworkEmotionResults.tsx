@@ -26,7 +26,7 @@ export function NetworkEmotionResults({
   const available = status === "ready" || status === "refreshing";
   const age = Math.max(0, Math.floor((now - updatedAt) / 60_000));
   return (
-    <section className="network-now" aria-label="Your Network Now">
+    <section className="network-now" aria-label="Your Network Overview">
       <button
         ref={toggle}
         className="network-now-toggle"
@@ -36,7 +36,7 @@ export function NetworkEmotionResults({
         onClick={() => setExpanded(!expanded)}
       >
         <strong>
-          YOUR NETWORK NOW{" "}
+          YOUR NETWORK OVERVIEW{" "}
           <span aria-hidden="true">{expanded ? "−" : "+"}</span>
         </strong>
         <span data-testid="active-pulse-count">
@@ -52,7 +52,7 @@ export function NetworkEmotionResults({
           id="network-now-details"
           className="network-emotion-results"
           role="region"
-          aria-label="Your Network Now details"
+          aria-label="Your Network Overview details"
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               event.stopPropagation();
@@ -61,10 +61,10 @@ export function NetworkEmotionResults({
           }}
         >
           <header>
-            <h2>YOUR NETWORK NOW</h2>
+            <h2>YOUR NETWORK OVERVIEW</h2>
             <button
               type="button"
-              aria-label="Close Your Network Now"
+              aria-label="Close Your Network Overview"
               onClick={close}
             >
               ×

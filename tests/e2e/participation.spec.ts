@@ -115,7 +115,7 @@ test("new Atom participation, canonical location, verification and Living Atom i
   await expect(page.getByTestId("reachable-count")).toHaveText("641");
   await expect(action).toBeFocused();
   await capture(page, info, "09-living-atom");
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption("session-atom-1001");

@@ -193,7 +193,7 @@ export async function updateOwner(form: FormData) {
     );
     await services.preferences.update(
       digest as "weekly" | "monthly" | "disabled",
-      form.get("pulseNotifications") === "on",
+      (await services.preferences.get()).pulseNotifications,
     );
     return { message: "Your profile and preferences are saved." };
   } catch {

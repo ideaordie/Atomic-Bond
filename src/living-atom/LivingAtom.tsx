@@ -14,7 +14,6 @@ import {
 import { useReducedMotion } from "./interaction/use-reduced-motion";
 import { ACTION_DURATION_MS, pulseStepMs, pulseSteps } from "./pulse/traversal";
 import { idlePulse, type PulsePresentation } from "./pulse/presentation";
-import { AggregateExplorer } from "./interaction/AggregateExplorer";
 import { AtomContextPanel } from "./interaction/AtomContextPanel";
 import "./living-atom.css";
 import "./controls.css";
@@ -59,11 +58,14 @@ export function LivingAtom({
     originalId: originalAtomId,
     selectedId: originalAtomId,
   });
-  const toolsToggle = useRef<HTMLButtonElement>(null);
+  const canvasContainer = useRef<HTMLDivElement>(null);
+  const focusCanvas = () =>
+    canvasContainer.current
+      ?.querySelector("canvas")
+      ?.focus({ preventScroll: true });
   const [inspectedId, setInspectedId] = useState<string | null>(null);
   const [camera, setCamera] = useState(INITIAL_CAMERA);
   const [paused, setPaused] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
   const emotionalView = ownerMode && Boolean(emotional);
   const [sentEmotion, setSentEmotion] = useState<Emotion | null>(null);
@@ -152,7 +154,6 @@ export function LivingAtom({
 
   const inspect = useCallback((id: string) => {
     setInspectedId(id);
-    setToolsOpen(false);
   }, []);
   const recenter = (id: string) => {
     setSelection((state) => selectAtom(state, id));
@@ -160,7 +161,7 @@ export function LivingAtom({
     setPulse(idlePulse(id));
     setSentEmotion(null);
     setInspectedId(null);
-    toolsToggle.current?.focus({ preventScroll: true });
+    focusCanvas();
   };
   const home = () => {
     setSelection(returnToOriginal);
@@ -168,10 +169,8 @@ export function LivingAtom({
     setPulse(idlePulse(originalAtomId));
     setSentEmotion(null);
     setInspectedId(null);
-    setToolsOpen(false);
   };
-  const individualNodes = scene.nodes.filter((node) => node.kind === "atom");
-  const aggregates = scene.nodes.filter((node) => node.kind === "aggregate");
+  const representedIds = new Set(scene.nodes.flatMap((node) => node.members));
   const reached =
     pulse.distance === null
       ? 0
@@ -192,7 +191,7 @@ export function LivingAtom({
   return (
     <div className="living-atom spatial-shell" data-testid="living-atom">
       <h1 className="sr-only">The Living Atom</h1>
-      <div className="atom-stage">
+      <div className="atom-stage" ref={canvasContainer}>
         <AtomCanvas
           emotions={paints}
           feelNetwork={emotionalView}
@@ -212,6 +211,26 @@ export function LivingAtom({
           onSelect={inspect}
           onCamera={setCamera}
         />
+        <label className="canvas-keyboard-selector">
+          Select an Atom
+          <select
+            aria-label="Select an Atom"
+            value={inspectedId ?? ""}
+            onChange={(event) => {
+              if (event.target.value) inspect(event.target.value);
+            }}
+          >
+            <option value="">Choose an Atom</option>
+            {graph.nodes
+              .filter((node) => representedIds.has(node.id))
+              .map((node) => (
+                <option key={node.id} value={node.id}>
+                  ATOM #{node.publicId}
+                  {node.displayName ? ` - ${node.displayName}` : ""}
+                </option>
+              ))}
+          </select>
+        </label>
       </div>
 
       {
@@ -272,20 +291,6 @@ export function LivingAtom({
       >
         <button
           type="button"
-          ref={toolsToggle}
-          className="tools-toggle"
-          aria-expanded={toolsOpen}
-          aria-controls="explorer-tools"
-          onClick={() => {
-            setToolsOpen((value) => !value);
-            setInspectedId(null);
-          }}
-        >
-          Explore Atoms <span aria-hidden="true">⌕</span>
-        </button>
-
-        <button
-          type="button"
           className="my-atom"
           onClick={home}
           aria-label={ownerMode ? "My Atom" : "Starting Atom"}
@@ -316,7 +321,7 @@ export function LivingAtom({
           onView={() => recenter(inspectedId)}
           onClose={() => {
             setInspectedId(null);
-            toolsToggle.current?.focus({ preventScroll: true });
+            focusCanvas();
           }}
         />
       )}
@@ -348,7 +353,6 @@ export function LivingAtom({
               if (running) setPulse(idlePulse(selection.selectedId));
               else {
                 setComposerOpen(true);
-                setToolsOpen(false);
                 setInspectedId(null);
               }
             }}
@@ -389,6 +393,24 @@ export function LivingAtom({
             onClick={() => setCamera(INITIAL_CAMERA)}
           >
             ◎<span>Recenter</span>
+          </button>
+          <button
+            type="button"
+            disabled={reducedMotion}
+            aria-label={
+              reducedMotion
+                ? "Motion reduced"
+                : paused
+                  ? "Resume motion"
+                  : "Pause motion"
+            }
+            aria-pressed={paused || reducedMotion}
+            onClick={() => setPaused((value) => !value)}
+          >
+            <span aria-hidden="true" className="motion-symbol">
+              {paused ? "▶" : "Ⅱ"}
+            </span>
+            <span aria-hidden="true">Motion</span>
           </button>
         </div>
         <div className="scale-controls" aria-label="Network scale">
@@ -435,109 +457,13 @@ export function LivingAtom({
         />
       )}
 
-      {toolsOpen && (
-        <aside
-          className="explorer-tools"
-          id="explorer-tools"
-          aria-label="Exploration tools"
-        >
-          <div className="tools-heading">
-            <h2>Explore your connections</h2>
-            <button
-              type="button"
-              aria-label="Close exploration tools"
-              onClick={() => setToolsOpen(false)}
-            >
-              ×
-            </button>
-          </div>
-          <label>
-            Select an Atom
-            <select
-              aria-label="Select an Atom"
-              value={inspectedId ?? ""}
-              onChange={(event) => {
-                if (event.target.value) inspect(event.target.value);
-              }}
-            >
-              <option value="">Choose a person to explore…</option>
-              {individualNodes.map((node) => (
-                <option key={node.id} value={node.members[0]}>
-                  {node.label}
-                  {emotionalView
-                    ? ` · ${paints.get(node.id)?.label ?? "No active Pulse"}`
-                    : ""}
-                  {node.distance === 0
-                    ? " · current center"
-                    : node.distance === 1
-                      ? " · direct Bond"
-                      : " · extended network"}
-                </option>
-              ))}
-            </select>
-          </label>
-          <p id="network-instructions">
-            Select a person, then choose View their network. Drag to pan; pinch,
-            use the wheel or + / − to zoom. With the canvas focused, arrow keys
-            pan and + / − zoom.
-          </p>
-          <button
-            type="button"
-            onClick={() => setPaused((value) => !value)}
-            disabled={reducedMotion}
-          >
-            {reducedMotion
-              ? "Motion reduced"
-              : paused
-                ? "Resume motion"
-                : "Pause motion"}
-          </button>
-          {aggregates.length > 0 && (
-            <AggregateExplorer
-              key={`${selection.selectedId}:${mode}`}
-              groups={aggregates}
-              graph={graph}
-              onSelect={inspect}
-            />
-          )}
-          <details className="network-details">
-            <summary>Network details</summary>
-            <p>
-              <span data-testid="represented-count">
-                {scene.representedCount}
-              </span>{" "}
-              people represented, of {scene.reachableCount} reachable. Counts
-              include the current center.
-            </p>
-            <p>
-              Displayed through{" "}
-              <span data-testid="max-degree">{scene.maxDistance}</span> Bonds.{" "}
-              {scene.reachableCount - scene.representedCount} people are beyond
-              this view. {scene.disconnectedCount} Atoms are disconnected.
-            </p>
-            <ul>
-              {scene.regions.map((region) => (
-                <li key={region.key}>
-                  {region.label}: {region.reachableCount} people in reach
-                </li>
-              ))}
-            </ul>
-            <p>
-              Regional clouds summarize people in view. Background stars are
-              decorative. Geography is coarse; distance and weekly growth are
-              unavailable. Indirect connection does not imply trust.
-            </p>
-          </details>
-        </aside>
-      )}
-      {!toolsOpen && (
-        <p id="network-instructions" className="sr-only">
-          Select an Atom to inspect it, then choose View their network. Drag to
-          pan, pinch or use + / − to zoom. Arrow keys pan when the canvas is
-          focused. The Explore Atoms menu provides keyboard selectors and motion
-          controls.
-        </p>
-      )}
+      <p id="network-instructions" className="sr-only">
+        Select an Atom to inspect it, then choose View their network. Drag to
+        pan, pinch or use zoom controls. Arrow keys pan and plus/minus zoom when
+        the canvas is focused. Tab to the accessible Atom selector for keyboard
+        selection.
+      </p>
+
       <p className="simulation-label">
         {synthetic && ownerMode
           ? "Synthetic network"

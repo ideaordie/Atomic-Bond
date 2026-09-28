@@ -6,7 +6,7 @@ test("optional X onboarding rejects URLs and exposes only a safe public profile 
 }, info) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/explore");
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption("mock-atom-00000002");
@@ -44,7 +44,7 @@ test("optional X onboarding rejects URLs and exposes only a safe public profile 
     .click();
   await page.getByRole("button", { name: "Confirm Bond", exact: true }).click();
   await page.getByRole("button", { name: "See your network" }).click();
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption("session-atom-1001");

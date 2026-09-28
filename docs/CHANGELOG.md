@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.3 - targeted UI cleanup follow-up
+
+- Removed the redundant header MY ATOM link and made the profile return action clearly visible.
+- Renamed Growth digest to Growth Notification Frequency and removed the Pulse notifications preference control while preserving stored preferences.
+- Renamed YOUR NETWORK NOW to YOUR NETWORK OVERVIEW.
+- Removed the Explore Atoms button and exploration drawer. Canvas inspection and navigation remain intact; motion controls move to the utility dock and a focus-only native selector preserves keyboard access to represented Atoms.
+- No Master Specification, authentication, Bond, Pulse lifecycle or database changes.
+
 ## 0.8.3 - Global coarse Home Region
 
 - Replaced the five-place production signup selector with bundled searchable country/subdivision choices based on ISO 3166 identifiers.

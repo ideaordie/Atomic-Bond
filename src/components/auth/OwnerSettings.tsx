@@ -31,7 +31,11 @@ export function OwnerSettings({
   return (
     <section className="auth-panel">
       <h1>ATOM #{publicId}</h1>
-      <Link href="/explore">MY ATOM</Link>
+      <nav aria-label="Profile navigation">
+        <Link href="/explore" className="profile-return">
+          <span aria-hidden="true">←</span> RETURN TO MY ATOM
+        </Link>
+      </nav>
       <form
         aria-busy={pending}
         onSubmit={async (e) => {
@@ -91,7 +95,7 @@ export function OwnerSettings({
             {xError}
           </p>
         )}
-        <label htmlFor="digest">Growth digest</label>
+        <label htmlFor="digest">Growth Notification Frequency</label>
         <select
           id="digest"
           name="digest"
@@ -101,17 +105,9 @@ export function OwnerSettings({
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
         </select>
-        <label className="auth-checkbox">
-          <input
-            type="checkbox"
-            name="pulseNotifications"
-            defaultChecked={preferences.pulseNotifications}
-          />{" "}
-          Pulse notifications
-        </label>
         <small>
-          Preferences are saved now. Scheduled digests and Pulse notification
-          delivery are not enabled yet.
+          Your preference is saved now. Scheduled growth notifications are not
+          enabled yet.
         </small>
         <button disabled={pending}>{pending ? "Saving…" : "Save"}</button>
         <p role="status">{message}</p>

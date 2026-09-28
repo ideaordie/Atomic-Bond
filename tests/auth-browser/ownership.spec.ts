@@ -60,8 +60,52 @@ test("new invitation verification, owner actions, logout and cross-device same A
     receiver.getByRole("dialog", { name: "How are you feeling?" }),
   ).toHaveCount(0);
   await receiver.getByRole("link", { name: "Profile & preferences" }).click();
+  await expect(receiver.getByLabel("Pulse notifications")).toHaveCount(0);
+  const returnLink = receiver.getByRole("link", {
+    name: "RETURN TO MY ATOM",
+    exact: true,
+  });
+  await expect(returnLink).toBeInViewport();
+  await expect(returnLink).toHaveAttribute("href", "/explore");
+  const returnBox = await returnLink.boundingBox();
+  const aliasBox = await receiver.getByLabel("Name / alias").boundingBox();
+  expect(returnBox!.height).toBeGreaterThanOrEqual(44);
+  expect(returnBox!.y + returnBox!.height).toBeLessThanOrEqual(aliasBox!.y);
+  await returnLink.focus();
+  await returnLink.press("Tab");
+  await receiver.keyboard.press("Shift+Tab");
+  await expect(returnLink).toBeFocused();
+  expect(
+    await returnLink.evaluate((el) => getComputedStyle(el).outlineStyle),
+  ).not.toBe("none");
+  await receiver.screenshot({
+    path: info.outputPath("profile-return-navigation.png"),
+    fullPage: true,
+  });
+  await returnLink.press("Enter");
+  await expect(receiver).toHaveURL("/explore");
+  await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
+  const mainNav = receiver.getByRole("navigation", { name: "Main navigation" });
+  await expect(
+    mainNav.getByRole("link", { name: "MY ATOM", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    mainNav.getByRole("link", { name: "Profile & preferences" }),
+  ).toBeVisible();
+  expect(
+    await receiver.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await receiver.screenshot({
+    path: info.outputPath("owner-navigation.png"),
+    fullPage: true,
+  });
+  await receiver.getByRole("link", { name: "Profile & preferences" }).click();
   await receiver.getByLabel("Name / alias").fill("Updated owner");
-  await receiver.getByLabel("Growth digest").selectOption("weekly");
+  await receiver
+    .getByLabel("Growth Notification Frequency")
+    .selectOption("weekly");
   await receiver.getByRole("button", { name: "Save", exact: true }).click();
   await expect(receiver.getByRole("status")).toContainText("saved");
   await receiver.screenshot({

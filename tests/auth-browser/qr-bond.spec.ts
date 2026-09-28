@@ -56,13 +56,17 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     `qr-a-${info.project.name}@example.invalid`,
   );
   await expect(page.getByTestId("reachable-count")).toHaveText("1");
-  await page.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
-  const empty = page.getByRole("region", { name: "Your Network Now details" });
+  await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
+  const empty = page.getByRole("region", {
+    name: "Your Network Overview details",
+  });
   await expect(empty).toContainText("0 active Pulses");
   await expect(empty).toContainText("1 connected Atom");
   await expect(empty).toContainText("No active Pulses right now");
   await expect(empty.locator("li")).toHaveCount(8);
-  await page.getByRole("button", { name: "Close Your Network Now" }).click();
+  await page
+    .getByRole("button", { name: "Close Your Network Overview" })
+    .click();
   await page.screenshot({
     path: info.outputPath("small-no-pulses.png"),
     fullPage: true,
@@ -166,7 +170,7 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   await expect(page.getByTestId("own-pulse")).toContainText("Curious");
   // Reconciliation must reveal the other owner’s Pulse without navigation.
   await receiver.bringToFront();
-  await receiver.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
+  await receiver.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
   // Browser time is controlled; server requests remain real asynchronous work.
   await expect
     .poll(
@@ -179,18 +183,18 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     .toContain("1 active Pulse");
   await expect(
     receiver
-      .getByRole("region", { name: "Your Network Now details" })
+      .getByRole("region", { name: "Your Network Overview details" })
       .getByRole("listitem")
       .filter({ hasText: "Curious" }),
   ).toContainText("100.0%");
   await receiver
-    .getByRole("button", { name: "Close Your Network Now" })
+    .getByRole("button", { name: "Close Your Network Overview" })
     .click();
   await receiver.screenshot({
     path: info.outputPath("living-small-emotional.png"),
     fullPage: true,
   });
-  await receiver.getByRole("button", { name: "Explore Atoms" }).click();
+  await receiver.getByLabel("Select an Atom", { exact: true }).focus();
   await receiver
     .getByLabel("Select an Atom", { exact: true })
     .selectOption(first);
@@ -220,13 +224,13 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   });
   await visitor.goto(`http://127.0.0.1:3104/a/${first}`);
   await expect(
-    visitor.getByRole("button", { name: /YOUR NETWORK NOW/ }),
+    visitor.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }),
   ).toHaveCount(0);
   await expect(visitor.getByTestId("atom-canvas")).toHaveAttribute(
     "data-emotional-view",
     "structural",
   );
-  await visitor.getByRole("button", { name: "Explore Atoms" }).click();
+  await visitor.getByLabel("Select an Atom", { exact: true }).focus();
   await visitor
     .getByLabel("Select an Atom", { exact: true })
     .selectOption(first);

@@ -25,7 +25,14 @@ async function setup(page: Page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.clock.pauseAt(new Date("2026-09-23T12:00:02Z"));
   await page.goto("/explore");
-  await page.clock.runFor(20);
+  // Hydration schedules the initial Pulse snapshot; advance the paused clock
+  // while waiting so setup does not depend on page hydration timing.
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(20);
+      return page.getByTestId("active-pulse-count").textContent();
+    })
+    .toContain("128 active Pulses");
   await expect(page.getByTestId("active-pulse-count")).toContainText(
     "128 active Pulses",
   );
@@ -84,12 +91,12 @@ test("Living emotional network coverage, progressive clouds, selected state and 
   page,
 }, info) => {
   await setup(page);
-  await page.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
+  await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
   await expect(page.getByTestId("active-pulse-count")).toContainText(
     "128 active Pulses",
   );
   await expect(
-    page.getByRole("region", { name: "Your Network Now details" }),
+    page.getByRole("region", { name: "Your Network Overview details" }),
   ).toBeVisible();
   const canvas = page.getByTestId("atom-canvas");
   for (const [view, mode] of [
@@ -112,7 +119,9 @@ test("Living emotional network coverage, progressive clouds, selected state and 
   await expect(
     page.locator(".emotion-distribution li").filter({ hasText: "Curious" }),
   ).toHaveText("Curious16 · 12.5%");
-  await page.getByRole("button", { name: "Close Your Network Now" }).click();
+  await page
+    .getByRole("button", { name: "Close Your Network Overview" })
+    .click();
   await page.getByRole("button", { name: "People", exact: true }).click();
   await page.clock.runFor(50);
   for (const [id, name, active] of [
@@ -120,7 +129,7 @@ test("Living emotional network coverage, progressive clouds, selected state and 
     ["mock-atom-00000006", "expired", false],
     ["mock-atom-00000003", "no-emotion", false],
   ] as const) {
-    await page.getByRole("button", { name: "Explore Atoms" }).click();
+    await page.getByLabel("Select an Atom", { exact: true }).focus();
     await page.getByLabel("Select an Atom", { exact: true }).selectOption(id);
     await expect(page.getByTestId("current-pulse")).toHaveCount(active ? 1 : 0);
     if (active)
@@ -136,7 +145,7 @@ test("expiry updates the mounted network exactly at the deadline", async ({
   await setup(page);
   await sendEmotionalPulse(page, "Sad");
   await page.getByRole("button", { name: "Stop Pulse", exact: true }).click();
-  await page.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
+  await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
   await expect(page.getByTestId("active-pulse-count")).toContainText(
     "129 active Pulses",
   );
@@ -172,7 +181,7 @@ test("Pulse stops at 15 seconds while active material remains independent of the
   await expect(page.getByTestId("pulse-status")).toContainText(
     "640 connected Atoms reached",
   );
-  const toggle = page.getByRole("button", { name: /YOUR NETWORK NOW/ });
+  const toggle = page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ });
   await toggle.click();
   await toggle.click();
   await page.clock.fastForward(60_000);
@@ -190,9 +199,11 @@ test("Curious appears in Living emotional network and selected context, then exp
   await setup(page);
   await sendEmotionalPulse(page, "Curious");
   await page.getByRole("button", { name: "Stop Pulse", exact: true }).click();
-  await page.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
-  await page.getByRole("button", { name: "Close Your Network Now" }).click();
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
+  await page
+    .getByRole("button", { name: "Close Your Network Overview" })
+    .click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption(mockAtomId(0));
@@ -204,13 +215,13 @@ test("Curious appears in Living emotional network and selected context, then exp
   await expect(page.getByTestId("own-pulse")).toHaveCount(0);
 });
 
-test("Your Network Now expands, updates without losing scroll, expires and closes accessibly", async ({
+test("Your Network Overview expands, updates without losing scroll, expires and closes accessibly", async ({
   page,
 }, info) => {
   await setup(page);
-  const toggle = page.getByRole("button", { name: /YOUR NETWORK NOW/ });
+  const toggle = page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ });
   const results = page.getByRole("region", {
-    name: "Your Network Now details",
+    name: "Your Network Overview details",
   });
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(results).toHaveCount(0);
@@ -258,7 +269,9 @@ test("Your Network Now expands, updates without losing scroll, expires and close
       .evaluate((node) => (node as HTMLCanvasElement).toDataURL()),
   ).not.toBe(activeFrame);
   await capture(page, info, "expired-neutral");
-  const close = results.getByRole("button", { name: "Close Your Network Now" });
+  const close = results.getByRole("button", {
+    name: "Close Your Network Overview",
+  });
   const box = (await close.boundingBox())!;
   expect(box.width).toBeGreaterThanOrEqual(44);
   expect(box.height).toBeGreaterThanOrEqual(44);

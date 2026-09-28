@@ -12,9 +12,9 @@ test("network panels fit breakpoint widths and recover after orientation", async
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
+    await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
     const details = page.getByRole("region", {
-      name: "Your Network Now details",
+      name: "Your Network Overview details",
     });
     const box = (await details.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);
@@ -22,7 +22,9 @@ test("network panels fit breakpoint widths and recover after orientation", async
     expect(
       await details.evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
-    await page.getByRole("button", { name: "Close Your Network Now" }).click();
+    await page
+      .getByRole("button", { name: "Close Your Network Overview" })
+      .click();
   }
   await page.setViewportSize({ width: 844, height: 390 });
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
@@ -47,9 +49,9 @@ test("network panels fit breakpoint widths and recover after orientation", async
   await expect(
     page.getByRole("button", { name: "Pulse", exact: true }),
   ).toBeFocused();
-  await page.getByRole("button", { name: /YOUR NETWORK NOW/ }).click();
+  await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
   const results = page.getByRole("region", {
-    name: "Your Network Now details",
+    name: "Your Network Overview details",
   });
   // Text-only stress: large counts must not collide with labels or escape the panel.
   await page.getByTestId("active-pulse-count").evaluate((el) => {
@@ -64,13 +66,15 @@ test("network panels fit breakpoint widths and recover after orientation", async
     true,
   );
   const disclosureBox = (await page
-    .getByRole("button", { name: /YOUR NETWORK NOW/ })
+    .getByRole("button", { name: /YOUR NETWORK OVERVIEW/ })
     .boundingBox())!;
   expect((await results.boundingBox())!.y).toBeGreaterThan(
     disclosureBox.y + disclosureBox.height,
   );
-  await page.getByRole("button", { name: "Close Your Network Now" }).click();
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page
+    .getByRole("button", { name: "Close Your Network Overview" })
+    .click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption("mock-atom-00000002");

@@ -32,12 +32,17 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
   await expect(page.getByTestId("selected-atom")).toHaveText("#00000001");
   await expect(page.getByTestId("direct-count")).toHaveText("12");
   await expect(page.getByTestId("reachable-count")).toHaveText("640");
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
-  await page.getByText("Network details", { exact: true }).click();
-  await expect(page.getByTestId("represented-count")).toHaveText("640");
-  await expect(page.getByTestId("max-degree")).toHaveText(
-    String(scene.maxDistance),
+  await canvas.focus();
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByLabel("Select an Atom", { exact: true }),
+  ).toBeFocused();
+  await expect(page.getByRole("button", { name: "Explore Atoms" })).toHaveCount(
+    0,
   );
+  await expect(
+    page.getByRole("complementary", { name: "Exploration tools" }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Motion reduced" }),
   ).toBeDisabled();
@@ -47,7 +52,7 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
     ),
   ).toBe(true);
 
-  await page.getByRole("button", { name: "Close exploration tools" }).click();
+  await page.getByTestId("atom-canvas").focus();
 
   // Click a real drawn node using the public scene projection, not a test-only UI hook.
   const target = scene.nodes.find(
@@ -81,7 +86,7 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
   await expect(canvas).toHaveAttribute("data-pan", "0,0");
   await expect(canvas).toHaveAttribute("data-zoom", "1.00");
 
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption(mockAtomId(1));
@@ -90,11 +95,12 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
   await expect(page.getByTestId("selected-atom")).toHaveText("#00000002");
   await expect(page.getByTestId("direct-count")).toHaveText("10");
   await page.getByRole("button", { name: "My Atom" }).click();
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
-  await page.getByText("Explore grouped Atoms", { exact: true }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   const groupMember = scene.nodes.find((node) => node.kind === "aggregate")!
     .members[0]!;
-  await page.getByLabel("Select a grouped Atom").selectOption(groupMember);
+  await page
+    .getByLabel("Select an Atom", { exact: true })
+    .selectOption(groupMember);
   await expect(canvas).toHaveAttribute("data-center", mockAtomId(0));
   await expect(page.getByTestId("relationship")).toContainText(
     "Bonds from you",
@@ -160,7 +166,7 @@ test("Pulse advances by degree and recentering cancels the old traversal", async
       createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
     ),
   );
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption(mockAtomId(1));
@@ -179,7 +185,7 @@ test("motion can be paused and responds to changed system preferences", async ({
   await page.goto("/explore");
   const canvas = page.getByTestId("atom-canvas");
   await expect(canvas).toHaveAttribute("data-motion", "gentle");
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page.getByRole("button", { name: "Pause motion" }).click();
   await expect(canvas).toHaveAttribute("data-motion", "still");
   await page.getByRole("button", { name: "Resume motion" }).click();
@@ -272,7 +278,7 @@ test("spatial views remain usable and provide review captures", async ({
   };
   await expect(canvas).toHaveAttribute("data-representation", "networks");
   await capture("initial");
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page
     .getByLabel("Select an Atom", { exact: true })
     .selectOption(mockAtomId(180));
@@ -283,16 +289,12 @@ test("spatial views remain usable and provide review captures", async ({
   expect(panel.height).toBeLessThan(page.viewportSize()!.height / 3);
   await capture("selected-direct");
   await page.getByRole("button", { name: "Close selected Atom" }).click();
-  await page.getByRole("button", { name: "Explore Atoms" }).click();
-  await page.getByText("Explore grouped Atoms", { exact: true }).click();
+  await page.getByLabel("Select an Atom", { exact: true }).focus();
   const group = scene.nodes.find(
     (node) => node.kind === "aggregate" && node.distance >= 4,
   )!;
   await page
-    .getByLabel("Network group", { exact: true })
-    .selectOption(group.id);
-  await page
-    .getByLabel("Select a grouped Atom")
+    .getByLabel("Select an Atom", { exact: true })
     .selectOption(group.members[0]!);
   await expect(page.getByTestId("relationship")).toContainText(
     `${group.distance} Bonds from you`,
