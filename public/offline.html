@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f6f8" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Atomic Bond — Offline</title>
+    <style>
+      html {
+        color-scheme: light;
+        background: #f3f6f8;
+        color: #22364b;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+      }
+      main {
+        padding: 32px;
+        max-width: 440px;
+      }
+      .brand {
+        letter-spacing: 0.2em;
+        font-size: 14px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      button {
+        min-height: 44px;
+        padding: 12px 24px;
+        border: 1px solid #285b83;
+        border-radius: 12px;
+        background: #285b83;
+        color: white;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid #12619b;
+        outline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="brand">ATOMIC BOND</p>
+      <h1>You're offline.</h1>
+      <p>Reconnect to view your current network.</p>
+      <button onclick="location.reload()">TRY AGAIN</button>
+    </main>
+  </body>
+</html>

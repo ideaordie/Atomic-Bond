@@ -1,5 +1,14 @@
 # Atomic Bond
 
+Task #9.0: **0.9.0 — optional installable PWA**. See
+[PWA architecture and device checklist](docs/architecture/PWA_v0.1.md).
+Use `pnpm build && pnpm start` to test the service worker locally; it is disabled
+in development mode. Installation never replaces verified ownership. Physical
+iOS/Android acceptance is required before claiming device verification.
+Permanent application origin: `https://atomicbond.ideaordie.com`. Custom-domain
+authentication and Bond flow passed user verification. See the
+[external configuration checkpoint](docs/architecture/DEPLOYMENT_v0.1.md#task-90-permanent-origin-configuration-checkpoint).
+
 **See how connected we already are.**
 
 **Frozen MVP baseline: v0.8.0 — first functional Atomic Bond MVP baseline.**

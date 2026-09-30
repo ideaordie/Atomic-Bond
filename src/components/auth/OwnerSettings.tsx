@@ -1,4 +1,5 @@
 "use client";
+import { InstallOffer } from "../pwa/InstallOffer";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { normalizeXHandle, X_HANDLE_ERROR } from "../../utils/x-profile";
@@ -112,6 +113,7 @@ export function OwnerSettings({
         <button disabled={pending}>{pending ? "Saving…" : "Save"}</button>
         <p role="status">{message}</p>
       </form>
+      <InstallOffer preferences />
       <form action={signOut}>
         <SignOutButton />
       </form>

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.0 - Task #9.0 / Installable PWA
+
+- Custom-domain configuration follow-up: added the required Supabase callback query pattern and redeployed the existing 0.8.3 commit with updated APP_ORIGIN. No email was sent during that diagnostic; the user subsequently verified real custom-domain authentication, existing ownership and Bond flow and approved PWA publication.
+- Uses `https://atomicbond.ideaordie.com` as the configured permanent production origin, with relative manifest/worker paths and no old deployment hostname in runtime source.
+- Added origin-relative standalone manifest, scientific light app icons and Apple metadata.
+- Added optional verified-owner install offer, 30-day dismissal suppression, native Chromium prompt and manual iOS guidance; preferences retains a quiet install entry.
+- Added a conservative service worker caching only generic offline HTML/icons, with network-only application requests and explicit offline presentation.
+- Preserved ownership, authentication, QR/Bond consent, Pulse behavior and public/private boundaries; no notifications, analytics, database or Master Spec changes.
+- Physical iOS/Android acceptance is pending; automated platform simulations are not physical installation evidence.
+
 ## 0.8.3 - targeted UI cleanup follow-up
 
 - Removed the redundant header MY ATOM link and made the profile return action clearly visible.

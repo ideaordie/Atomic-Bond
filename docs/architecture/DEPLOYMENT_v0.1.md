@@ -1,5 +1,19 @@
 # Deployment foundation v0.1
 
+## Task #9.0 PWA release
+
+The permanent application origin `https://atomicbond.ideaordie.com` is connected;
+the user verified production authentication and Bond flow and approved Task #9.0
+publication for installed-device acceptance. No database migration
+is required. The completed external configuration checkpoint is recorded below.
+Publish through the reviewed Git workflow. Verify `/manifest.webmanifest`,
+`/sw.js` (no-cache response), `/offline.html` and `/icons/*.png`. Never cache private
+routes at a CDN or in the worker. Preview origins are separate installations;
+production should retain a stable origin and manifest identity. See
+[PWA update/rollback behavior and physical acceptance](PWA_v0.1.md) before release.
+Do not simply delete a deployed service worker during rollback; use the documented
+safe worker/cleanup strategy for already-installed clients.
+
 The frozen v0.8.0 MVP uses the existing HTTPS APP_ORIGIN and both existing
 migrations; it needs no new secret or schema change. See the
 [baseline report](BASELINE_v0.8.0.md) and [QR Bond procedure](QR_BOND_v0.1.md),
@@ -7,6 +21,73 @@ which distinguish owner acceptance from recorded physical test evidence. Never c
 live QR codes, authentication links or private identity values in release evidence.
 
 Application milestone: 0.5.0 / Task #5, 2026-09-22.
+
+## Task #9.0 permanent-origin configuration checkpoint
+
+This is the required configuration sequence for the permanent-origin move,
+completed before PWA publication as recorded below. Do not edit Squarespace DNS
+automatically.
+
+1. In the Atomic Bond Vercel project's Domains settings, attach
+   `atomicbond.ideaordie.com` to Production. Obtain its exact required DNS records.
+2. In Squarespace, the domain administrator must enter the Vercel-provided CNAME
+   for host `atomicbond` and any ownership-verification TXT record requested.
+   Do not guess the CNAME target or transfer nameservers. Preserve Resend's
+   existing mail/DKIM/SPF records and unrelated records. If an existing record at
+   the same host conflicts, stop and resolve it before replacing anything.
+3. Confirm Vercel reports valid configuration and HTTPS certificate issuance.
+4. Set Vercel Production `APP_ORIGIN=https://atomicbond.ideaordie.com` with no
+   trailing slash. Review `AUTH_ALLOWED_ORIGINS`: the configured APP_ORIGIN is
+   already allowed; additional entries must be explicit approved origins only.
+   Do not enable production localhost access. Redeploy the existing approved
+   release for these environment changes; this is separate from publishing #9.0.
+5. In Supabase Authentication URL Configuration, set Site URL to
+   `https://atomicbond.ideaordie.com`; allow
+   `https://atomicbond.ideaordie.com/auth/confirm` and
+   `https://atomicbond.ideaordie.com/auth/confirm?next=*`.
+   The application still validates the return path. Avoid wildcard hostnames.
+6. After that endpoint is live, change Supabase's signed Send Email Hook URL to
+   `https://atomicbond.ideaordie.com/api/auth/email-hook`. Preserve the matching
+   hook signing secret and existing server-only Resend configuration. No API key
+   rotation, new sender identity or Supabase project URL change is required.
+7. Review old-origin links before removing old callback allowlists. Existing
+   cookies and PWA installations do not transfer to the new origin. Use returning
+   owner access to resolve the same Atom; never create a replacement identity.
+   Do not assume a blanket redirect safely migrates in-flight auth links.
+
+After configuration, verify HTTPS, owner access, callback completion, canonical
+invitation URLs and public routes on the permanent origin. Then review/publish
+#9.0 and verify manifest, worker, offline behavior and physical installation there
+before finalizing it. Do not claim production PWA verification from localhost or a
+preview origin.
+
+### Custom-domain configuration verification, 2026-09-29
+
+The custom domain resolves to the Atomic Bond Vercel project. During diagnosis,
+Production still served commit `f7b10148d4ffabae476d23c67ea19f60d9d3752c`
+from before the APP_ORIGIN update. Supabase had the correct Site URL and hook URL,
+but its custom-domain callback list lacked `/auth/confirm?next=*`, which the
+application uses for its validated return path.
+
+Added that callback entry and redeployed the existing published commit with the
+latest Production environment, without publishing the PWA or pushing Git.
+Vercel deployment `7Hog5Xo3dCrudKTGW3NFMj8LZGpz` is Ready. Production configuration
+contains the hook signing secret, Resend API key and sender; no secret was
+revealed or rotated. DNS and database schema were not changed.
+
+A deliberately invalid canonical-location registration probe passed the new
+origin guard and stopped before any Auth email or identity creation. The old
+Vercel origin was rejected. Auth pages returned 200; GET on the POST-only hook
+returned 405 and an unsigned, recipient-free POST returned the expected 400.
+These checks do not establish real email delivery or signed-hook completion.
+No email was sent during the diagnostic. The user subsequently verified real
+email delivery, custom-domain authentication, existing ownership, canonical Bond
+URLs and invitation flow. Publication is approved; physical PWA installation
+acceptance remains pending.
+
+References: [Vercel custom domains](https://vercel.com/docs/domains/working-with-domains/add-a-domain),
+[Supabase redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls),
+[Supabase Send Email Hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook).
 
 ## Current Task #6 deployment requirements
 
@@ -193,7 +274,7 @@ See [Instant Rollback](https://vercel.com/docs/instant-rollback).
 
 ## Task #7 auth/email release
 
-Follow [AUTH_EMAIL_v0.1.md](AUTH_EMAIL_v0.1.md) before enabling real signup. Apply the additive owner-access migration through the CLI, deploy the reviewed application, configure the server-only Resend and signed-hook secrets, and then enable the Supabase Send Email Hook. Use `https://atomic-bond.vercel.app` as the production APP_ORIGIN and exact preview callback allowlists. Never enable a hook pointing to an undeployed endpoint. No keys belong in GitHub or public environment variables. Supabase Auth remains the token authority. Local automated email simulation is not proof of inbox delivery; complete real verification/access acceptance before declaring Task #7 done.
+Follow [AUTH_EMAIL_v0.1.md](AUTH_EMAIL_v0.1.md) before enabling real signup. Apply the additive owner-access migration through the CLI, deploy the reviewed application, configure the server-only Resend and signed-hook secrets, and then enable the Supabase Send Email Hook. The original Task #7 release used the Vercel hostname; the Task #9.0 permanent-origin checkpoint above supersedes that production-origin configuration. Use exact approved preview callback allowlists. Never enable a hook pointing to an undeployed endpoint. No keys belong in GitHub or public environment variables. Supabase Auth remains the token authority. Local automated email simulation is not proof of inbox delivery; complete real verification/access acceptance before declaring Task #7 done.
 
 ## Task #8.3 geography deployment
 

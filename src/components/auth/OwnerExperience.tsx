@@ -1,4 +1,5 @@
 "use client";
+import { InstallOffer } from "../pwa/InstallOffer";
 
 import { useEffect, useRef, useState } from "react";
 import { BondInvitation, type DisplayInvitation } from "./BondInvitation";
@@ -161,6 +162,7 @@ export function OwnerExperience({
         }}
       />
       {error && <p role="alert">{error}</p>}
+      <InstallOffer />
       <p className="bond-update" role="status">
         {creating ? "Preparing your invitation…" : notice}
       </p>
