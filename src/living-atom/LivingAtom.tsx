@@ -465,17 +465,16 @@ export function LivingAtom({
       </p>
 
       <p className="simulation-label">
-        {synthetic && ownerMode
-          ? "Synthetic network"
-          : ownerMode
-            ? "Your connected network"
-            : "Public network"}{" "}
-        <span aria-hidden="true">·</span>{" "}
-        {reducedMotion
-          ? "Reduced motion"
-          : paused
-            ? "Motion paused"
-            : "A shared human constellation"}
+        {[
+          synthetic && ownerMode
+            ? "Synthetic network"
+            : ownerMode
+              ? null
+              : "Public network",
+          reducedMotion ? "Reduced motion" : paused ? "Motion paused" : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")}
       </p>
     </div>
   );
