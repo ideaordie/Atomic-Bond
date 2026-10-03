@@ -1,17 +1,22 @@
 # Deployment foundation v0.1
 
-## Task #9.1 growth-email candidate
+## Task #9.1 weekly growth production release
 
-See [growth deployment and operations](GROWTH_EMAIL_v0.1.md). The provenance and
-dedicated-role migrations are applied; the role remains unconfigured. The approved
-pilot adds seven thin service-role-only RPC wrappers through migration 202610030002. Configure a separate Supabase secret as SUPABASE_GROWTH_SECRET_KEY
-and a separate CRON_SECRET, both server-only sensitive values. No pooler/password
-setup is required. The secret has broader authority than the adapter and must
-never enter owner/browser clients. Preview the new migration before application.
-Keep GROWTH_EMAIL_ENABLED disabled and no Vercel cron until controlled Atom #3
-email/unsubscribe/return acceptance passes. The candidate schedule is Tuesday
-16:00 UTC with bounded batches and explicit continuation. Hosted preview,
-credential verification and real acceptance are still pending.
+See [growth deployment and operations](GROWTH_EMAIL_v0.1.md). All three approved
+growth migrations are applied; no activation migration is needed. The dedicated
+role remains unconfigured; production uses the isolated server-only Supabase
+secret adapter and seven approved RPCs. Sensitive credentials remain in Vercel.
+
+After controlled acceptance, v0.9.1 enables Tuesday 16:00 UTC (12:00 EDT / 11:00 EST)
+through vercel.json at /api/growth/run?dryRun=false. Production uses
+GROWTH_EMAIL_ENABLED=true, GROWTH_SEND_CAP=10, and no GROWTH_TEST_ATOM restriction.
+The endpoint requires CRON_SECRET; ordinary authorized requests default to dry run.
+No immediate live invocation accompanies deployment. First routine run is pending.
+
+Emergency: disable Vercel Cron Jobs, set GROWTH_EMAIL_ENABLED=false and redeploy.
+Transactional Auth email is independent. Adjust cap only deliberately and review
+aggregate dry-run results. Bounded runs may need intentional cursor continuation;
+see the growth guide for retry/idempotency and first-week monitoring.
 
 ## Task #9.0 PWA release
 

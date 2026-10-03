@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.1 — Weekly Atom Growth production scheduling
+
+- Controlled Atom #3 email receipt, same-owner return, unsubscribe, transactional access after unsubscribe and explicit owner re-enable passed. Current preference provenance preserves current intent; append-only preference history is deferred.
+- Enabled the approved Tuesday 16:00 UTC production schedule with a 10-attempt pilot cap, bounded sequential delivery, authorization, no-growth suppression and persistent period/concurrency safeguards. No immediate campaign is triggered.
+- Removed only the Email preferences footer link from HTML/plain text; the secure Unsubscribe link remains. A separately approved revised test copy did not alter the accepted digest or its baseline.
+- Atom #3 retains one accepted period and its 5-connected-Atom / 2-direct-Bond baseline. Existing preferences and database migrations are unchanged.
+- First routine scheduled run remains pending operational observation.
+
 ## 0.9.1-rc.1 — Task #9.1 controlled acceptance candidate
 
 - Candidate deployment only: controlled real-email acceptance and recurring scheduling remain pending. Sending stays disabled. Atom #3 has one prepared reservation for +1 connected Atom and +1 direct Bond; its baseline has not advanced and no send attempt has started.

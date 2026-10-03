@@ -1,11 +1,12 @@
 # Atomic Bond
 
-Task #9.1 growth-email candidate: see [growth operations and rollout gates](docs/architecture/GROWTH_EMAIL_v0.1.md).
+Task #9.1: **0.9.1 — Weekly Atom Growth**. see [growth operations and rollout gates](docs/architecture/GROWTH_EMAIL_v0.1.md).
 The pilot uses an isolated server-only Supabase secret and seven approved RPCs.
 Configure SUPABASE_GROWTH_SECRET_KEY only in ignored local/sensitive server
 configuration. Its broader service-role authority is an explicitly accepted pilot
-tradeoff. The dedicated database role remains preserved and unconfigured. Sending
-and recurring scheduling remain disabled until controlled acceptance passes.
+tradeoff. The dedicated database role remains preserved and unconfigured. Controlled acceptance passed. Production runs Tuesday 16:00 UTC, at most 10
+send attempts per run. Dry-run mode remains the default for operator requests.
+See the operations guide for the kill switch, continuation and first-run review.
 
 Task #9.0: **0.9.0 — optional installable PWA**. See
 [PWA architecture and device checklist](docs/architecture/PWA_v0.1.md).

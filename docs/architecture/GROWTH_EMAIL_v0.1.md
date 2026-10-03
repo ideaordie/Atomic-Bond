@@ -1,4 +1,41 @@
-# Growth email v0.1 — Task #9.1 candidate
+# Growth email v0.1 — Task #9.1
+
+## v0.9.1 production activation and acceptance
+
+Controlled real acceptance passed: the owner received the digest, VIEW MY ATOM
+restored Atom #3, unsubscribe produced OFF/unsubscribe, transactional access still
+worked, and manual re-enable produced weekly/owner_choice. Profile synchronization,
+safety-cap, kill-switch, authorization, no-growth, concurrency and restart
+idempotency checks passed. One accepted digest advanced the baseline to 5 connected
+Atoms and 2 direct Bonds (one region/country). An explicitly approved revised
+footer test copy reused its content/capability without changing delivery state.
+
+Current provenance is authoritative, not an append-only event history. Explicit
+owner re-enable correctly replaces unsubscribe. Historical auditing is a possible
+future operations enhancement, not a Task #9.1 gate.
+
+Production configuration: GROWTH_EMAIL_ENABLED=true, GROWTH_SEND_CAP=10,
+GROWTH_TEST_ATOM empty/unset. No preference changes accompany activation.
+Repository vercel.json registers /api/growth/run?dryRun=false at 0 16 * * 2:
+Tuesday 16:00 UTC (12:00 EDT / 11:00 EST). Initial expected run: October 6, 2026.
+Vercel supplies the existing CRON_SECRET authorization header. Deployment only
+registers the schedule; no operator live-send request is made at activation.
+
+Initial cap: 10 attempts per run, sequential with at least one second between
+attempts; batch size 50, three pages, 210-second work budget. Adjust
+GROWTH_SEND_CAP in Vercel Production (0–100), redeploy, and check a dry run before
+increasing it. Cap/time-limit results retain pending recipients and provide a
+continuation cursor; an operator must deliberately resume incomplete batches.
+
+Fast emergency stop: disable Cron Jobs in Vercel project settings, then set
+GROWTH_EMAIL_ENABLED=false and redeploy. This affects only engagement delivery;
+authentication, verification and transactional email stay enabled. An in-flight
+provider request cannot be recalled. Re-enable only after checking the incident.
+
+Operator dry run: authenticated GET /api/growth/run?dryRun=true, using CRON_SECRET
+in the Authorization header, never a URL. Review aggregate output only. Never use
+the Vercel Run button merely to check registration; it invokes the live path.
+First scheduled run: PENDING. Use the first-week checklist below after it occurs.
 
 The approved Task #9.1 preference migration preserves every existing
 `growth_digest` value, including monthly and disabled. Historical intent cannot
@@ -28,8 +65,8 @@ calling it. It sets the same authoritative preference to disabled and records
 unsubscribe provenance. No token or email is added to public Atom data.
 
 Transactional authentication email remains independent and enabled. The growth
-worker and public unsubscribe flow are implemented locally. Hosted application,
-credentials, controlled acceptance and recurring scheduling remain gated.
+worker and public unsubscribe flow are deployed. Controlled acceptance passed;
+the production activation record above supersedes earlier checkpoint notes.
 
 ## Approved pilot RPC transport
 
@@ -73,11 +110,9 @@ two eligible without baselines, three disabled and two ineligible; zero attempts
 failures or cap events. Missing/invalid scheduler authorization was rejected.
 
 Atom #3's initial authoritative baseline was then established without reserving or
-sending email. A subsequent evaluation returned no_growth. No production growth
-has yet been communicated, and no delivery records were created. The network stayed
-at five ACTIVE Atoms and four confirmed Bonds. Genuine subsequent growth is needed
-for the controlled digest; historical reach must not be invented as new growth.
-Vercel runtime verification and controlled live acceptance remain pending.
+sending email. At that checkpoint evaluation returned no_growth and the network
+had five ACTIVE Atoms and four confirmed Bonds. Subsequent genuine growth supported
+the accepted controlled digest recorded above; historical reach was not invented.
 
 ## Preserved dedicated worker role — future hardening
 
@@ -137,10 +172,11 @@ credential.
 Acceptance tests connect as the actual login role (not merely as an admin
 with an application-side allowlist), reject direct private reads/mutations and
 role escalation, reject unauthorized function calls, and prove reservation
-concurrency and restart persistence. Hosted changes and sending stay gated.
+concurrency and restart persistence. Production sending was enabled only after
+the explicit acceptance and activation approval recorded above.
 
 The single controlled real-email recipient approved by the project owner is
-public ATOM #3. No live test has been sent for Task #9.1.
+public ATOM #3. The controlled live test and revised-footer copy were received.
 
 References: [Supabase custom-role pooled connections](https://supabase.com/docs/guides/database/connecting-to-postgres),
 [PostgreSQL role privileges](https://www.postgresql.org/docs/current/sql-createrole.html).
@@ -212,7 +248,7 @@ the service worker never caches this route or capability. An already in-flight
 provider request cannot be recalled; eligibility is checked immediately before
 sending, and subsequent requests remain suppressed.
 
-List-Unsubscribe/one-click POST headers are deferred for this candidate: standard
+List-Unsubscribe/one-click POST headers are deferred for this pilot: standard
 HTTPS one-click URLs would place a bearer capability in server request URLs,
 unlike the selected fragment/body design. Do not emit a misleading fragment-based
 one-click header. Visible low-friction unsubscribe is always present. Header and
@@ -256,10 +292,8 @@ only after verifying the cause and explicit rollout gates.
 
 ## Scheduler operations and rollout gates
 
-No recurring cron is configured yet. Candidate cadence after acceptance:
-Tuesdays at approximately 16:00 UTC, without collecting user timezone. Configure
-Vercel cron only after controlled email, unsubscribe, owner return and all listed
-security gates pass. [Vercel cron behavior](https://vercel.com/docs/cron-jobs/manage-cron-jobs)
+The approved production cadence is Tuesday 16:00 UTC, without collecting user
+timezone. Controlled email, unsubscribe, owner return and security gates passed. [Vercel cron behavior](https://vercel.com/docs/cron-jobs/manage-cron-jobs)
 requires application-level idempotency and manual recovery; it does not retry
 failed invocations automatically.
 
@@ -298,7 +332,7 @@ The public network remained five active Atoms and four confirmed Bonds.
 
 Dedicated-role password/pooler configuration is intentionally deferred. Native
 local PostgreSQL tests already exercise an actual restricted login.
-No live growth email, schedule activation or v0.9.1 publication has occurred.
+At that earlier checkpoint no live growth email or schedule activation had occurred.
 The first scheduled run remains pending.
 
 ## First-week monitoring and limits

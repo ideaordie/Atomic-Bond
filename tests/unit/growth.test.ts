@@ -77,6 +77,10 @@ describe("weekly growth service", () => {
     expect(message.text).toContain(`${origin}/return`);
     expect(message.html).toContain(`${origin}/unsubscribe#`);
     expect(message.html).not.toContain("vercel.app");
+    expect(message.html).not.toContain("Email preferences");
+    expect(message.text).not.toContain("Email preferences");
+    expect(message.html).not.toContain(`${origin}/owner`);
+    expect(message.text).toContain(`${origin}/unsubscribe#`);
     expect(message.text).not.toContain("cities");
     expect(() =>
       growthEmail({ ...delivery, current: delivery.previous }, origin),
