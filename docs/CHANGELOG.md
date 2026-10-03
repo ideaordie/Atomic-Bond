@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased — Six-second Pulse propagation
+
+- Scaled the outgoing Pulse animation and degree timing proportionally from 15 seconds to six seconds. Complete network reach, BFS sequencing, emotional colors, reduced motion and the independent 24-hour state are preserved.
+
+## Unreleased — Beta About & privacy summary
+
+- Added the public `/about` page with the approved explanation of Atoms, mutual Bonds, voluntary 24-hour Pulse, privacy, weekly growth email, participant choices and beta status. This is an informational/privacy summary, not a formal legal Privacy Policy.
+- Added ABOUT immediately before Profile & preferences in network navigation, including after Bond confirmation, and made it available from the anonymous entry/public network views. Return navigation uses the existing home route to resolve the owner or anonymous entry appropriately.
+- Audited the copy against public allowlist serialization, canonical country/subdivision signup, optional identity fields, authorized connected Pulse retrieval/expiry, activation preference defaults, purpose-limited unsubscribe and independent transactional email. No product mechanics, database, scheduling or Master Spec changes.
+
+## Unreleased — Pulse status visibility
+
+- Hid the owner Pulse status line visually while retaining its screen-reader announcement and unchanged 24-hour lifecycle.
+- Positioned YOUR NETWORK OVERVIEW immediately below the regional reach information, with responsive expanded results.
+
 ## Unreleased — Contextual My Atom action
 
 - MY ATOM replaces CREATE BOND in the same primary-action position and styling only while viewing another Atom's network. Selecting an Atom alone leaves CREATE BOND unchanged; returning home restores it.

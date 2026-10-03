@@ -46,13 +46,16 @@ export async function NetworkPage({
           )}
         </div>
         <span>See how connected we already are.</span>
-        {source.mode === "supabase" && (
-          <div className="auth-entry">
-            {!ownerId && <Link href="/auth">CREATE MY ATOM</Link>}
-            {!ownerId && <Link href="/auth?mode=access">ACCESS MY ATOM</Link>}
-            {ownerId && <Link href="/owner">Profile &amp; preferences</Link>}
-          </div>
-        )}
+        <div className="auth-entry">
+          <Link href="/about">ABOUT</Link>
+          {ownerId && <Link href="/owner">Profile &amp; preferences</Link>}
+          {source.mode === "supabase" && !ownerId && (
+            <Link href="/auth">CREATE MY ATOM</Link>
+          )}
+          {source.mode === "supabase" && !ownerId && (
+            <Link href="/auth?mode=access">ACCESS MY ATOM</Link>
+          )}
+        </div>
       </nav>
       {source.mode === "mock" ? (
         <ParticipationExperience

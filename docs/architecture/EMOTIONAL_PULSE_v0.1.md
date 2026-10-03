@@ -21,7 +21,12 @@ history or new database schema. MockPulseService and deterministic eight-state
 fixtures remain available only in explicit development/test mode.
 
 PULSE opens the existing composer. Successful persistence immediately updates
-own state and starts graph-distance propagation, capped at 15 seconds. Temporary
+own state and starts graph-distance propagation lasting approximately six seconds.
+The presentation window and degree-step timing are both scaled to 40% of the
+former 15-second animation (600ms base steps become 240ms). Deep networks retain
+adaptive steps so the final BFS layer finishes within the window, rather than
+cutting off the previous traversal. Reduced-motion presentation and the separate
+24-hour persisted state are unchanged. Temporary
 propagation can illuminate recipients but never changes their stored emotions.
 Stopping propagation, changing perspective, or collapsing information does not
 clear the sender's 24-hour state. Selected context shows authorized active state

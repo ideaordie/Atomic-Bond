@@ -262,12 +262,11 @@
 /* Informational disclosure, separate from the two primary actions. */
 .network-now {
   padding: 0;
-  margin: 0;
-  position: absolute;
-  top: 142px;
-  right: 28px;
+  margin: 12px 0 0;
+  position: relative;
   width: 260px;
   z-index: 5;
+  pointer-events: auto;
 }
 .living-atom .network-now-toggle {
   display: grid;
@@ -281,8 +280,9 @@
   border-radius: 12px;
   color: var(--text);
 }
-.network-now-toggle strong {
+.living-atom .network-now-toggle strong {
   font-size: 10px;
+  font-weight: 700;
   letter-spacing: 0.06em;
 }
 .network-now-toggle strong span {
@@ -332,12 +332,16 @@
   font-size: 12px;
 }
 .network-now-toggle > span,
-.network-now-toggle strong {
+.living-atom .network-now-toggle strong {
   font-size: 12px;
   line-height: 1.4;
 }
 .network-now .network-emotion-results {
-  top: calc(100% + 8px);
+  top: 0;
+  left: calc(100% + 8px);
+  right: auto;
+  width: min(300px, calc(100vw - 340px));
+  max-height: clamp(150px, calc(100svh - 610px), 380px);
 }
 .network-emotion-results .emotion-distribution {
   font-size: 14px;
@@ -360,12 +364,16 @@
 }
 @media (max-width: 600px) {
   .network-now {
-    top: 210px;
-    right: 16px;
+    grid-column: 2 / -1;
+    justify-self: end;
+    margin-top: 0;
     width: 230px;
+    max-width: 100%;
   }
   .network-now .network-emotion-results {
     top: calc(100% + 8px);
+    left: auto;
+    right: 0;
     width: min(330px, calc(100vw - 32px));
     max-height: min(34svh, calc(100svh - 455px));
   }

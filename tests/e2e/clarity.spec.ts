@@ -68,9 +68,14 @@ test("network panels fit breakpoint widths and recover after orientation", async
   const disclosureBox = (await page
     .getByRole("button", { name: /YOUR NETWORK OVERVIEW/ })
     .boundingBox())!;
-  expect((await results.boundingBox())!.y).toBeGreaterThan(
-    disclosureBox.y + disclosureBox.height,
-  );
+  const resultsBox = (await results.boundingBox())!;
+  if (page.viewportSize()!.width <= 600) {
+    expect(resultsBox.y).toBeGreaterThan(
+      disclosureBox.y + disclosureBox.height,
+    );
+  } else {
+    expect(resultsBox.x).toBeGreaterThan(disclosureBox.x + disclosureBox.width);
+  }
   await page
     .getByRole("button", { name: "Close Your Network Overview" })
     .click();

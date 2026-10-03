@@ -58,6 +58,7 @@ test("explicit emotion selection, eight visual states, replacement and full grap
     const definition = EMOTION_DEFINITIONS[emotion];
     await sendEmotionalPulse(page, definition.label);
     await expect(page.getByTestId("own-pulse")).toContainText(definition.label);
+    await expect(page.getByTestId("own-pulse")).toHaveClass("sr-only");
     await expect(canvas).toHaveAttribute("data-pulse-color", definition.color);
     await page.clock.runFor(
       Math.ceil(
@@ -158,40 +159,48 @@ test("expiry updates the mounted network exactly at the deadline", async ({
   );
 });
 
-test("Pulse stops at 15 seconds while active material remains independent of the disclosure", async ({
-  page,
-}) => {
-  await setup(page);
-  await expect(
-    page.getByRole("button", { name: "FEEL YOUR NETWORK" }),
-  ).toHaveCount(0);
-  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
-    "data-emotional-view",
-    "active",
-  );
-  await sendEmotionalPulse(page, "Curious");
-  await page.clock.runFor(14999);
-  await expect(
-    page.getByRole("button", { name: "Stop Pulse", exact: true }),
-  ).toBeVisible();
-  await page.clock.runFor(1);
-  await expect(
-    page.getByRole("button", { name: "Pulse", exact: true }),
-  ).toBeVisible();
-  await expect(page.getByTestId("pulse-status")).toContainText(
-    "640 connected Atoms reached",
-  );
-  const toggle = page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ });
-  await toggle.click();
-  await toggle.click();
-  await page.clock.fastForward(60_000);
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
-    "data-emotional-view",
-    "active",
-  );
-  await expect(page.getByTestId("own-pulse")).toContainText("Curious");
-});
+for (const reducedMotion of ["reduce", "no-preference"] as const) {
+  test(`Pulse completes full reach before settling at six seconds (${reducedMotion})`, async ({
+    page,
+  }) => {
+    await setup(page);
+    await page.emulateMedia({ reducedMotion });
+    await expect(
+      page.getByRole("button", { name: "FEEL YOUR NETWORK" }),
+    ).toHaveCount(0);
+    await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+      "data-emotional-view",
+      "active",
+    );
+    await sendEmotionalPulse(page, "Curious");
+    await page.clock.runFor(duration - 1);
+    await expect(page.getByTestId("pulse-status")).toHaveAttribute(
+      "data-degree",
+      String(createScene(generateMockGraph(), mockAtomId(0), true).maxDistance),
+    );
+    await expect(page.getByTestId("pulse-status")).toContainText("640");
+    await expect(
+      page.getByRole("button", { name: "Stop Pulse", exact: true }),
+    ).toBeVisible();
+    await page.clock.runFor(1);
+    await expect(
+      page.getByRole("button", { name: "Pulse", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByTestId("pulse-status")).toContainText(
+      "640 connected Atoms reached",
+    );
+    const toggle = page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ });
+    await toggle.click();
+    await toggle.click();
+    await page.clock.fastForward(60_000);
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+      "data-emotional-view",
+      "active",
+    );
+    await expect(page.getByTestId("own-pulse")).toContainText("Curious");
+  });
+}
 
 test("Curious appears in Living emotional network and selected context, then expires", async ({
   page,

@@ -23,7 +23,10 @@ export function BondConfirmation({
       <div className="explore-page">
         <nav className="explore-nav" aria-label="Main navigation">
           <Link href="/explore">MY ATOM #{result.publicId}</Link>
-          <Link href="/owner">Profile &amp; preferences</Link>
+          <div className="auth-entry">
+            <Link href="/about">ABOUT</Link>
+            <Link href="/owner">Profile &amp; preferences</Link>
+          </div>
         </nav>
         <OwnerExperience
           graph={result.graph}

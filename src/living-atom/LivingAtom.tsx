@@ -263,22 +263,22 @@ export function LivingAtom({
               ? "Coarse, synthetic geography"
               : "Coarse geography"}
           </p>
+          {emotionalView && (
+            <NetworkEmotionResults
+              summary={emotionalSummary}
+              reach={reach}
+              now={emotional?.now ?? 0}
+              updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
+              status={emotional?.status ?? "ready"}
+            />
+          )}
         </div>
       }
-      {emotionalView && (
-        <NetworkEmotionResults
-          summary={emotionalSummary}
-          reach={reach}
-          now={emotional?.now ?? 0}
-          updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
-          status={emotional?.status ?? "ready"}
-        />
-      )}
       <div className="perspective-label" aria-live="polite">
         <span>{isMine ? "YOUR PERSPECTIVE" : "VIEWING THEIR NETWORK"}</span>
         <strong data-testid="selected-atom">#{scene.selected.publicId}</strong>
         {isMine && ownPulse && (
-          <p className="own-pulse-label" data-testid="own-pulse">
+          <p className="sr-only" data-testid="own-pulse">
             Your Pulse: {EMOTION_DEFINITIONS[ownPulse.emotion].label} · active
             for 24 hours
           </p>

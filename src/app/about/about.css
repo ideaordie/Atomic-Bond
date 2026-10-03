@@ -1,0 +1,68 @@
+.about-page {
+  max-width: 780px;
+  padding-bottom: 48px;
+  line-height: 1.7;
+}
+.about-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.about-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+.about-intro {
+  padding: 32px 0 24px;
+}
+.about-page h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  max-width: 17ch;
+  line-height: 1.15;
+  margin: 12px 0 24px;
+}
+.about-lead {
+  font-size: 20px;
+}
+.about-page section {
+  margin: 0;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+}
+.about-page h2 {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  margin: 0 0 16px;
+}
+.about-page p {
+  margin: 0 0 16px;
+}
+.about-page section p:last-child {
+  margin-bottom: 0;
+}
+.about-page ul {
+  padding-left: 24px;
+}
+.about-page li {
+  margin-bottom: 6px;
+}
+.about-return {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--surface);
+}
+.about-return:hover {
+  background: var(--surface-muted);
+}

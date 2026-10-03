@@ -128,7 +128,8 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
     "1",
   );
   const pulsePixels = await pixels();
-  await page.clock.runFor(50);
+  // Scale this within-step sample with the accelerated propagation timing.
+  await page.clock.runFor(20);
   expect(
     (await pixels()) !== pulsePixels,
     "Pulse travels while ambient positions are frozen",

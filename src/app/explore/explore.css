@@ -38,17 +38,19 @@ main.explore-page {
 }
 .auth-entry {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   gap: 8px 14px;
   font-size: 11px;
-  max-width: 190px;
+  flex-shrink: 0;
 }
 .auth-entry a {
   color: var(--text);
   min-height: 44px;
+  min-width: 44px;
   display: flex;
   align-items: center;
+  white-space: nowrap;
 }
 .network-view-label {
   margin: 4px 0 0;
@@ -60,15 +62,23 @@ main.explore-page {
   .explore-nav {
     padding: 0 18px;
     height: 62px;
+    gap: 8px;
   }
   .explore-nav .wordmark {
-    font-size: 15px;
-    letter-spacing: 0.24em;
+    font-size: 12px;
+    letter-spacing: 0.12em;
   }
   .explore-nav > span {
     max-width: 118px;
     text-align: right;
     font-size: 8px;
     line-height: 1.6;
+  }
+  .auth-entry {
+    gap: 8px;
+    font-size: 12px;
+  }
+  .auth-entry:has(a[href="/auth"]) {
+    font-size: 10px;
   }
 }

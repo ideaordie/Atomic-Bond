@@ -209,7 +209,7 @@ describe("spatial presentation preserves graph meaning", () => {
       distance: null,
       completed: false,
     });
-    expect(pulsePhase(1000, 1300, false)).toBe(0.5);
+    expect(pulsePhase(1000, 1120, false)).toBe(0.5);
     expect(pulsePhase(1000, 900, false)).toBe(0);
     expect(pulsePhase(1000, 2000, false)).toBe(1);
     expect(pulsePhase(1000, 1100, true)).toBe(1);

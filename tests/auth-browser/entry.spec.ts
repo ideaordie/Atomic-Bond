@@ -7,6 +7,10 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   request,
 }, info) => {
   await page.goto("/");
+  await page.getByRole("link", { name: "ABOUT", exact: true }).click();
+  await expect(page).toHaveURL(/\/about$/);
+  await page.getByRole("link", { name: /RETURN TO ATOMIC BOND/ }).click();
+  await expect(page).toHaveURL("http://127.0.0.1:3104/");
   await page.getByRole("link", { name: "ACCESS MY ATOM", exact: true }).click();
   await expect(page.getByLabel("Country", { exact: false })).toHaveCount(0);
   await expect(
@@ -39,6 +43,30 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   ).toBeVisible();
   await expect(page.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await expect(page.getByTestId("reachable-count")).toHaveText("1");
+  const aboutLink = page.getByRole("link", { name: "ABOUT", exact: true });
+  const profileLink = page.getByRole("link", { name: "Profile & preferences" });
+  const aboutBox = (await aboutLink.boundingBox())!;
+  const profileBox = (await profileLink.boundingBox())!;
+  expect(aboutBox.x + aboutBox.width).toBeLessThan(profileBox.x);
+  expect(aboutBox.y).toBeCloseTo(profileBox.y, 0);
+  expect(aboutBox.height).toBeGreaterThanOrEqual(44);
+  expect(profileBox.x + profileBox.width).toBeLessThanOrEqual(
+    page.viewportSize()!.width,
+  );
+  const brandBox = (await page
+    .getByRole("link", { name: "ATOMIC BOND", exact: true })
+    .boundingBox())!;
+  expect(brandBox.x + brandBox.width).toBeLessThan(aboutBox.x);
+  await page.screenshot({
+    path: info.outputPath("about-owner-navigation.png"),
+    fullPage: true,
+  });
+  await aboutLink.click();
+  await expect(
+    page.getByRole("link", { name: "Profile & preferences" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: /RETURN TO ATOMIC BOND/ }).click();
+  await expect(page.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await expect(
     page.getByRole("button", { name: "CREATE BOND", exact: true }),
   ).toBeEnabled();
@@ -64,6 +92,17 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   await expect(
     visitor.getByRole("link", { name: "Profile & preferences" }),
   ).toHaveCount(0);
+  expect(
+    await visitor.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await visitor.getByRole("link", { name: "ABOUT", exact: true }).click();
+  await expect(visitor).toHaveURL(/\/about$/);
+  await visitor.getByRole("link", { name: /RETURN TO ATOMIC BOND/ }).click();
+  await expect(
+    visitor.getByRole("link", { name: "ACCESS MY ATOM", exact: true }),
+  ).toBeVisible();
   await page.goto(`/a/${number}`);
   await expect(
     page.getByText(`PUBLIC ATOM VIEW · ATOM #${number}`, { exact: true }),

@@ -1,7 +1,8 @@
 import type { AtomScene } from "../types/scene";
 
-export const PULSE_STEP_MS = 600;
-export const ACTION_DURATION_MS = 15_000;
+// Both timings are 40% of the former 15-second / 600ms presentation.
+export const PULSE_STEP_MS = 240;
+export const ACTION_DURATION_MS = 6_000;
 /** Preserve BFS order while fitting even deep networks into the action window. */
 export function pulseStepMs(maxDistance: number) {
   return Math.min(
