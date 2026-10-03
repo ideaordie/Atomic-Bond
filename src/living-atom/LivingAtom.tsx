@@ -284,25 +284,27 @@ export function LivingAtom({
           </p>
         )}
       </div>
-      <div
-        className="secondary-actions"
-        role="group"
-        aria-label="Network exploration"
-      >
-        <button
-          type="button"
-          className="my-atom"
-          onClick={home}
-          aria-label={ownerMode ? "My Atom" : "Starting Atom"}
-          title={
-            ownerMode
-              ? "Return to your own network perspective"
-              : "Return to the starting Atom"
-          }
+      {!ownerMode && (
+        <div
+          className="secondary-actions"
+          role="group"
+          aria-label="Network exploration"
         >
-          <span>{ownerMode ? "My Atom" : "Starting Atom"}</span>
-        </button>
-      </div>
+          <button
+            type="button"
+            className="my-atom"
+            onClick={home}
+            aria-label={ownerMode ? "My Atom" : "Starting Atom"}
+            title={
+              ownerMode
+                ? "Return to your own network perspective"
+                : "Return to the starting Atom"
+            }
+          >
+            <span>{ownerMode ? "My Atom" : "Starting Atom"}</span>
+          </button>
+        </div>
+      )}
       {inspectedId && (
         <AtomContextPanel
           ownerMode={ownerMode}
@@ -341,6 +343,18 @@ export function LivingAtom({
               aria-busy={creatingBond}
             >
               {creatingBond ? "Creating invitation…" : "CREATE BOND"}
+            </button>
+          )}
+
+          {ownerMode && !isMine && (
+            <button
+              type="button"
+              className="create-bond"
+              onClick={home}
+              aria-label="My Atom"
+              title="Return to your own network perspective"
+            >
+              MY ATOM
             </button>
           )}
 

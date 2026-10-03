@@ -349,7 +349,7 @@ test("spatial views remain usable and provide review captures", async ({
   await page.clock.runFor(50);
   await expect(canvas).toHaveAttribute("data-representation", "regions");
   await capture("far-regions");
-  await page.getByRole("button", { name: "My Atom" }).click();
+  await page.getByRole("button", { name: "Networks", exact: true }).click();
   await expect(canvas).toHaveAttribute("data-representation", "networks");
   expect(
     await page.evaluate(

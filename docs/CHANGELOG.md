@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — Contextual My Atom action
+
+- MY ATOM replaces CREATE BOND in the same primary-action position and styling only while viewing another Atom's network. Selecting an Atom alone leaves CREATE BOND unchanged; returning home restores it.
+
 ## 0.9.1 — Weekly Atom Growth production scheduling
 
 - Controlled Atom #3 email receipt, same-owner return, unsubscribe, transactional access after unsubscribe and explicit owner re-enable passed. Current preference provenance preserves current intent; append-only preference history is deferred.

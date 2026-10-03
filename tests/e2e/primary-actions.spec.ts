@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { mockAtomId } from "../../src/data/mock/graph";
 
 test("primary actions align, remain reachable and preserve keyboard behavior", async ({
   page,
@@ -71,8 +72,36 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
     "active",
   );
   await expect(
-    page
-      .getByRole("group", { name: "Network exploration" })
-      .getByRole("button"),
-  ).toHaveCount(1);
+    page.getByRole("button", { name: "My Atom", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByLabel("Select an Atom", { exact: true })
+    .selectOption(mockAtomId(1));
+  await expect(
+    page.getByRole("button", { name: "My Atom", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    group.getByRole("button", { name: "CREATE BOND" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "View their network" }).click();
+  const home = group.getByRole("button", { name: "My Atom", exact: true });
+  await expect(home).toBeVisible();
+  await expect(group.getByRole("button", { name: "CREATE BOND" })).toHaveCount(
+    0,
+  );
+  const homeBox = (await home.boundingBox())!;
+  for (const key of ["x", "y", "width", "height"] as const) {
+    expect(homeBox[key]).toBeCloseTo(boxes[0]![key], 0);
+  }
+  await page.screenshot({
+    path: info.outputPath("my-atom-controls.png"),
+    fullPage: true,
+  });
+  await home.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("selected-atom")).toHaveText("#00000001");
+  await expect(home).toHaveCount(0);
+  await expect(
+    group.getByRole("button", { name: "CREATE BOND" }),
+  ).toBeVisible();
 });
