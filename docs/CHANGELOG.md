@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — Centered network overview
+
+- Centered the expanded YOUR NETWORK OVERVIEW panel in the viewport on mobile, tablet and desktop. The trigger remains below regional reach; scrolling and close behavior are preserved.
+
 ## Unreleased — Six-second Pulse propagation
 
 - Scaled the outgoing Pulse animation and degree timing proportionally from 15 seconds to six seconds. Complete network reach, BFS sequencing, emotional colors, reduced motion and the independent 24-hour state are preserved.

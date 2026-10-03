@@ -292,12 +292,13 @@
   font-size: 10px;
 }
 .network-now .network-emotion-results {
-  position: absolute;
-  top: 64px;
-  right: 0;
-  left: auto;
+  position: fixed;
+  top: 50%;
+  right: auto;
+  left: 50%;
   bottom: auto;
-  width: 300px;
+  transform: translate(-50%, -50%);
+  width: min(300px, calc(100vw - 32px));
   max-height: min(42svh, 380px);
 }
 .pulse-composer {
@@ -336,13 +337,6 @@
   font-size: 12px;
   line-height: 1.4;
 }
-.network-now .network-emotion-results {
-  top: 0;
-  left: calc(100% + 8px);
-  right: auto;
-  width: min(300px, calc(100vw - 340px));
-  max-height: clamp(150px, calc(100svh - 610px), 380px);
-}
 .network-emotion-results .emotion-distribution {
   font-size: 14px;
   line-height: 1.5;
@@ -359,7 +353,7 @@
 }
 @media (max-height: 550px) {
   .network-now .network-emotion-results {
-    max-height: 240px;
+    max-height: min(240px, calc(100dvh - 32px));
   }
 }
 @media (max-width: 600px) {
@@ -371,10 +365,6 @@
     max-width: 100%;
   }
   .network-now .network-emotion-results {
-    top: calc(100% + 8px);
-    left: auto;
-    right: 0;
     width: min(330px, calc(100vw - 32px));
-    max-height: min(34svh, calc(100svh - 455px));
   }
 }

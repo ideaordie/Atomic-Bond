@@ -19,6 +19,8 @@ test("network panels fit breakpoint widths and recover after orientation", async
     const box = (await details.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width);
+    expect(box.x + box.width / 2).toBeCloseTo(width / 2, 0);
+    expect(box.y + box.height / 2).toBeCloseTo(844 / 2, 0);
     expect(
       await details.evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
@@ -65,17 +67,19 @@ test("network panels fit breakpoint widths and recover after orientation", async
   expect(await results.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
     true,
   );
-  const disclosureBox = (await page
-    .getByRole("button", { name: /YOUR NETWORK OVERVIEW/ })
-    .boundingBox())!;
   const resultsBox = (await results.boundingBox())!;
-  if (page.viewportSize()!.width <= 600) {
-    expect(resultsBox.y).toBeGreaterThan(
-      disclosureBox.y + disclosureBox.height,
-    );
-  } else {
-    expect(resultsBox.x).toBeGreaterThan(disclosureBox.x + disclosureBox.width);
-  }
+  expect(resultsBox.x + resultsBox.width / 2).toBeCloseTo(
+    page.viewportSize()!.width / 2,
+    0,
+  );
+  expect(resultsBox.y + resultsBox.height / 2).toBeCloseTo(
+    page.viewportSize()!.height / 2,
+    0,
+  );
+  await page.screenshot({
+    path: info.outputPath("centered-overview.png"),
+    fullPage: true,
+  });
   await page
     .getByRole("button", { name: "Close Your Network Overview" })
     .click();
