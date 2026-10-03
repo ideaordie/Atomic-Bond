@@ -5,6 +5,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import { createServer } from "node:net";
 import assert from "node:assert/strict";
+import { Client } from "pg";
 
 const root = resolve("artifacts/database-tests");
 await mkdir(root, { recursive: true });
@@ -33,7 +34,7 @@ try {
   started = true;
   admin = postgres.getPgClient();
   await admin.connect();
-  await admin.query(`create role anon; create role authenticated;
+  await admin.query(`create role anon; create role authenticated; create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
@@ -157,6 +158,74 @@ try {
     duplicateIdentity.filter((r) => r.status === "fulfilled").length,
     1,
   );
+  // Real restricted LOGIN sessions, not an administrator-side role simulation.
+  const growthPassword = randomBytes(32).toString("hex");
+  await admin.query(
+    `alter role atomic_bond_growth password '${growthPassword}'`,
+  );
+  async function worker(sql, args = []) {
+    const client = new Client({
+      host: "127.0.0.1",
+      port,
+      database: "postgres",
+      user: "atomic_bond_growth",
+      password: growthPassword,
+    });
+    await client.connect();
+    try {
+      return await client.query(sql, args);
+    } finally {
+      await client.end();
+    }
+  }
+  assert.equal(
+    (await worker("select current_user as role")).rows[0].role,
+    "atomic_bond_growth",
+  );
+  for (const sql of [
+    "select * from private.atom_identities",
+    "select normalized_email from private.atom_identities",
+    "update public.atoms set display_name='bad'",
+    "insert into public.bonds default values",
+    "update public.bonds set status='CONFIRMED'",
+    "delete from public.emotional_pulses",
+    "update auth.users set email='bad@example.com'",
+    "select public.activate_atom()",
+    "set role postgres",
+    "select * from private.growth_deliveries",
+  ])
+    await assert.rejects(worker(sql));
+  const g = await active(),
+    h = await active();
+  const number = (
+    await admin.query(
+      "select a.public_id::text as n from public.atoms a join private.atom_identities i on i.atom_id=a.id where i.auth_user_id=$1",
+      [g],
+    )
+  ).rows[0].n;
+  await worker("select growth_jobs.evaluate($1,true)", [number]);
+  const gi = await call(g, "create_bond_invitation");
+  await call(h, "accept_bond_invitation", [gi.token]);
+  const reservations = await Promise.all(
+    Array.from({ length: 4 }, () =>
+      worker("select growth_jobs.reserve($1) as id", [number]),
+    ),
+  );
+  const job = reservations[0].rows[0].id;
+  assert.equal(new Set(reservations.map((r) => r.rows[0].id)).size, 1);
+  const claims = await Promise.all(
+    Array.from({ length: 4 }, () =>
+      worker("select growth_jobs.claim($1) as result", [job]),
+    ),
+  );
+  assert.equal(claims.filter((r) => r.rows[0].result).length, 1);
+  const claim = claims.find((r) => r.rows[0].result).rows[0].result;
+  await worker("select growth_jobs.authorize_send($1,$2,$3)", [
+    job,
+    claim.attemptId,
+    "a".repeat(64),
+  ]);
+  await worker("select growth_jobs.finish($1,$2,true)", [job, claim.attemptId]);
   // Restart verifies durability, not just an in-process cache.
   await admin.end();
   admin = undefined;
@@ -169,10 +238,14 @@ try {
   assert.equal(
     (await admin.query("select count(*)::int as count from public.bonds"))
       .rows[0].count,
-    2,
+    3,
+  );
+  assert.equal(
+    (await worker("select growth_jobs.reserve($1) as id", [number])).rows[0].id,
+    null,
   );
   console.log(
-    "PASS: concurrent identity creation, activation/number assignment, invitation reuse, single-use acceptance, reversed Bond races, email uniqueness, and restart persistence.",
+    "PASS: identity/Bond concurrency, dedicated growth LOGIN denial checks, overlapping growth reservations/claims, and restart-persistent idempotency.",
   );
 } finally {
   await admin?.end();

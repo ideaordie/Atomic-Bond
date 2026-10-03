@@ -17,6 +17,12 @@ describe("deployment publication boundaries", () => {
       "APP_ORIGIN=",
       "AUTH_ALLOWED_ORIGINS=",
       "AUTH_ALLOW_LOCALHOST=",
+      "SUPABASE_GROWTH_SECRET_KEY=",
+      "CRON_SECRET=",
+      "GROWTH_EMAIL_ENABLED=",
+      "GROWTH_TEST_ATOM=",
+      "GROWTH_BATCH_SIZE=",
+      "GROWTH_SEND_CAP=",
     ]);
   });
 

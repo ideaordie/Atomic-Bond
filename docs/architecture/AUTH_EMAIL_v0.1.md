@@ -1,5 +1,13 @@
 # Verified email identity and passwordless ownership v0.1
 
+Task #9.1 adds a separate optional [growth-email worker](GROWTH_EMAIL_v0.1.md).
+Its seven operations cannot create Auth sessions or change Auth ownership; the
+pilot's isolated server credential itself has broader service-role authority.
+Ordinary Auth delivery never uses that client. Growth unsubscribe
+changes only the weekly preference. Authentication delivery and its secrets do
+not depend on the growth kill switch. Digest VIEW MY ATOM uses `/return`, which
+resolves the existing owner or enters the existing returning-access flow.
+
 Task #8.2 presentation refinements are documented in [UI clarity](UI_UX_v0.8.2.md).
 Create my Atom / Access my Atom labels, explicit field requirements and loading,
 email and validation feedback use the same server actions and non-disclosing

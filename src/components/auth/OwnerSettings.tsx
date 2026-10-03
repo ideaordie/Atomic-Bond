@@ -1,5 +1,6 @@
 "use client";
 import { InstallOffer } from "../pwa/InstallOffer";
+import { WeeklyGrowthPreference } from "./WeeklyGrowthPreference";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { normalizeXHandle, X_HANDLE_ERROR } from "../../utils/x-profile";
@@ -96,23 +97,10 @@ export function OwnerSettings({
             {xError}
           </p>
         )}
-        <label htmlFor="digest">Growth Notification Frequency</label>
-        <select
-          id="digest"
-          name="digest"
-          defaultValue={preferences.growthDigest}
-        >
-          <option value="disabled">Disabled</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-        <small>
-          Your preference is saved now. Scheduled growth notifications are not
-          enabled yet.
-        </small>
         <button disabled={pending}>{pending ? "Saving…" : "Save"}</button>
         <p role="status">{message}</p>
       </form>
+      <WeeklyGrowthPreference enabled={preferences.growthDigest === "weekly"} />
       <InstallOffer preferences />
       <form action={signOut}>
         <SignOutButton />

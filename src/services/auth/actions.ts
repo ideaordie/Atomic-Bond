@@ -182,7 +182,10 @@ export async function updateOwner(form: FormData) {
     await sameOrigin();
     const { services, atom } = await requireOwner();
     const digest = form.get("digest");
-    if (!["weekly", "monthly", "disabled"].includes(String(digest)))
+    if (
+      form.get("digestChanged") === "true" &&
+      !["weekly", "monthly", "disabled"].includes(String(digest))
+    )
       throw new Error();
     await services.atoms.update(
       registration({
@@ -191,14 +194,31 @@ export async function updateOwner(form: FormData) {
         locationId: atom!.locationId,
       }),
     );
-    await services.preferences.update(
-      digest as "weekly" | "monthly" | "disabled",
-      (await services.preferences.get()).pulseNotifications,
-    );
+    // Unrelated profile saves must not replay stale consent after unsubscribe.
+    if (form.get("digestChanged") === "true")
+      await services.preferences.update(
+        digest as "weekly" | "monthly" | "disabled",
+        (await services.preferences.get()).pulseNotifications,
+      );
     return { message: "Your profile and preferences are saved." };
   } catch {
     return {
       error: "Unable to save. Check your profile details and try again.",
     };
+  }
+}
+
+export async function updateWeeklyGrowth(enabled: boolean) {
+  try {
+    await sameOrigin();
+    if (typeof enabled !== "boolean") throw new Error();
+    const { services } = await requireOwner();
+    await services.preferences.update(
+      enabled ? "weekly" : "disabled",
+      (await services.preferences.get()).pulseNotifications,
+    );
+    return { saved: true };
+  } catch {
+    return { saved: false };
   }
 }

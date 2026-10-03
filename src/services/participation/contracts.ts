@@ -1,5 +1,6 @@
 import type { GraphData, GraphNode, NetworkReach } from "../../types/graph";
 import type { PublicSocialProfiles } from "../../types/public-profile";
+import type { GrowthDelivery } from "../growth/contracts";
 
 export interface Location {
   readonly id: string;
@@ -51,7 +52,7 @@ export interface NotificationService {
   sendVerificationEmail(identity: PrivateIdentity): void;
   sendMagicAccessLink(identity: PrivateIdentity): void;
   sendBondNotification(atomId: string): void;
-  sendGrowthDigest(atomId: string): void;
+  sendGrowthDigest(input: GrowthDelivery, origin: string): void | Promise<void>;
 }
 export type BondState =
   | "INVITE_CREATED"

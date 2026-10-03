@@ -32,6 +32,11 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
   await expect(page.getByTestId("selected-atom")).toHaveText("#00000001");
   await expect(page.getByTestId("direct-count")).toHaveText("12");
   await expect(page.getByTestId("reachable-count")).toHaveText("640");
+  // SSR already supplies the text/data attributes above. Wait for the renderer's
+  // mount-time resize before testing keyboard focus across client hydration.
+  await expect
+    .poll(() => canvas.evaluate((element: HTMLCanvasElement) => element.width))
+    .toBeGreaterThan(300);
   await canvas.focus();
   await page.keyboard.press("Tab");
   await expect(

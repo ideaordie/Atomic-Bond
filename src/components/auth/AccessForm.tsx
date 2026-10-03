@@ -155,6 +155,11 @@ export function AccessForm({
               </p>
             )}
             <HomeRegion />
+            <p>
+              Weekly Atom Growth Updates are enabled when your new Atom is
+              activated. You can turn them off anytime in Profile &amp;
+              Preferences. Secure access emails remain independent.
+            </p>
           </>
         )}
         <button className="flow-primary" disabled={pending}>

@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.9.1-rc.1 — Task #9.1 controlled acceptance candidate
+
+- Candidate deployment only: controlled real-email acceptance and recurring scheduling remain pending. Sending stays disabled. Atom #3 has one prepared reservation for +1 connected Atom and +1 direct Bond; its baseline has not advanced and no send attempt has started.
+- Stabilized the existing keyboard-focus browser test by waiting for client renderer initialization before tabbing; retained its focus assertion and changed no product interaction.
+
+- Applied RPC migration `202610030002` after preview; hosted grants/privacy and unchanged preferences verified. The configured worker passed a non-sending hosted scheduler evaluation. Established Atom #3's initial baseline and confirmed no-growth suppression; no growth email, delivery reservation or recurring schedule created. Production application publication and controlled live acceptance remain pending.
+
+- Approved pilot simplification: isolated sessionless server-only Supabase adapter and seven service-role-only RPC wrappers. The broader credential authority is explicitly accepted; the dedicated database role remains preserved and unconfigured. Credential setup and live acceptance remain gated; no recurring email enabled.
+
+- Added the approved dedicated growth PostgreSQL login with seven explicit operations and no table grants, plus real-login denial/concurrency/restart tests.
+- Added growth baselines, immutable weekly reservations, retry safeguards, protected bounded dry-run worker, responsive digest content and purpose-limited unsubscribe. Production sending/scheduling remains disabled pending configuration and live acceptance.
+- Added immediate weekly ON/OFF preferences and new-Atom disclosure; existing legacy preferences remain unchanged.
+
+- Added a version-controlled private growth-preference provenance migration; preserves all legacy values without inferring consent.
+- New first activations default to weekly only when unset; explicit OFF and unsubscribe survive returning access and unrelated profile saves.
+- Added a restricted unsubscribe primitive and database/service regressions. Transactional email is independent; no growth schedule enabled yet.
+- Applied reviewed migrations `202610010001` and `202610030001` on 2026-10-03. Hosted permission audit confirmed exactly seven worker functions, no direct table privileges or administrative flags, and unchanged values for all five existing preference records. Secure worker connection configuration and live acceptance remain pending.
+
 ## 0.9.0 - Task #9.0 / Installable PWA
 
 - Custom-domain configuration follow-up: added the required Supabase callback query pattern and redeployed the existing 0.8.3 commit with updated APP_ORIGIN. No email was sent during that diagnostic; the user subsequently verified real custom-domain authentication, existing ownership and Bond flow and approved PWA publication.

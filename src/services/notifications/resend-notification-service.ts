@@ -2,10 +2,24 @@ import type {
   NotificationService,
   PrivateIdentity,
 } from "../participation/contracts";
+import { growthEmail } from "../growth/email";
+import type { GrowthDelivery } from "../growth/contracts";
+
+export class EmailDeliveryError extends Error {
+  constructor(public readonly status: number) {
+    super("Email delivery failed");
+  }
+}
 
 export interface MailTransport {
   send(
-    message: { from: string; to: string; subject: string; text: string },
+    message: {
+      from: string;
+      to: string;
+      subject: string;
+      text: string;
+      html?: string;
+    },
     idempotencyKey?: string,
   ): Promise<void>;
 }
@@ -50,8 +64,14 @@ export class ResendNotificationService implements NotificationService {
   async sendBondNotification(): Promise<void> {
     throw new Error("Bond email delivery is not enabled");
   }
-  async sendGrowthDigest(): Promise<void> {
-    throw new Error("Use an authorized, preference-checked summary delivery");
+  async sendGrowthDigest(input: GrowthDelivery, origin: string): Promise<void> {
+    await this.transport.send(
+      this.growthMessage(input, origin),
+      `growth/${input.id}`,
+    );
+  }
+  growthMessage(input: GrowthDelivery, origin: string) {
+    return { from: this.from, to: input.email, ...growthEmail(input, origin) };
   }
   async sendSummary(
     input: {

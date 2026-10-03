@@ -8,12 +8,36 @@ let db: PGlite;
 const location = randomUUID();
 beforeAll(async () => {
   db = new PGlite({ extensions: { pgcrypto } });
-  await db.exec(`create role anon; create role authenticated;
+  await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
-  for (const file of readdirSync("supabase/migrations").sort())
+  for (const file of readdirSync("supabase/migrations").sort()) {
+    if (file.includes("growth_preference_provenance")) {
+      await db.exec(`insert into public.atoms(id,location_id)
+        select ('00000000-0000-0000-0000-00000000000'||n)::uuid,id from
+        (select id from public.locations limit 1) l cross join generate_series(1,3) n;
+        insert into private.notification_preferences(atom_id,growth_digest)
+        values ('00000000-0000-0000-0000-000000000001','disabled'),
+        ('00000000-0000-0000-0000-000000000002','weekly'),
+        ('00000000-0000-0000-0000-000000000003','monthly');`);
+    }
     await db.exec(readFileSync(`supabase/migrations/${file}`, "utf8"));
+    if (file.includes("growth_preference_provenance")) {
+      expect(
+        (
+          await db.query(
+            "select growth_digest,growth_preference_source from private.notification_preferences order by atom_id",
+          )
+        ).rows,
+      ).toEqual(
+        ["disabled", "weekly", "monthly"].map((growth_digest) => ({
+          growth_digest,
+          growth_preference_source: "legacy_unknown",
+        })),
+      );
+    }
+  }
   await db.query(
     "insert into public.locations(id,canonical_key,city,region,country,country_code,display_name) values($1,'test-place','Test City','Test Region','Test Country','US','Test City, US')",
     [location],
@@ -23,6 +47,18 @@ afterAll(async () => {
   await db?.close();
 });
 
+async function directGrowth(name: string, args: unknown[] = []) {
+  return (
+    await call(
+      `select growth_jobs.${name}(${args.map((_, i) => `$${i + 1}`).join(",")}) as result`,
+      args,
+      null,
+      "atomic_bond_growth",
+    )
+  )[0]!.result as Record<string, unknown> | null;
+}
+
+const growth = directGrowth;
 async function call(
   sql: string,
   args: unknown[] = [],
@@ -384,8 +420,199 @@ describe("migrations and production database invariants", () => {
     });
     expect(await rpc("my_notification_preferences", b.user)).toEqual({
       transactionalAccess: true,
-      growthDigest: "disabled",
+      growthDigest: "weekly",
       pulseNotifications: false,
+    });
+  });
+});
+
+describe("growth role boundary", () => {
+  it("denies all seven pilot RPCs to browser roles and preserves private schema isolation", async () => {
+    const signatures = [
+      "scan(bigint,integer)",
+      "evaluate(bigint,boolean)",
+      "reserve(bigint)",
+      "claim(uuid)",
+      "authorize_send(uuid,uuid,text)",
+      "finish(uuid,uuid,boolean)",
+      "unsubscribe(text)",
+    ];
+    for (const signature of signatures) {
+      for (const role of ["anon", "authenticated", "atomic_bond_growth"]) {
+        const result = await db.query<{ allowed: boolean }>(
+          "select has_function_privilege($1,$2,'EXECUTE') as allowed",
+          [role, `public.growth_${signature}`],
+        );
+        expect(result.rows[0]!.allowed).toBe(false);
+      }
+      expect(
+        (
+          await db.query<{ allowed: boolean }>(
+            "select has_function_privilege('service_role',$1,'EXECUTE') as allowed",
+            [`public.growth_${signature}`],
+          )
+        ).rows[0]!.allowed,
+      ).toBe(true);
+    }
+    for (const role of ["anon", "authenticated"]) {
+      await expect(
+        call("select public.growth_scan(0,10)", [], null, role),
+      ).rejects.toThrow();
+      await expect(
+        call(
+          "select public.growth_unsubscribe($1)",
+          ["a".repeat(64)],
+          null,
+          role,
+        ),
+      ).rejects.toThrow();
+    }
+    expect(
+      (
+        await db.query<{ allowed: boolean }>(
+          "select has_schema_privilege('service_role','growth_jobs','USAGE') as allowed",
+        )
+      ).rows[0]!.allowed,
+    ).toBe(false);
+  });
+  it("denies private reads, arbitrary writes, auth modification, unrelated RPCs and role escalation", async () => {
+    const denied = [
+      "select * from private.atom_identities",
+      "select normalized_email from private.atom_identities",
+      "update public.atoms set display_name='Bad'",
+      "insert into public.bonds default values",
+      "update public.bonds set status='CONFIRMED'",
+      "delete from public.emotional_pulses",
+      "update auth.users set email='bad@example.com'",
+      "select public.activate_atom()",
+      "select public.update_notification_preferences('weekly',false)",
+      "create table public.unapproved_growth_table(id int)",
+      "select * from private.growth_deliveries",
+    ];
+    for (const sql of denied)
+      await expect(call(sql, [], null, "atomic_bond_growth")).rejects.toThrow();
+    const role = (
+      await db.query(
+        "select rolsuper,rolcreaterole,rolcreatedb,rolreplication,rolbypassrls from pg_roles where rolname='atomic_bond_growth'",
+      )
+    ).rows[0];
+    expect(Object.values(role!)).toEqual([false, false, false, false, false]);
+    for (const roleName of ["anon", "authenticated"])
+      await expect(
+        call("select growth_jobs.scan()", [], null, roleName),
+      ).rejects.toThrow();
+  });
+  it.each(["dedicated", "rpc"])(
+    "%s baselines real confirmed reach, reserves once, preserves failed growth, and scopes unsubscribe",
+    async (transport) => {
+      const invoke = directGrowth;
+      const run = async (name: string, args: unknown[] = []) =>
+        transport === "dedicated"
+          ? invoke(name, args)
+          : ((
+              await call(
+                `select public.growth_${name}(${args.map((_, i) => `$${i + 1}`).join(",")}) as result`,
+                args,
+                null,
+                "service_role",
+              )
+            )[0]!.result as Record<string, unknown> | null);
+      const growth = run;
+      const a = await active(),
+        b = await active();
+      expect(await growth("evaluate", [a.number, false])).toEqual({
+        outcome: "baseline",
+      });
+      expect(await growth("evaluate", [a.number, true])).toEqual({
+        outcome: "baseline",
+      });
+      expect(await growth("evaluate", [a.number, true])).toEqual({
+        outcome: "no_growth",
+      });
+      const invitation = await rpc("create_bond_invitation", a.user);
+      await rpc("accept_bond_invitation", b.user, [invitation.token]);
+      expect(await growth("evaluate", [a.number, false])).toEqual({
+        outcome: "would_send",
+      });
+      const id = await growth("reserve", [a.number]);
+      expect(await growth("reserve", [a.number])).toBe(id);
+      const delivery = (await growth("claim", [id]))!;
+      expect(delivery.current).toMatchObject({
+        connectedAtoms: 1,
+        directBonds: 1,
+        regions: 1,
+        countries: 1,
+      });
+      expect(await growth("claim", [id])).toBeNull();
+      expect(
+        await growth("authorize_send", [
+          id,
+          delivery.attemptId,
+          "a".repeat(64),
+        ]),
+      ).toBe(true);
+      expect(await growth("finish", [id, delivery.attemptId, false])).toBe(
+        true,
+      );
+      expect(await growth("evaluate", [a.number, false])).toEqual({
+        outcome: "would_send",
+      });
+      await db.query(
+        "update private.growth_deliveries set lease_until=now()-interval '1 second' where id=$1",
+        [id],
+      );
+      const retry = (await growth("claim", [id]))!;
+      expect(retry.unsubscribeToken).toBe(delivery.unsubscribeToken);
+      expect(
+        await growth("authorize_send", [id, retry.attemptId, "a".repeat(64)]),
+      ).toBe(true);
+      expect(await growth("finish", [id, retry.attemptId, true])).toBe(true);
+      expect(await growth("evaluate", [a.number, true])).toEqual({
+        outcome: "already_sent",
+      });
+      expect(await growth("reserve", [a.number])).toBeNull();
+      expect(await growth("unsubscribe", ["bad"])).toBe(false);
+      expect(await growth("unsubscribe", ["0".repeat(64)])).toBe(false);
+      expect(await growth("unsubscribe", [delivery.unsubscribeToken])).toBe(
+        true,
+      );
+      expect(await growth("unsubscribe", [delivery.unsubscribeToken])).toBe(
+        true,
+      );
+      expect(await rpc("my_notification_preferences", a.user)).toMatchObject({
+        growthDigest: "disabled",
+        transactionalAccess: true,
+      });
+      expect(await rpc("my_notification_preferences", b.user)).toMatchObject({
+        growthDigest: "weekly",
+      });
+      expect(await growth("evaluate", [a.number, true])).toEqual({
+        outcome: "disabled",
+      });
+      await rpc("update_notification_preferences", a.user, ["weekly", false]);
+      expect(await growth("evaluate", [a.number, false])).toEqual({
+        outcome: "already_sent",
+      });
+    },
+  );
+  it("excludes dormant, deleted, unverified and OFF recipients", async () => {
+    for (const status of ["DORMANT", "DELETED"]) {
+      const a = await active();
+      await db.query("update public.atoms set status=$1 where id=$2", [
+        status,
+        await internal(a.user),
+      ]);
+      expect(await growth("evaluate", [a.number, false])).toEqual({
+        outcome: "ineligible",
+      });
+    }
+    const a = await active();
+    await db.query(
+      "update auth.users set email_confirmed_at=null where id=$1",
+      [a.user],
+    );
+    expect(await growth("evaluate", [a.number, false])).toEqual({
+      outcome: "ineligible",
     });
   });
 });
@@ -437,5 +664,77 @@ describe("coarse region migration", () => {
     });
     expect(node.metadata).not.toHaveProperty("city");
     expect(JSON.stringify(node)).not.toContain("@example.invalid");
+  });
+  it("defaults only new first activations and preserves explicit OFF and unsubscribe across owner operations", async () => {
+    const { user } = await pending();
+    const id = await internal(user);
+    const preference = async () =>
+      (
+        await db.query<{
+          growth_digest: string;
+          growth_preference_source: string;
+          transactional_access: boolean;
+        }>(
+          "select growth_digest,growth_preference_source,transactional_access from private.notification_preferences where atom_id=$1",
+          [id],
+        )
+      ).rows[0]!;
+    expect(await preference()).toMatchObject({
+      growth_digest: "disabled",
+      growth_preference_source: "unset",
+    });
+    await rpc("activate_atom", user);
+    expect(await preference()).toMatchObject({
+      growth_digest: "weekly",
+      growth_preference_source: "activation_default",
+    });
+    await rpc("update_notification_preferences", user, ["disabled", false]);
+    await rpc("begin_atom", user, [location, null, null]);
+    await rpc("activate_atom", user);
+    await rpc("update_my_atom", user, ["Changed", null, location]);
+    expect(await preference()).toMatchObject({
+      growth_digest: "disabled",
+      growth_preference_source: "owner_choice",
+      transactional_access: true,
+    });
+    await rpc("update_notification_preferences", user, ["weekly", false]);
+    await db.query("select private.unsubscribe_growth($1)", [id]);
+    await rpc("activate_atom", user);
+    await rpc("update_my_atom", user, ["Changed again", null, location]);
+    expect(await preference()).toMatchObject({
+      growth_digest: "disabled",
+      growth_preference_source: "unsubscribe",
+      transactional_access: true,
+    });
+    await expect(
+      call("select private.unsubscribe_growth($1)", [id], null, "anon"),
+    ).rejects.toThrow();
+    await expect(
+      rpc("update_notification_preferences", null, ["weekly", false]),
+    ).rejects.toThrow();
+    await rpc("update_notification_preferences", user, ["weekly", false]);
+    expect(await preference()).toMatchObject({
+      growth_digest: "weekly",
+      growth_preference_source: "owner_choice",
+    });
+  });
+
+  it("preserves legacy values and explicit pending preferences at activation", async () => {
+    for (const source of ["legacy_unknown", "owner_choice", "unsubscribe"]) {
+      for (const digest of source === "unsubscribe"
+        ? ["disabled"]
+        : ["disabled", "weekly", "monthly"]) {
+        const { user } = await pending();
+        await db.query(
+          "update private.notification_preferences set growth_digest=$1,growth_preference_source=$2 where atom_id=$3",
+          [digest, source, await internal(user)],
+        );
+        await rpc("activate_atom", user);
+        expect(await rpc("my_notification_preferences", user)).toMatchObject({
+          growthDigest: digest,
+          transactionalAccess: true,
+        });
+      }
+    }
   });
 });

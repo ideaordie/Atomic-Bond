@@ -104,10 +104,21 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await receiver.getByRole("link", { name: "Profile & preferences" }).click();
   await receiver.getByLabel("Name / alias").fill("Updated owner");
   await receiver
-    .getByLabel("Growth Notification Frequency")
-    .selectOption("weekly");
+    .getByLabel("Weekly updates", { exact: true })
+    .selectOption("off");
+  await expect(
+    receiver.getByText("Weekly updates are OFF.", { exact: true }),
+  ).toBeVisible();
+  await receiver
+    .getByLabel("Weekly updates", { exact: true })
+    .selectOption("on");
+  await expect(
+    receiver.getByText("Weekly updates are ON.", { exact: true }),
+  ).toBeVisible();
   await receiver.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(receiver.getByRole("status")).toContainText("saved");
+  await expect(receiver.locator("form").getByRole("status")).toContainText(
+    "saved",
+  );
   await receiver.screenshot({
     path: info.outputPath("owner-settings.png"),
     fullPage: true,
