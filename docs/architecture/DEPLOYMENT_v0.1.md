@@ -314,3 +314,17 @@ Do not roll back anonymized user data or reset numbers. Disable the deletion key
 for emergency shutdown; existing transactional email and growth credentials stay
 independent. Production acceptance requires a specifically approved disposable
 account, never Atom #3 or another genuine participant.
+
+## Task #9.3 accepted lifecycle release
+
+v0.9.3 uses the already-applied migrations `202610050001_deactivated_state.sql`
+and `202610050002_account_deactivation.sql`. No additional migration, secret,
+cron change or participant mutation is needed for release publication. Deploy
+through the existing main → Vercel workflow and verify the custom domain,
+public tombstones and guarded account routes. Controlled Atom #5 completed the
+live reversible cycle; the owner approved product and remaining live acceptance.
+
+If a deployment must be rolled back, keep the additive database state and use a
+lifecycle-aware build. Do not restore a pre-deactivation application that assumes
+every owned Atom is ACTIVE. Never change lifecycle rows or reset Atom numbers as
+part of deployment recovery. Permanent deletion remains irreversible.

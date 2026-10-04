@@ -1,15 +1,10 @@
 # Atomic Bond
 
-Task #9.3 local candidate: [account deactivation and reactivation](docs/architecture/ACCOUNT_DEACTIVATION_v0.1.md)
-preserves the same account and Bonds during an explicit pause. Permanent deletion
-remains separate and irreversible. Controlled live acceptance is pending.
-
-Task #9.2 account deletion is a v0.9.2 candidate, not yet production accepted.
-See [account deletion, tombstones and rollout](docs/architecture/ACCOUNT_DELETION_v0.1.md)
-for the reviewed migration, separate server-only Auth credential, confirmation,
-recovery and controlled acceptance requirements. Destructive acceptance requires
-an explicitly approved test account (Atom #8 is approved; Atom #3 is excluded).
-No automatic inactivity deletion is introduced.
+Current approved release: **v0.9.3 — Account Deactivation & Reactivation**.
+See [account deactivation and reactivation](docs/architecture/ACCOUNT_DEACTIVATION_v0.1.md).
+Explicit deactivation preserves the account, number, profile and Bonds for verified return.
+Permanent [account deletion](docs/architecture/ACCOUNT_DELETION_v0.1.md) remains separate
+and irreversible. Product and controlled live acceptance passed; no automatic inactivity deletion.
 
 Task #9.1: **0.9.1 — Weekly Atom Growth**. see [growth operations and rollout gates](docs/architecture/GROWTH_EMAIL_v0.1.md).
 The pilot uses an isolated server-only Supabase secret and seven approved RPCs.
@@ -35,7 +30,7 @@ See the [baseline report](docs/architecture/BASELINE_v0.8.0.md) for included
 functionality, verification evidence and known limitations. The `v0.8.0` Git tag
 is permanent; future changes receive subsequent versions.
 
-Approved release: **0.8.3 - Global coarse Home Region**. Authenticated
+Earlier milestone: **0.8.3 - Global coarse Home Region**. Authenticated
 MY ATOM shows authorized active emotional states automatically. CREATE BOND and
 PULSE are the primary actions; **YOUR NETWORK NOW** expands current coverage and
 distribution. See [Emotional Pulse architecture](docs/architecture/EMOTIONAL_PULSE_v0.1.md)

@@ -1,22 +1,32 @@
 # Account deactivation and reactivation — Task #9.3
 
-Status: controlled-acceptance candidate; both reviewed migrations are applied.
-Controlled live acceptance remains pending. Do not describe v0.9.3
-as accepted before the live cycle.
+Status: accepted v0.9.3. Product and live acceptance approved by the owner on
+2026-10-04; remaining owner functionality was manually verified by the owner.
 
-Hosted migration checkpoint: history matches all nine repository migrations through 202610050002. Before/after Atom, Bond, preference and number-ledger integrity hashes
-match. Six ACTIVE Atoms, eight confirmed Bonds and sequence value nine are unchanged;
-Atom #5 remains ACTIVE and Atom #8 remains DELETED. No live lifecycle transition
-has been performed.
+Both reviewed migrations are applied; hosted history matches all nine repository
+migrations through 202610050002. Application of the migrations preserved existing
+Atom, Bond, preference and number-ledger integrity. No further migration is needed
+for release, and the Tuesday growth schedule remains unchanged.
 
-Local verification: 224 unit/integration/security tests, native PostgreSQL
-concurrency/restart checks, client security boundary, formatting/lint/TypeScript,
-production build, 81 main browser cases (two animation timing cases passed an
-isolated rerun), 3 persistence cases and 48 Auth/QR/PWA cases passed. The final
-session-timing and presentation fixes also passed six targeted lifecycle browser
-cases at all three viewports. Secret scan passed. Physical PWA/live acceptance
-remains pending. Atom #5 is explicitly approved; its initial weekly preference is
-OFF, with one confirmed Bond and no active Pulse/invitation. Preserve that intent.
+Controlled Atom #5 completed ACTIVE → DEACTIVATED → ACTIVE. Hosted verification
+confirmed the same permanent number, one retained confirmed Bond, verified identity,
+restored alias/location, no old Pulse, cancelled invitation with its recovery secret
+removed, and weekly OFF/legacy_unknown preserved. The new baseline matches current
+network metrics: six connected Atoms, one direct Bond, one region and one country.
+No new Atom number was allocated. Atom #3 and all Bond rows were unchanged; Atom #8
+remains DELETED. Another participant sent a Pulse during the live window, so whole
+network activity hashes are not represented as byte-identical.
+
+The agent verified production deactivation, anonymous/public behavior and hosted
+post-reactivation state. The owner performed explicit reactivation and accepted
+remaining owner functionality. Physical installed-PWA details were not independently
+observed by the agent; automated PWA coverage and owner live acceptance are distinct
+evidence. The temporary test alias is controlled acceptance data, not a release dependency.
+
+Final release verification passed: 224 unit/integration/security tests, all 81 main browser cases (one parallel tablet animation timeout passed unchanged in an isolated three-viewport rerun), 3 persistence browser cases and 48 Auth/QR/PWA cases. The full repository check pipeline covered: formatting, lint,
+TypeScript, unit/integration/security, native PostgreSQL concurrency/restart,
+client boundary, production build, main/persistence/Auth/QR/PWA browser suites and
+secret scans. Browser coverage includes 390×844, 768×1024 and 1440×900.
 
 ## Product and retained data
 
