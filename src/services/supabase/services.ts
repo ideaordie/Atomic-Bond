@@ -23,7 +23,9 @@ export interface PendingAtom {
 function lifecycle(value: unknown): PendingAtom {
   const row = record(value),
     status = string(row.status) as AtomStatus;
-  if (!["PENDING", "ACTIVE", "DORMANT", "DELETED"].includes(status))
+  if (
+    !["PENDING", "ACTIVE", "DORMANT", "DEACTIVATED", "DELETED"].includes(status)
+  )
     throw new Error("Invalid lifecycle response");
   return {
     status,

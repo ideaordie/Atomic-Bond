@@ -10,7 +10,7 @@ beforeAll(async () => {
   db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
- create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);
+ create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp());
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
   for (const file of readdirSync("supabase/migrations").sort()) {
@@ -80,7 +80,10 @@ async function call(
 const deletionClaims = new Map<string, unknown>();
 async function recentAccess(user: string, age = 0) {
   const session = randomUUID();
-  await db.query("insert into auth.sessions values($1,$2)", [session, user]);
+  await db.query("insert into auth.sessions(id,user_id) values($1,$2)", [
+    session,
+    user,
+  ]);
   deletionClaims.set(user, {
     session_id: session,
     amr: [{ method: "otp", timestamp: Date.now() / 1000 - age }],
@@ -117,14 +120,6 @@ async function active() {
   const { user } = await pending();
   const atom = await rpc("activate_atom", user);
   return { user, number: atom.publicId as string };
-}
-async function internal(user: string) {
-  return (
-    await db.query<{ atom_id: string }>(
-      "select atom_id from private.atom_identities where auth_user_id=$1",
-      [user],
-    )
-  ).rows[0]!.atom_id;
 }
 
 describe("migrations and production database invariants", () => {
@@ -945,3 +940,242 @@ describe("owner-authorized account deletion", () => {
     }
   });
 });
+
+describe("reversible account lifecycle", () => {
+  it("accepts same-second verified new sessions but never revives a pre-deactivation JWT", async () => {
+    const a = await active();
+    await recentAccess(a.user);
+    const oldClaims = deletionClaims.get(a.user);
+    await rpc("deactivate_my_account", a.user);
+    await expect(rpc("reactivate_my_account", a.user)).rejects.toThrow();
+    await recentAccess(a.user);
+    const seconds = (
+      await db.query<{ seconds: string }>(
+        "select floor(extract(epoch from authenticated_after))::text seconds from private.account_lifecycle where atom_id=(select id from public.atoms where public_id=$1)",
+        [a.number],
+      )
+    ).rows[0]!.seconds;
+    const fresh = deletionClaims.get(a.user) as {
+      session_id: string;
+      amr: Array<{ method: string; timestamp: number }>;
+    };
+    fresh.amr[0]!.timestamp = Number(seconds);
+    expect(await rpc("reactivate_my_account", a.user)).toMatchObject({
+      state: "active",
+      publicId: a.number,
+    });
+    deletionClaims.set(a.user, oldClaims);
+    expect(await rpc("my_atom", a.user)).toBeNull();
+    await expect(
+      rpc("send_emotional_pulse", a.user, ["JOY"]),
+    ).rejects.toThrow();
+  });
+  it("cancels prepared delivery permanently, excludes private regions, resets genuine intervening growth, and preserves same-email uniqueness", async () => {
+    const a = await active(),
+      b = await active(),
+      c = await active();
+    await recentAccess(a.user);
+    await recentAccess(b.user);
+    await growth("evaluate", [a.number, true]);
+    const invite = await rpc("create_bond_invitation", a.user);
+    await rpc("accept_bond_invitation", b.user, [invite.token]);
+    const job = await growth("reserve", [a.number]);
+    expect(job).toBeTypeOf("string");
+    await rpc("deactivate_my_account", a.user);
+    expect(await growth("claim", [job])).toBeNull();
+    expect(
+      (
+        await db.query(
+          "select status from private.growth_deliveries where id=$1",
+          [job],
+        )
+      ).rows,
+    ).toEqual([{ status: "cancelled" }]);
+    const owned = (
+      await db.query<{ normalized_email: string }>(
+        "select normalized_email from private.atom_identities where auth_user_id=$1",
+        [a.user],
+      )
+    ).rows[0]!;
+    await expect(pending(true, owned.normalized_email)).rejects.toThrow();
+    const next = await rpc("create_bond_invitation", b.user);
+    await rpc("accept_bond_invitation", c.user, [next.token]);
+    const graph = await rpc("public_graph", null, [a.number]);
+    expect(graph.nodes).toHaveLength(3);
+    const state = await rpc("reactivate_my_account", b.user);
+    expect(state.publicId).toBe(b.number); // A different owner cannot target a.
+    expect(
+      (
+        await db.query("select status from public.atoms where public_id=$1", [
+          a.number,
+        ])
+      ).rows,
+    ).toEqual([{ status: "DEACTIVATED" }]);
+    await expect(
+      call("select public.reactivate_my_account() as result", [], null, "anon"),
+    ).rejects.toThrow();
+    await expect(
+      call("select * from private.account_lifecycle", [], a.user),
+    ).rejects.toThrow();
+    await expect(
+      call(
+        "select public.reactivate_my_account() as result",
+        [],
+        null,
+        "atomic_bond_growth",
+      ),
+    ).rejects.toThrow();
+    await db.query(
+      "update private.account_lifecycle set authenticated_after=now()-interval '2 seconds' where atom_id=(select id from public.atoms where public_id=$1)",
+      [a.number],
+    );
+    await recentAccess(a.user);
+    await rpc("reactivate_my_account", a.user);
+    expect(await growth("evaluate", [a.number, false])).toMatchObject({
+      outcome: "no_growth",
+    });
+    expect(await growth("claim", [job])).toBeNull();
+    expect(
+      (
+        await db.query(
+          "select baseline->>'connectedAtoms' n from private.growth_state where atom_id=(select id from public.atoms where public_id=$1)",
+          [a.number],
+        )
+      ).rows,
+    ).toEqual([{ n: "2" }]);
+  });
+  it("preserves identity, profile, Bonds and preference; hides public data and requires explicit freshly authenticated return", async () => {
+    const a = await active(),
+      b = await active();
+    await recentAccess(a.user);
+    const invite = await rpc("create_bond_invitation", a.user);
+    await rpc("accept_bond_invitation", b.user, [invite.token]);
+    await rpc("send_emotional_pulse", a.user, ["CURIOUS"]);
+    const stale = await rpc("create_bond_invitation", a.user);
+    await growth("evaluate", [a.number, true]);
+    const before = await rpc("my_atom", a.user);
+    const prefs = await rpc("my_notification_preferences", a.user);
+    const sequence = (
+      await db.query("select last_value from private.atom_number_seq")
+    ).rows;
+    const bonds = (await db.query("select * from public.bonds order by id"))
+      .rows;
+    await expect(rpc("deactivate_my_account")).rejects.toThrow();
+    expect(await rpc("deactivate_my_account", a.user)).toMatchObject({
+      state: "deactivated",
+      publicId: a.number,
+    });
+    expect(await rpc("my_atom", a.user)).toBeNull();
+    await expect(rpc("reactivate_my_account", a.user)).rejects.toThrow();
+    await expect(
+      rpc("send_emotional_pulse", a.user, ["JOY"]),
+    ).rejects.toThrow();
+    await expect(
+      rpc("accept_bond_invitation", b.user, [stale.token]),
+    ).rejects.toThrow();
+    expect(await growth("evaluate", [a.number, false])).toMatchObject({
+      outcome: "ineligible",
+    });
+    const graph = await rpc("public_graph", null, [a.number]);
+    const node = (graph.nodes as Array<Record<string, unknown>>).find(
+      (n) => n.publicId === a.number,
+    )!;
+    expect(node).toMatchObject({ status: "DEACTIVATED", metadata: {} });
+    expect(node.displayName ?? null).toBeNull();
+    expect(node.xHandle ?? null).toBeNull();
+    expect(JSON.stringify(graph)).not.toContain("@example.com");
+    // Move only the isolated test cutoff back to model later verified access.
+    await db.query(
+      "update private.account_lifecycle set authenticated_after=now()-interval '2 seconds' where atom_id=(select id from public.atoms where public_id=$1)",
+      [a.number],
+    );
+    await recentAccess(a.user);
+    expect(await rpc("my_atom", a.user)).toEqual({
+      ...before,
+      status: "DEACTIVATED",
+    });
+    await expect(rpc("activate_atom", a.user)).rejects.toThrow(
+      "Explicit reactivation",
+    );
+    expect(await rpc("deactivate_my_account", a.user)).toMatchObject({
+      state: "deactivated",
+    });
+    await expect(rpc("create_bond_invitation", a.user)).rejects.toThrow();
+    expect(await rpc("reactivate_my_account", a.user)).toMatchObject({
+      state: "active",
+      publicId: a.number,
+    });
+    expect(await rpc("my_atom", a.user)).toEqual(before);
+    expect(await rpc("my_notification_preferences", a.user)).toEqual(prefs);
+    expect(await rpc("connected_emotional_pulses", a.user)).toEqual([]);
+    expect(await growth("evaluate", [a.number, false])).toMatchObject({
+      outcome: "no_growth",
+    });
+    const state = (
+      await db.query(
+        "select * from private.growth_state where atom_id=(select id from public.atoms where public_id=$1)",
+        [a.number],
+      )
+    ).rows;
+    await rpc("reactivate_my_account", a.user);
+    expect(
+      (
+        await db.query(
+          "select * from private.growth_state where atom_id=(select id from public.atoms where public_id=$1)",
+          [a.number],
+        )
+      ).rows,
+    ).toEqual(state);
+    expect(
+      (await db.query("select * from public.bonds order by id")).rows,
+    ).toEqual(bonds);
+    expect(
+      (await db.query("select last_value from private.atom_number_seq")).rows,
+    ).toEqual(sequence);
+    await expect(
+      rpc("accept_bond_invitation", b.user, [stale.token]),
+    ).rejects.toThrow();
+    await rpc("send_emotional_pulse", a.user, ["CALM"]);
+    expect(await rpc("connected_emotional_pulses", a.user)).toHaveLength(1);
+  });
+  it("preserves explicit OFF and permits permanent deletion without reactivation", async () => {
+    const a = await active();
+    await recentAccess(a.user);
+    await rpc("update_notification_preferences", a.user, ["disabled", false]);
+    await rpc("deactivate_my_account", a.user);
+    await db.query(
+      "update private.account_lifecycle set authenticated_after=now()-interval '2 seconds' where atom_id=(select id from public.atoms where public_id=$1)",
+      [a.number],
+    );
+    await recentAccess(a.user);
+    await rpc("reactivate_my_account", a.user);
+    expect(await rpc("my_notification_preferences", a.user)).toMatchObject({
+      growthDigest: "disabled",
+    });
+    await rpc("deactivate_my_account", a.user);
+    await db.query(
+      "update private.account_lifecycle set authenticated_after=now()-interval '2 seconds' where atom_id=(select id from public.atoms where public_id=$1)",
+      [a.number],
+    );
+    await recentAccess(a.user);
+    expect(await rpc("delete_my_account", a.user, ["DELETE"])).toMatchObject({
+      state: "auth_cleanup_pending",
+    });
+    await expect(rpc("reactivate_my_account", a.user)).rejects.toThrow();
+    expect(
+      (
+        await db.query("select status from public.atoms where public_id=$1", [
+          a.number,
+        ])
+      ).rows,
+    ).toEqual([{ status: "DELETED" }]);
+  });
+});
+async function internal(user: string) {
+  return (
+    await db.query<{ atom_id: string }>(
+      "select atom_id from private.atom_identities where auth_user_id=$1",
+      [user],
+    )
+  ).rows[0]!.atom_id;
+}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { ownerContext, ownedPublicId } from "../../services/auth/server";
 import { AccessForm } from "../../components/auth/AccessForm";
@@ -13,6 +14,12 @@ export default async function AuthPage({
   const { user, atom } = context;
   const query = await searchParams;
   const next = nextPath(query.next);
+  if (atom?.status === "DEACTIVATED")
+    redirect(
+      next === "/account/delete"
+        ? next
+        : `/account/reactivate?next=${encodeURIComponent(next)}`,
+    );
   if (ownedPublicId(context))
     return (
       <main>

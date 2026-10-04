@@ -18,7 +18,9 @@ export function emotionalNetwork(
   for (const pulse of visible) {
     if (
       !perspective.distances.has(pulse.atomId) ||
-      perspective.nodes.get(pulse.atomId)?.status === "DELETED"
+      ["DELETED", "DEACTIVATED"].includes(
+        perspective.nodes.get(pulse.atomId)?.status || "",
+      )
     )
       continue;
     const old = latest.get(pulse.atomId);
@@ -66,7 +68,10 @@ export function emotionalNetwork(
   return {
     active,
     connectedCount: [...perspective.distances.keys()].filter(
-      (id) => perspective.nodes.get(id)?.status !== "DELETED",
+      (id) =>
+        !["DELETED", "DEACTIVATED"].includes(
+          perspective.nodes.get(id)?.status || "",
+        ),
     ).length,
     counts,
     percentages: Object.fromEntries(

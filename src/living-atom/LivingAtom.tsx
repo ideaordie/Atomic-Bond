@@ -266,13 +266,16 @@ export function LivingAtom({
           {graph.nodes.some((node) => node.status === "DELETED") && (
             <p>Includes retained deleted Atoms.</p>
           )}
+          {graph.nodes.some((node) => node.status === "DEACTIVATED") && (
+            <p>Includes structural connections through deactivated Atoms.</p>
+          )}
         </div>
       }
       <div className="perspective-label" aria-live="polite">
         <span>{isMine ? "YOUR PERSPECTIVE" : "VIEWING THEIR NETWORK"}</span>
         <strong data-testid="selected-atom">#{scene.selected.publicId}</strong>
-        {scene.selected.status === "DELETED" && (
-          <span>DELETED · Anonymized connection</span>
+        {["DELETED", "DEACTIVATED"].includes(scene.selected.status || "") && (
+          <span>{scene.selected.status} · Anonymized connection</span>
         )}
         {isMine && ownPulse && (
           <p className="sr-only" data-testid="own-pulse">
@@ -335,7 +338,10 @@ export function LivingAtom({
             status={emotional?.status ?? "ready"}
           />
         )}
-        {(ownerMode || scene.selected.status !== "DELETED") && (
+        {(ownerMode ||
+          !["DELETED", "DEACTIVATED"].includes(
+            scene.selected.status || "",
+          )) && (
           <div
             className="primary-actions"
             role="group"

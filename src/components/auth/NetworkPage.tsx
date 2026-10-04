@@ -21,6 +21,8 @@ export async function NetworkPage({
   const mode = dataConfiguration(process.env).mode;
   const owner = mode === "supabase" ? await ownerContext() : null;
   const ownerId = owner ? ownedPublicId(owner) : null;
+  if (!requested && owner?.atom?.status === "DEACTIVATED")
+    redirect("/account/reactivate");
   if (mode === "supabase" && !requested && !ownerId) redirect("/");
   if (mode === "supabase" && requested && !/^[1-9][0-9]*$/.test(requested))
     notFound();

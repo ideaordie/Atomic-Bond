@@ -24,7 +24,13 @@ export function AccountDeletion({
   }, [step, cleanupPending]);
   return (
     <section className="account-danger" aria-labelledby="account-heading">
-      <h2 id="account-heading">ACCOUNT</h2>
+      <h2 id="account-heading">DELETE ACCOUNT &amp; DATA</h2>
+      {step === 0 && (
+        <p>
+          Permanently remove your personal account information. This cannot be
+          undone.
+        </p>
+      )}
       {step === 0 ? (
         <button className="delete-account-button" onClick={() => setStep(1)}>
           DELETE ACCOUNT

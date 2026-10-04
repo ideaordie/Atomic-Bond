@@ -10,7 +10,13 @@ export default async function DeletePage() {
   const context = await ownerContext();
   if (!context.user) redirect("/auth?mode=access&next=%2Faccount%2Fdelete");
   const { data, error } = await context.client.rpc("account_deletion_status");
-  if (error || (!ownedPublicId(context) && !data?.pending)) redirect("/auth");
+  if (
+    error ||
+    (!ownedPublicId(context) &&
+      context.atom?.status !== "DEACTIVATED" &&
+      !data?.pending)
+  )
+    redirect("/auth");
   return (
     <main>
       <section className="auth-panel">

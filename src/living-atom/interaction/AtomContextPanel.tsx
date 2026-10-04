@@ -41,7 +41,9 @@ export function AtomContextPanel({
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, [atomId]);
-  const deleted = context.selected.status === "DELETED";
+  const deleted =
+    context.selected.status === "DELETED" ||
+    context.selected.status === "DEACTIVATED";
   const alias = deleted ? undefined : context.selected.displayName?.trim();
   const homeRegion =
     context.selected.metadata?.homeRegion ??
@@ -97,7 +99,7 @@ export function AtomContextPanel({
         </div>
       </div>
       {deleted ? (
-        <p>DELETED · Anonymized structural connection</p>
+        <p>{context.selected.status} · Anonymized structural connection</p>
       ) : (
         <PublicXProfile profiles={context.selected.socialProfiles} />
       )}

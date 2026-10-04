@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import { ownerContext, ownedPublicId } from "../../services/auth/server";
 export default async function ReturnToAtom() {
   await connection();
+  const context = await ownerContext();
+  if (context.atom?.status === "DEACTIVATED") redirect("/account/reactivate");
   redirect(
-    ownedPublicId(await ownerContext())
-      ? "/explore"
-      : "/auth?mode=access&next=%2Fexplore",
+    ownedPublicId(context) ? "/explore" : "/auth?mode=access&next=%2Fexplore",
   );
 }

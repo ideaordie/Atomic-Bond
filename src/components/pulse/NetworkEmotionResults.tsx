@@ -85,7 +85,7 @@ export function NetworkEmotionResults({
           </p>
           {reach.people > summary.connectedCount && (
             <p>
-              Structural reach includes anonymized deleted Atoms. Emotional
+              Structural reach includes deleted or deactivated Atoms. Emotional
               coverage below includes only remaining participants.
             </p>
           )}

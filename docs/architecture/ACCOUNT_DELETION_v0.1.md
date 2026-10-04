@@ -1,9 +1,16 @@
 # Account deletion and dormancy — Task #9.2
 
-Status: v0.9.2 controlled-acceptance candidate. Local verification passed and the
-reviewed migration is applied. The separate secret is configured in local and
-Vercel Production environments. Controlled live acceptance remains pending; this
-is not a completed production acceptance report.
+Status: v0.9.2 controlled deletion of the explicitly approved Atom #8 passed.
+Its number and two confirmed Bonds remain; private identity, Auth ownership,
+optional profile/location, Pulse and engagement state were removed. Atom #3 and
+unrelated records remained unchanged. Same-email re-registration was cancelled
+before execution; no claim of that live acceptance is made. Historical candidate
+checkpoints below describe their state at the time.
+
+Task #9.3 adds separate reversible DEACTIVATED account management. It does not
+change irreversible DELETED semantics. Deactivated owners may still use the same
+recent-authentication deletion flow without first reactivating. See
+[account deactivation](ACCOUNT_DEACTIVATION_v0.1.md).
 
 ## Approved product policy
 

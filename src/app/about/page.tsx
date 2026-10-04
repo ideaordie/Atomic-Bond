@@ -81,11 +81,17 @@ export default function About() {
         </p>
         <p>Your name or alias and X handle are optional.</p>
         <p>
-          You can delete your account from Profile &amp; Preferences. This
-          removes your personal identity, Home Region, active Pulse and account
-          access. Your permanent Atom number and anonymized confirmed Bonds
-          remain to preserve network connections. Inactivity alone does not
-          delete an account.
+          You may deactivate your account to temporarily step away. Your private
+          account, profile, Atom number and Bonds are preserved for your
+          verified return. Your public profile is hidden, your Pulse is removed
+          and weekly updates pause until you explicitly reactivate.
+        </p>
+        <p>
+          You can permanently delete your account from Profile &amp;
+          Preferences. This cannot be undone. Deletion removes your personal
+          identity, Home Region, active Pulse and account access. Your permanent
+          Atom number and anonymized confirmed Bonds remain to preserve network
+          connections. Inactivity alone does not delete an account.
         </p>
         <p>
           Atoms and the structural Bond network may be publicly viewable.

@@ -36,7 +36,7 @@ try {
   await admin.connect();
   await admin.query(`create role anon; create role authenticated; create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
- create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);
+ create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp());
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
   for (const file of (await readdir("supabase/migrations"))
@@ -254,7 +254,7 @@ try {
     const owner = await active(),
       peer = await active();
     const session = randomUUID();
-    await admin.query("insert into auth.sessions values($1,$2)", [
+    await admin.query("insert into auth.sessions(id,user_id) values($1,$2)", [
       session,
       owner,
     ]);
@@ -354,6 +354,133 @@ try {
   }
   console.log(
     "PASS: concurrent deletion/Pulse/Bond/provider-authorization/repeated deletion invariants.",
+  );
+  // Deactivation shares the same ordering boundary without erasing private identity.
+  for (const mode of ["pulse", "bond", "invitation", "digest"]) {
+    const owner = await active(),
+      peer = await active();
+    const initialSession = randomUUID();
+    await admin.query("insert into auth.sessions(id,user_id) values($1,$2)", [
+      initialSession,
+      owner,
+    ]);
+    deletionClaims.set(owner, {
+      session_id: initialSession,
+      amr: [{ method: "otp", timestamp: Date.now() / 1000 }],
+    });
+    const atom = (
+      await admin.query(
+        "select atom_id from private.atom_identities where auth_user_id=$1",
+        [owner],
+      )
+    ).rows[0].atom_id;
+    const number = (
+      await admin.query(
+        "select public_id::text n from public.atoms where id=$1",
+        [atom],
+      )
+    ).rows[0].n;
+    const invite = await call(owner, "create_bond_invitation");
+    let job, delivery;
+    if (mode === "digest") {
+      await worker("select growth_jobs.evaluate($1,true)", [number]);
+      await call(peer, "accept_bond_invitation", [invite.token]);
+      job = (await worker("select growth_jobs.reserve($1) id", [number]))
+        .rows[0].id;
+      delivery = (await worker("select growth_jobs.claim($1) result", [job]))
+        .rows[0].result;
+    }
+    const results = await Promise.allSettled([
+      call(owner, "deactivate_my_account"),
+      mode === "pulse"
+        ? call(owner, "send_emotional_pulse", ["JOY"])
+        : mode === "bond"
+          ? call(peer, "accept_bond_invitation", [invite.token])
+          : mode === "invitation"
+            ? call(owner, "create_bond_invitation")
+            : worker("select growth_jobs.authorize_send($1,$2,$3) allowed", [
+                job,
+                delivery.attemptId,
+                "b".repeat(64),
+              ]),
+      call(owner, "deactivate_my_account"),
+    ]);
+    assert(results.some((r) => r.status === "fulfilled"));
+    if (
+      mode === "digest" &&
+      results[1].status === "fulfilled" &&
+      results[1].value.rows[0].allowed
+    ) {
+      await worker("select growth_jobs.finish($1,$2,false)", [
+        job,
+        delivery.attemptId,
+      ]);
+      await call(owner, "deactivate_my_account");
+    }
+    assert.equal(
+      (await admin.query("select status from public.atoms where id=$1", [atom]))
+        .rows[0].status,
+      "DEACTIVATED",
+    );
+    assert.equal(
+      (
+        await admin.query(
+          "select count(*)::int n from public.emotional_pulses where atom_id=$1",
+          [atom],
+        )
+      ).rows[0].n,
+      0,
+    );
+    assert.equal(
+      (
+        await admin.query(
+          "select count(*)::int n from public.bond_invitations where creator_atom_id=$1 and status='ACTIVE'",
+          [atom],
+        )
+      ).rows[0].n,
+      0,
+    );
+    await assert.rejects(call(owner, "reactivate_my_account"));
+    await admin.query(
+      "update private.account_lifecycle set authenticated_after=now()-interval '2 seconds' where atom_id=$1",
+      [atom],
+    );
+    const session = randomUUID();
+    await admin.query("insert into auth.sessions(id,user_id) values($1,$2)", [
+      session,
+      owner,
+    ]);
+    deletionClaims.set(owner, {
+      session_id: session,
+      amr: [{ method: "otp", timestamp: Date.now() / 1000 }],
+    });
+    const restored = await Promise.all([
+      call(owner, "reactivate_my_account"),
+      call(owner, "reactivate_my_account"),
+    ]);
+    assert(
+      restored.every((r) => r.state === "active" && r.publicId === number),
+    );
+    const baseline = (
+      await admin.query(
+        "select baseline=private.growth_metrics($1) correct from private.growth_state where atom_id=$1",
+        [atom],
+      )
+    ).rows[0];
+    assert.equal(baseline.correct, true);
+    // Either ordering of reactivation/deletion ends terminally deleted.
+    await Promise.allSettled([
+      call(owner, "reactivate_my_account"),
+      call(owner, "delete_my_account", ["DELETE"]),
+    ]);
+    assert.equal(
+      (await admin.query("select status from public.atoms where id=$1", [atom]))
+        .rows[0].status,
+      "DELETED",
+    );
+  }
+  console.log(
+    "PASS: deactivation/Pulse/Bond/invitation/send races, stale sessions, repeated reactivation and terminal deletion.",
   );
   console.log(
     "PASS: identity/Bond concurrency, dedicated growth LOGIN denial checks, overlapping growth reservations/claims, and restart-persistent idempotency.",

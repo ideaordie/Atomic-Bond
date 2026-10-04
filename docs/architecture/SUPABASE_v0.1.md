@@ -1,5 +1,9 @@
 # Supabase Persistence & Identity v0.1
 
+Current lifecycle extension: [Task #9.3 deactivation](ACCOUNT_DEACTIVATION_v0.1.md)
+adds DEACTIVATED separately from DORMANT and terminal DELETED. Earlier Task #6
+state descriptions below are the original baseline.
+
 Task #6, application 0.6.0. Master Specification v0.2 remains authoritative.
 The approved frontend baseline is commit `6d78f5e`: Feel Your Network is a manual
 toggle, results open only on activation and remain independently closable, and

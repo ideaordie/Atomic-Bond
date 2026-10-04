@@ -73,6 +73,15 @@ export async function completeAccess(tokenHash: string, next: string) {
     if (!deletion.error && deletion.data?.pending)
       return { next: "/account/delete", publicId: null, returning: true };
     const returning = Boolean(context.atom?.publicId);
+    if (context.atom?.status === "DEACTIVATED")
+      return {
+        next:
+          nextPath(next) === "/account/delete"
+            ? "/account/delete"
+            : `/account/reactivate?next=${encodeURIComponent(nextPath(next))}`,
+        publicId: context.atom.publicId,
+        returning: true,
+      };
     if (!context.atom) {
       const details = registration(
         context.user.user_metadata.atomic_bond ?? {},
@@ -98,6 +107,8 @@ export async function finishRegistration(form: FormData) {
     await sameOrigin();
     const context = await ownerContext();
     if (!context.user?.email_confirmed_at) throw new Error();
+    if (context.atom?.status === "DEACTIVATED")
+      return { next: "/account/reactivate" };
     const details = registration(Object.fromEntries(form));
     if (!isCanonicalRegionId(details.locationId)) throw new Error();
     const place = await context.services.locations.resolve(details.locationId);

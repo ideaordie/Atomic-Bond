@@ -1,5 +1,9 @@
 # Verified email identity and passwordless ownership v0.1
 
+Task #9.3 adds [explicit deactivation/reactivation](ACCOUNT_DEACTIVATION_v0.1.md).
+Verified access to DEACTIVATED never activates automatically; old sessions are
+blocked by a private lifecycle cutoff. Permanent deletion remains irreversible.
+
 Task #9.1 adds a separate optional [growth-email worker](GROWTH_EMAIL_v0.1.md).
 Its seven operations cannot create Auth sessions or change Auth ownership; the
 pilot's isolated server credential itself has broader service-role authority.

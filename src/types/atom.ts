@@ -1,7 +1,8 @@
-export type AtomStatus = "PENDING" | "ACTIVE" | "DORMANT" | "DELETED";
+export type AtomStatus =
+  "PENDING" | "ACTIVE" | "DORMANT" | "DEACTIVATED" | "DELETED";
 /** Public numbers travel as decimal strings, avoiding JavaScript bigint precision loss. */
 export interface PublicAtomProfile {
-  readonly status?: "ACTIVE" | "DORMANT" | "DELETED";
+  readonly status?: "ACTIVE" | "DORMANT" | "DEACTIVATED" | "DELETED";
   readonly publicId: string;
   readonly displayName?: string;
   readonly xHandle?: string;

@@ -8,6 +8,9 @@ const db = new PGlite({ extensions: { pgcrypto } });
 await db.exec(
   `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;`,
 );
+await db.exec(
+  "create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp())",
+);
 for (const f of (await readdir("supabase/migrations"))
   .filter((f) => f.endsWith(".sql"))
   .sort())
@@ -16,9 +19,6 @@ const users = new Map(),
   tokens = new Map(),
   links = new Map(),
   mail = new Map();
-await db.exec(
-  "create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade)",
-);
 const claimsByUser = new Map();
 let failNextRemoval = false;
 const owner = randomUUID();
@@ -63,7 +63,7 @@ await rpc("activate_atom", [], owner);
 async function session(user) {
   const seconds = Math.floor(Date.now() / 1000);
   const sessionId = randomUUID();
-  await db.query("insert into auth.sessions values($1,$2)", [
+  await db.query("insert into auth.sessions(id,user_id) values($1,$2)", [
     sessionId,
     user.id,
   ]);
@@ -100,6 +100,8 @@ async function session(user) {
   };
 }
 const methods = {
+  deactivate_my_account: [],
+  reactivate_my_account: [],
   account_deletion_status: [],
   delete_my_account: ["p_confirmation"],
   account_cleanup_pending: ["p_user"],

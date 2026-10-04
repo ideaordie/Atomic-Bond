@@ -371,10 +371,14 @@
   align-items: center;
   gap: 16px;
 }
+.account-management,
 .account-danger {
   margin-top: 2.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid #d8dfe8;
+}
+.account-deactivation {
+  margin-block: 1.5rem;
 }
 .account-danger .delete-account-button {
   background: #fff;
@@ -382,6 +386,13 @@
   color: #94212d;
   min-height: 44px;
   white-space: normal;
+}
+.account-danger a.delete-account-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 16px;
+  text-decoration: none;
 }
 .account-confirm-actions {
   display: flex;

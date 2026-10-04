@@ -1,5 +1,11 @@
 # Growth email v0.1 — Task #9.1
 
+Task #9.3 [account deactivation](ACCOUNT_DEACTIVATION_v0.1.md) preserves preference
+and provenance while lifecycle-ineligible. Unsent deliveries are cancelled with
+period uniqueness retained; explicit reactivation establishes the current graph
+baseline without resetting completed-period protection. The Tuesday schedule is
+unchanged.
+
 ## v0.9.1 production activation and acceptance
 
 Controlled real acceptance passed: the owner received the digest, VIEW MY ATOM

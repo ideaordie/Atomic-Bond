@@ -74,7 +74,7 @@ export function ConfirmAccess() {
                 if ("error" in r) setError(r.error);
                 else if (
                   r.next.startsWith("/bond/") ||
-                  r.next === "/account/delete"
+                  r.next.startsWith("/account/")
                 )
                   window.location.replace(r.next);
                 else setResult(r);

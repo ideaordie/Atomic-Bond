@@ -548,6 +548,17 @@ its own connected-network visibility boundary.
 
 ------------------------------------------------------------------------
 
+### Explicit account deactivation and permanent deletion
+
+An owner may explicitly deactivate their account reversibly. Deactivation
+preserves the private account, profile, permanent Atom number and confirmed
+Bonds, while hiding optional public identity and Home Region, removing active
+Pulse and suspending engagement email. Transactional access remains available.
+Secure owner authentication and explicit reactivation restore the same Atom;
+authentication alone does not reactivate it. Preferences remain preserved and
+the growth comparison baseline restarts from the current network. Permanent
+account deletion remains separate, irreversible and cannot be reactivated.
+
 ## 58. SECURITY PRINCIPLES
 
 Security is architectural: server-side authoritative transitions, Row

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — Task #9.3 account deactivation candidate
+
+- Added a separate reversible DEACTIVATED lifecycle with owner confirmation, explicit verified reactivation and preserved number, private profile, preferences and confirmed Bonds. Permanent DELETE remains irreversible.
+- Hidden optional public identity/location, cleared Pulse, cancelled invitations and suppressed weekly delivery while deactivated. Reactivation preserves weekly intent and establishes the current network as the growth baseline.
+- Added session-cutoff protection, migrations, privacy copy and lifecycle/security/concurrency/browser coverage. Hosted and controlled Atom #5 acceptance remain pending; Atoms #3 and #8 are excluded.
+- Master Spec received only the approved account-lifecycle clarification. No scheduling change or deleted-account recovery mechanism.
+- Recorded the completed Task #9.2 Atom #8 deletion acceptance: anonymized DELETED, number and two structural Bonds retained, private identity/owner access removed. Same-email live re-registration was cancelled before execution.
+
 ## 0.9.2 candidate — Task #9.2 account deletion
 
 - Added two-stage DELETE ACCOUNT confirmation and recent passwordless authentication, with owner-derived database authorization and recoverable server-only Auth cleanup.

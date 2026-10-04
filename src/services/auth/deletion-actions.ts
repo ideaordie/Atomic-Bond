@@ -1,6 +1,6 @@
 "use server";
 import { cookies, headers } from "next/headers";
-import { authClient, requireOwner } from "./server";
+import { authClient, ownerContext } from "./server";
 import { appOrigin } from "./policy";
 import { accountRemovalAdapter } from "./account-removal";
 
@@ -11,7 +11,13 @@ async function guardOrigin() {
 export async function requestDeletionAccess() {
   try {
     await guardOrigin();
-    const { client, user } = await requireOwner();
+    const { client, user, atom } = await ownerContext();
+    if (
+      !user?.email_confirmed_at ||
+      !atom?.publicId ||
+      !["ACTIVE", "DORMANT", "DEACTIVATED"].includes(atom.status)
+    )
+      throw new Error();
     const { error } = await client.auth.signInWithOtp({
       email: user!.email!,
       options: {

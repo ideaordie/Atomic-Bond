@@ -6,6 +6,7 @@ export default async function OwnerPage() {
   await connection();
   const context = await ownerContext();
   const { atom, services } = context;
+  if (atom?.status === "DEACTIVATED") redirect("/account/reactivate");
   if (!ownedPublicId(context)) {
     if (context.user) {
       const { data } = await context.client.rpc("account_deletion_status");
