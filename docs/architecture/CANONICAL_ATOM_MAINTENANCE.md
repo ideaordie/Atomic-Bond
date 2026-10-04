@@ -1,8 +1,8 @@
 # One-time pre-beta maintenance exception
 
-Status: production transaction committed on October 4, 2026. Database and
-fresh passwordless-session acceptance passed; physical PWA and a new
-owner-selected Pulse send remain pending.
+Status: completed. Production transaction committed on October 4, 2026.
+Database and fresh passwordless-session acceptance passed. The owner manually
+confirmed successful Pulse operation and a fresh installed-PWA launch as Atom 1.
 
 The owner approved assigning public number 1 to the genuine account formerly
 numbered 3. This is not product renumbering functionality. Normal permanent-number
@@ -95,8 +95,7 @@ by dry run: 5 connected Atoms/2 direct Bonds/1 region/1 country and completed pe
 Verification: 235 automated tests, exact-operation abort/rollback checks including
 interruption with the protection trigger disabled, production build/TypeScript,
 lint, secret scan, and three unavailable-page browser checks at 390x844, 768x1024,
-1440x900 passed. New invitation/Pulse actions after fresh sign-in and a physical
-installed-PWA launch have not yet been claimed as verified.
+1440x900 passed. Subsequent live acceptance is recorded below.
 
 Fresh passwordless acceptance subsequently passed: the owner completed the email
 flow after sign-out and MY ATOM 1 resolved with the same UUID, one verified owner,
@@ -105,5 +104,6 @@ sequence allocation. Fresh-session /admin/signals access succeeded. CREATE BOND
 generated a QR invitation; it was cancelled without creating a Bond, leaving zero
 usable active invitations. Pulse composer and all eight choices were available;
 no emotion was selected or sent by the agent. Existing emotional state was preserved.
-Physical installed-PWA acceptance and a deliberate owner-selected new Pulse send
-remain manual checks, not claimed results.
+The owner subsequently confirmed the live Pulse works and a fresh installed-PWA
+launch resolves MY ATOM 1. These are owner-reported physical/live acceptance
+results, not agent-operated device tests. No acceptance checks remain pending.
