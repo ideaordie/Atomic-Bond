@@ -2,7 +2,7 @@
 
 Task #9.3 local candidate: [account deactivation and reactivation](docs/architecture/ACCOUNT_DEACTIVATION_v0.1.md)
 preserves the same account and Bonds during an explicit pause. Permanent deletion
-remains separate and irreversible. Hosted/live acceptance is pending.
+remains separate and irreversible. Controlled live acceptance is pending.
 
 Task #9.2 account deletion is a v0.9.2 candidate, not yet production accepted.
 See [account deletion, tombstones and rollout](docs/architecture/ACCOUNT_DELETION_v0.1.md)

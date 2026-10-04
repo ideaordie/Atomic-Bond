@@ -1,7 +1,13 @@
 # Account deactivation and reactivation — Task #9.3
 
-Status: local implementation candidate; hosted migration, publication and controlled
-live acceptance pending. Do not describe v0.9.3 as accepted before the live cycle.
+Status: controlled-acceptance candidate; both reviewed migrations are applied.
+Controlled live acceptance remains pending. Do not describe v0.9.3
+as accepted before the live cycle.
+
+Hosted migration checkpoint: history matches all nine repository migrations through 202610050002. Before/after Atom, Bond, preference and number-ledger integrity hashes
+match. Six ACTIVE Atoms, eight confirmed Bonds and sequence value nine are unchanged;
+Atom #5 remains ACTIVE and Atom #8 remains DELETED. No live lifecycle transition
+has been performed.
 
 Local verification: 224 unit/integration/security tests, native PostgreSQL
 concurrency/restart checks, client security boundary, formatting/lint/TypeScript,
