@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.2 — Canonical Atom maintenance support
+
+- Added a generic unavailable public Atom page without identity disclosure or redirects.
+- Added the approved, guarded one-time pre-beta #3 → #1 data maintenance operation and local preservation/abort tests. Production execution and fresh owner acceptance are recorded separately in the maintenance document; normal permanent-number rules remain unchanged.
+
 ## 0.10.1 — Mobile information row
 
 - Kept Your Network Overview and Network Signal side by side on mobile with equal compact widths and padding. Expanded panels and Signal persistence remain unchanged.

@@ -30,6 +30,15 @@ export async function NetworkPage({
     process.env,
     requested || ownerId || undefined,
   );
+  if (source.mode === "supabase" && requested && !source.graph.nodes.length) {
+    return (
+      <main className="signal-admin">
+        <h1>ATOM UNAVAILABLE</h1>
+        <p>This Atom is not currently available.</p>
+        <Link href="/">RETURN TO ATOMIC BOND</Link>
+      </main>
+    );
+  }
   const ownView =
     !publicView && Boolean(ownerId && (!requested || requested === ownerId));
   return (

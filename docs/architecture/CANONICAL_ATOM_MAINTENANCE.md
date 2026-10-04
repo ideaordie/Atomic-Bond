@@ -1,0 +1,65 @@
+# One-time pre-beta maintenance exception
+
+Status: implementation tested locally; production execution and live acceptance pending.
+
+The owner approved assigning public number 1 to the genuine account formerly
+numbered 3. This is not product renumbering functionality. Normal permanent-number
+rules and the frozen Master Spec remain unchanged. Historical documentation is
+not rewritten.
+
+## Operation and guards
+
+`supabase/maintenance/atom3-to-atom1.sql` is an explicitly invoked, version-controlled
+data operation, intentionally outside schema migrations: a new installation must
+not attempt this production-specific reassignment. It preserves the genuine UUID,
+Auth relationship, all identity/profile/preferences, Bonds, Pulse, growth records,
+and administrator membership. The unused test tombstone becomes unnumbered and
+loses its location association; Atom 2 and the shared location record are retained.
+Ledger entries 1 and 3 remain, the sequence is never changed, and 3 is unavailable
+without a redirect or historical identity disclosure.
+
+The transaction takes the lifecycle advisory lock, an exclusive Atom-table lock,
+and read locks blocking writes to all affected dependency tables. Lock acquisition
+times out rather than waiting indefinitely. Source UUID, verified administrator,
+ACTIVE lifecycle, five exact counterpart numbers, test destination identity and
+absence of dependencies, weekly owner preference, baseline, delivery safety and
+protection are checked. The sole temporarily disabled trigger is protect_atom;
+it is restored before commit. Full related-row comparisons remain in transaction
+memory, never output. Other Atoms, topology and sequence are compared too. Any
+exception rolls the transaction back, including trigger changes.
+
+## External gates
+
+Confirm no Vercel growth execution is running, no delivery lease is active, and
+no pending/retry source delivery exists. Avoid Tuesday 16:00 UTC. Prevent manual
+scheduler invocations during the short window; do not change the Tuesday schedule.
+Capture fresh non-secret before-state comparisons and the obsolete tombstone's
+location UUID for compensating recovery. Verify physical backup availability.
+At preparation, Supabase reported a completed October 4 backup at 12:28 UTC and
+PITR disabled. A full backup restore is disaster recovery, not the normal rollback:
+it could erase unrelated changes.
+
+## Recovery
+
+Before commit, a failure is a transaction rollback. After commit, stop and assess
+any material failure. A compensating transaction must acquire the same locks and
+assert the same stable account is currently number 1, the test tombstone remains
+unnumbered/DELETED, number 3 has no Atom, and no conflicting delivery is running.
+With only protect_atom temporarily disabled, restore the genuine number to 3,
+then restore the old tombstone number 1 and its captured location UUID. Restore
+the trigger and verify unchanged related data, sequence and ledger before commit.
+Never restore whole tables or overwrite legitimate post-maintenance activity.
+Do not execute compensation automatically or improvise a recovery after a guard fails.
+
+## Acceptance
+
+Compare all five Bond IDs/endpoints, UUID graph reach, profile, preferences,
+identity, growth state/history, administrator membership and welcome Signal.
+Verify number 2 and sequence unchanged. Fresh passwordless authentication must
+resolve MY ATOM 1; public 3 must show only ATOM UNAVAILABLE. Verify owner controls,
+Signal administration without republishing, growth dry-run/idempotency and fresh
+PWA behavior. No actual growth email or unnecessary Bond is needed. The service
+worker has no owner/graph runtime cache; stale open tabs require refresh.
+
+Local tests run the exact SQL and changed-source, missing-admin, destination-data,
+changed-Bonds and repeat-operation aborts. Ordinary renumbering must still fail.
