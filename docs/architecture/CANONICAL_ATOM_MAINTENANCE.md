@@ -1,8 +1,8 @@
 # One-time pre-beta maintenance exception
 
 Status: production transaction committed on October 4, 2026. Database and
-refreshed-session acceptance passed; fresh passwordless and physical PWA
-acceptance remain pending.
+fresh passwordless-session acceptance passed; physical PWA and a new
+owner-selected Pulse send remain pending.
 
 The owner approved assigning public number 1 to the genuine account formerly
 numbered 3. This is not product renumbering functionality. Normal permanent-number
@@ -97,3 +97,13 @@ interruption with the protection trigger disabled, production build/TypeScript,
 lint, secret scan, and three unavailable-page browser checks at 390x844, 768x1024,
 1440x900 passed. New invitation/Pulse actions after fresh sign-in and a physical
 installed-PWA launch have not yet been claimed as verified.
+
+Fresh passwordless acceptance subsequently passed: the owner completed the email
+flow after sign-out and MY ATOM 1 resolved with the same UUID, one verified owner,
+five unchanged Bonds, unchanged preferences/baseline, one admin membership and no
+sequence allocation. Fresh-session /admin/signals access succeeded. CREATE BOND
+generated a QR invitation; it was cancelled without creating a Bond, leaving zero
+usable active invitations. Pulse composer and all eight choices were available;
+no emotion was selected or sent by the agent. Existing emotional state was preserved.
+Physical installed-PWA acceptance and a deliberate owner-selected new Pulse send
+remain manual checks, not claimed results.
