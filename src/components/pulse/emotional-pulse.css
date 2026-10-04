@@ -158,24 +158,6 @@
   box-shadow: 0 6px 24px #29466312;
   overflow: hidden;
 }
-.network-emotion-results header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 12px;
-}
-.network-emotion-results h2 {
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  margin: 0;
-}
-.network-emotion-results header button {
-  min-width: 44px;
-  min-height: 44px;
-  flex-shrink: 0;
-  font-size: 24px;
-}
 .measurement-status {
   margin: 0;
   padding: 0 12px 10px;

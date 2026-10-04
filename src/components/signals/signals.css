@@ -79,17 +79,24 @@
   overflow: auto;
   background: var(--surface, #fff);
   color: var(--text, #172b3e);
-  padding: 20px;
+  padding: 0;
   border: 1px solid var(--border, #abbac4);
-  border-radius: 16px;
-  box-shadow: 0 10px 50px #19304830;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px #29466312;
   overflow-wrap: anywhere;
 }
-.signal-details header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+.signal-details-content {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+.signal-details-content h3 {
+  margin: 8px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.signal-details-content .signal-type,
+.signal-details-content time {
+  font-size: 12px;
 }
 .signal-details p {
   white-space: pre-wrap;

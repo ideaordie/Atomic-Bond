@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — Information-panel visual consistency
+
+- Unified expanded Network Overview and Network Signal headings, close controls, body typography and panel styling without changing content, persistence or publication behavior.
+
 ## v0.10.0 — Approved Network Signal beta baseline
 
 - Final beta designation explicitly approved after the v0.10.1 mobile refinement and v0.10.2 canonical maintenance. Earlier release entries and commits remain historical and unchanged; this designation includes their accepted changes.

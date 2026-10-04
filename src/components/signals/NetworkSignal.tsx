@@ -6,6 +6,7 @@ import {
   type NetworkSignal as Signal,
 } from "../../services/signals/model";
 import "./signals.css";
+import "../network-details.css";
 export function SignalPanel({
   signal,
   available = true,
@@ -45,7 +46,7 @@ export function SignalPanel({
       </button>
       {expanded && visible && (
         <div
-          className="signal-details"
+          className="signal-details network-details"
           role="region"
           aria-label="Network Signal details"
           onKeyDown={(e) => {
@@ -54,29 +55,37 @@ export function SignalPanel({
         >
           <header>
             <h2>NETWORK SIGNAL</h2>
-            <button onClick={close} aria-label="Close Network Signal">
+            <button
+              type="button"
+              onClick={close}
+              aria-label="Close Network Signal"
+            >
               ×
             </button>
           </header>
-          <p>{signal.type === "ATOMIC_BOND" ? "ATOMIC BOND" : "COMMUNITY"}</p>
-          <h3>{signal.title}</h3>
-          <p>{signal.message}</p>
-          {signal.publishedAt && (
-            <time dateTime={signal.publishedAt}>
-              {new Date(signal.publishedAt).toLocaleString()}
-            </time>
-          )}
-          {signal.linkUrl && safeSignalUrl(signal.linkUrl) && (
-            <p>
-              <a
-                href={signal.linkUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {signal.linkLabel} ↗
-              </a>
+          <div className="signal-details-content">
+            <p className="signal-type">
+              {signal.type === "ATOMIC_BOND" ? "ATOMIC BOND" : "COMMUNITY"}
             </p>
-          )}
+            <h3>{signal.title}</h3>
+            <p>{signal.message}</p>
+            {signal.publishedAt && (
+              <time dateTime={signal.publishedAt}>
+                {new Date(signal.publishedAt).toLocaleString()}
+              </time>
+            )}
+            {signal.linkUrl && safeSignalUrl(signal.linkUrl) && (
+              <p>
+                <a
+                  href={signal.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {signal.linkLabel} ↗
+                </a>
+              </p>
+            )}
+          </div>
         </div>
       )}
     </section>

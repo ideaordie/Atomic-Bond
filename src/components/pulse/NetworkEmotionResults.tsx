@@ -3,6 +3,7 @@ import type { emotionalNetwork } from "../../graph/metrics/emotional-network";
 import type { networkReach } from "../../graph/metrics/network-reach";
 import { EMOTIONS } from "../../types/emotional-pulse";
 import { EMOTION_DEFINITIONS } from "../../living-atom/pulse/emotions";
+import "../network-details.css";
 
 export function NetworkEmotionResults({
   summary,
@@ -54,7 +55,7 @@ export function NetworkEmotionResults({
       {expanded && (
         <div
           id="network-now-details"
-          className="network-emotion-results"
+          className="network-emotion-results network-details"
           role="region"
           aria-label="Your Network Overview details"
           onKeyDown={(event) => {

@@ -1,0 +1,46 @@
+/* Shared presentation for the two Living Atom information panels. */
+.network-details {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.network-details > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+.network-details > header h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+}
+.network-details > header button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.network-details > header button:hover {
+  background: var(--surface);
+}
+.network-details > header button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}

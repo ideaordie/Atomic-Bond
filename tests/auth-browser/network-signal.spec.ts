@@ -101,6 +101,19 @@ test("admin drafts, persistent global panel, close, reload and ending", async ({
   await expect(
     page.getByRole("region", { name: "Network Signal details" }),
   ).toBeVisible();
+  const signalStyle = await page.locator(".signal-details").evaluate((el) => {
+    const heading = getComputedStyle(el.querySelector("h2")!);
+    const close = getComputedStyle(el.querySelector("header button")!);
+    return [
+      heading.fontSize,
+      heading.letterSpacing,
+      close.width,
+      close.height,
+      close.fontSize,
+      close.borderRadius,
+      getComputedStyle(el).fontSize,
+    ];
+  });
   await page.screenshot({
     path: info.outputPath("network-signal.png"),
     fullPage: true,
@@ -111,6 +124,33 @@ test("admin drafts, persistent global panel, close, reload and ending", async ({
     page.getByRole("region", { name: "Network Signal details" }),
   ).toHaveCount(0);
   await expect(panel).toContainText("Global update");
+  await page.getByRole("button", { name: /^YOUR NETWORK OVERVIEW/ }).click();
+  const overview = page.getByRole("region", {
+    name: "Your Network Overview details",
+  });
+  await expect(overview).toBeVisible();
+  expect(
+    await overview.evaluate((el) => {
+      const heading = getComputedStyle(el.querySelector("h2")!);
+      const close = getComputedStyle(el.querySelector("header button")!);
+      return [
+        heading.fontSize,
+        heading.letterSpacing,
+        close.width,
+        close.height,
+        close.fontSize,
+        close.borderRadius,
+        getComputedStyle(el).fontSize,
+      ];
+    }),
+  ).toEqual(signalStyle);
+  await page.screenshot({
+    path: info.outputPath("network-overview.png"),
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Close Your Network Overview" })
+    .click();
   expect(
     await page.evaluate(() =>
       [...Object.keys(localStorage), ...Object.keys(sessionStorage)].filter(
