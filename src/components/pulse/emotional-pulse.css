@@ -182,6 +182,9 @@
   font-size: 11px;
   color: var(--text);
 }
+.structural-coverage-note {
+  padding-inline: 12px;
+}
 .network-emotion-results .emotion-distribution {
   min-height: 0;
   border: 0;

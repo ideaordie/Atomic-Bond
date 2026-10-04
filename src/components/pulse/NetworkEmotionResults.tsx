@@ -84,7 +84,7 @@ export function NetworkEmotionResults({
                   : `Updated ${age === 0 ? "just now" : `${age} ${age === 1 ? "minute" : "minutes"} ago`}`}
           </p>
           {reach.people > summary.connectedCount && (
-            <p>
+            <p className="structural-coverage-note">
               Structural reach includes deleted or deactivated Atoms. Emotional
               coverage below includes only remaining participants.
             </p>
