@@ -6,7 +6,8 @@ welcome Signal; this correction does not change that record or publish another.
 ## Purpose and presentation
 
 Occasional global COMMUNITY or ATOMIC_BOND announcements appear beside Network
-Overview above Create Bond/Pulse. On narrow screens the information cards stack.
+Overview above Create Bond/Pulse. On narrow screens the information cards share
+one row with equal widths and compact padding.
 No active record shows NO CURRENT SIGNAL; request failure shows SIGNAL UNAVAILABLE.
 The expanded panel contains the complete text, publication time and optional HTTPS
 CTA. Text is rendered as text, never HTML. No feed, targeting, email or push exists.

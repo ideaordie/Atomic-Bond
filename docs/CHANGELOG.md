@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.1 — Mobile information row
+
+- Kept Your Network Overview and Network Signal side by side on mobile with equal compact widths and padding. Expanded panels and Signal persistence remain unchanged.
+
 ## 0.10.0 — Task #10 / Persistent Network Signal
 
 - Removed participant dismissal and browser-local suppression. Closing the expanded view now leaves the current Signal visible across reloads and visits; only the administrative publication lifecycle changes its visibility.

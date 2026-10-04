@@ -78,14 +78,12 @@ test("admin drafts, persistent global panel, close, reload and ending", async ({
       .querySelector(".primary-actions")!
       .getBoundingClientRect();
     return {
-      aligned:
-        innerWidth < 600
-          ? signal.top >= overview.bottom
-          : Math.abs(signal.top - overview.top) < 2,
+      aligned: Math.abs(signal.top - overview.top) < 2,
+      separate: overview.right < signal.left,
       above: signal.bottom <= primary.top,
     };
   });
-  expect(layout).toEqual({ aligned: true, above: true });
+  expect(layout).toEqual({ aligned: true, separate: true, above: true });
   await page.screenshot({
     path: info.outputPath("network-signal-compact.png"),
     fullPage: true,
