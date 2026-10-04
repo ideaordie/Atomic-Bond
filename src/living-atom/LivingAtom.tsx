@@ -28,6 +28,7 @@ import type { Emotion, EmotionalPulse } from "../types/emotional-pulse";
 const EMPTY_PULSES: readonly EmotionalPulse[] = [];
 
 export interface LivingAtomProps {
+  informationPanel?: React.ReactNode;
   ownerMode?: boolean;
   synthetic?: boolean;
   emotional?: {
@@ -45,6 +46,7 @@ export interface LivingAtomProps {
 }
 
 export function LivingAtom({
+  informationPanel,
   graph,
   originalAtomId,
   onCreateBond,
@@ -329,15 +331,20 @@ export function LivingAtom({
       )}
 
       <div className="spatial-dock">
-        {emotionalView && (
-          <NetworkEmotionResults
-            summary={emotionalSummary}
-            reach={reach}
-            now={emotional?.now ?? 0}
-            updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
-            status={emotional?.status ?? "ready"}
-          />
-        )}
+        <div
+          className={informationPanel ? "network-information-row" : undefined}
+        >
+          {emotionalView && (
+            <NetworkEmotionResults
+              summary={emotionalSummary}
+              reach={reach}
+              now={emotional?.now ?? 0}
+              updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
+              status={emotional?.status ?? "ready"}
+            />
+          )}
+          {informationPanel}
+        </div>
         {(ownerMode ||
           !["DELETED", "DEACTIVATED"].includes(
             scene.selected.status || "",

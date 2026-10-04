@@ -479,6 +479,51 @@ try {
       "DELETED",
     );
   }
+  {
+    const operator = await active();
+    const session = randomUUID();
+    await admin.query("insert into auth.sessions(id,user_id) values($1,$2)", [
+      session,
+      operator,
+    ]);
+    deletionClaims.set(operator, {
+      session_id: session,
+      amr: [{ method: "otp", timestamp: Date.now() / 1000 }],
+    });
+    await admin.query(
+      "insert into private.signal_administrators(auth_user_id) values($1)",
+      [operator],
+    );
+    const args = [
+      null,
+      "COMMUNITY",
+      "Concurrency test",
+      "One active global record",
+      null,
+      null,
+      null,
+      null,
+    ];
+    const ids = await Promise.all([
+      call(operator, "save_signal_draft", args),
+      call(operator, "save_signal_draft", args),
+    ]);
+    const attempts = await Promise.allSettled(
+      ids.map((id) => call(operator, "publish_network_signal", [id, null])),
+    );
+    assert.equal(attempts.filter((r) => r.status === "fulfilled").length, 1);
+    assert.equal(
+      (
+        await admin.query(
+          "select count(*)::int n from private.network_signals where publication='PUBLISHED'",
+        )
+      ).rows[0].n,
+      1,
+    );
+    console.log(
+      "PASS: concurrent global Signal publication allows exactly one winner.",
+    );
+  }
   console.log(
     "PASS: deactivation/Pulse/Bond/invitation/send races, stale sessions, repeated reactivation and terminal deletion.",
   );

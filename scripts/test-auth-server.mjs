@@ -60,6 +60,10 @@ const place = (
 ).rows[0].id;
 await rpc("begin_atom", [place, "Inviting Atom", null], owner);
 await rpc("activate_atom", [], owner);
+await db.query(
+  "insert into private.signal_administrators(auth_user_id) values($1)",
+  [owner],
+);
 async function session(user) {
   const seconds = Math.floor(Date.now() / 1000);
   const sessionId = randomUUID();
@@ -109,6 +113,20 @@ const methods = {
   public_graph: ["p_public_id"],
   canonical_locations: ["p_query"],
   canonical_location: ["p_id"],
+  signal_admin_history: [],
+  current_network_signal: [],
+  save_signal_draft: [
+    "p_id",
+    "p_type",
+    "p_title",
+    "p_message",
+    "p_label",
+    "p_url",
+    "p_start",
+    "p_end",
+  ],
+  publish_network_signal: ["p_id", "p_replace"],
+  end_network_signal: ["p_id"],
   my_atom: [],
   begin_atom: ["p_location_id", "p_display_name", "p_x_handle"],
   activate_atom: [],

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0-rc.1 — Task #10 / Network Signal candidate
+
+- Added global Signal authoring, private administrator membership, verified ACTIVE-owner authorization, draft preview and database-time publication windows.
+- Added a compact Living Atom Signal panel, HTTPS CTA validation and per-browser dismissal. Sponsorship remains disabled; no targeting, email or push.
+- Production publication remains gated on explicit approval. No initial Signal is automatically published.
+- Applied the additive Signal migration with existing participant/network data unchanged and provisioned verified Atom #3 membership. No new server credential, scheduling change or Master Spec revision.
+- Regression/security/build checks passed, including 234 unit/integration cases, PostgreSQL concurrency, 81 main browser cases, 3 persistence cases and 51 Auth/browser cases; timing/offline-navigation failures passed isolated reruns. Live first-publication acceptance remains pending.
+
 ## 0.9.3 — Task #9.3 / Account Deactivation & Reactivation
 
 - Added a separate reversible DEACTIVATED lifecycle with owner confirmation, explicit verified reactivation and preserved number, private profile, preferences and confirmed Bonds. Permanent DELETE remains irreversible.

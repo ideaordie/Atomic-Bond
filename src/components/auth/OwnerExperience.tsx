@@ -1,4 +1,5 @@
 "use client";
+import { NetworkSignal } from "../signals/NetworkSignal";
 import { InstallOffer } from "../pwa/InstallOffer";
 
 import { useEffect, useRef, useState } from "react";
@@ -134,6 +135,7 @@ export function OwnerExperience({
   return (
     <>
       <LivingAtom
+        informationPanel={<NetworkSignal />}
         graph={graph}
         originalAtomId={publicId}
         synthetic={false}

@@ -1179,3 +1179,177 @@ async function internal(user: string) {
     )
   ).rows[0]!.atom_id;
 }
+
+describe("Network Signal database authorization and scheduling", () => {
+  it("protects membership, drafts and publication and exposes only active display data", async () => {
+    const admin = await active(),
+      ordinary = await active();
+    await recentAccess(admin.user);
+    await recentAccess(ordinary.user);
+    await db.query("select private.provision_signal_administrator($1,true)", [
+      admin.number,
+    ]);
+    expect(await rpc("signal_admin_history", admin.user)).toEqual([]);
+    for (const user of [null, ordinary.user]) {
+      await expect(rpc("signal_admin_history", user)).rejects.toThrow();
+      await expect(
+        rpc("save_signal_draft", user, [
+          null,
+          "COMMUNITY",
+          "Title",
+          "Message",
+          null,
+          null,
+          null,
+          null,
+        ]),
+      ).rejects.toThrow();
+      await expect(
+        rpc("publish_network_signal", user, [randomUUID(), null]),
+      ).rejects.toThrow();
+      await expect(
+        rpc("end_network_signal", user, [randomUUID()]),
+      ).rejects.toThrow();
+    }
+    await expect(
+      call("select * from private.signal_administrators", [], ordinary.user),
+    ).rejects.toThrow();
+    await expect(
+      call(
+        "select private.provision_signal_administrator($1,true)",
+        [ordinary.number],
+        ordinary.user,
+      ),
+    ).rejects.toThrow();
+    await expect(
+      call(
+        "insert into private.signal_administrators(auth_user_id) values($1)",
+        [ordinary.user],
+        ordinary.user,
+      ),
+    ).rejects.toThrow();
+    await expect(rpc("current_network_signal")).rejects.toThrow();
+    const draftArgs = [
+      null,
+      "ATOMIC_BOND",
+      "Test title",
+      "Test message",
+      null,
+      null,
+      null,
+      null,
+    ];
+    const id = await rpc("save_signal_draft", admin.user, draftArgs);
+    expect(await rpc("current_network_signal", ordinary.user)).toBeNull();
+    await expect(
+      rpc("save_signal_draft", ordinary.user, [id, ...draftArgs.slice(1)]),
+    ).rejects.toThrow();
+    for (const url of [
+      "javascript:alert(1)",
+      "data:text/html,bad",
+      "file:///x",
+      "https://user:pass@example.com",
+      "https://example.com\\bad",
+    ])
+      await expect(
+        rpc("save_signal_draft", admin.user, [
+          null,
+          "COMMUNITY",
+          "Test",
+          "Test",
+          "Visit",
+          url,
+          null,
+          null,
+        ]),
+      ).rejects.toThrow();
+    await rpc("publish_network_signal", admin.user, [id, null]);
+    const display = await rpc("current_network_signal", ordinary.user);
+    expect(Object.keys(display).sort()).toEqual(
+      [
+        "id",
+        "type",
+        "title",
+        "message",
+        "linkLabel",
+        "linkUrl",
+        "publishedAt",
+        "startsAt",
+        "endsAt",
+      ].sort(),
+    );
+    const second = await rpc("save_signal_draft", admin.user, draftArgs);
+    await expect(
+      rpc("publish_network_signal", admin.user, [second, null]),
+    ).rejects.toThrow(/overlaps/);
+    await rpc("publish_network_signal", admin.user, [second, id]);
+    expect((await rpc("current_network_signal", ordinary.user)).id).toBe(
+      second,
+    );
+    await rpc("end_network_signal", admin.user, [second]);
+    const future = await rpc("save_signal_draft", admin.user, [
+      null,
+      "COMMUNITY",
+      "Later",
+      "Later",
+      null,
+      null,
+      new Date(Date.now() + 3600000).toISOString(),
+      new Date(Date.now() + 7200000).toISOString(),
+    ]);
+    await rpc("publish_network_signal", admin.user, [future, null]);
+    expect(await rpc("current_network_signal", ordinary.user)).toBeNull();
+    const overlap = await rpc("save_signal_draft", admin.user, [
+      null,
+      "COMMUNITY",
+      "Overlap",
+      "Overlap",
+      null,
+      null,
+      new Date(Date.now() + 4000000).toISOString(),
+      null,
+    ]);
+    await expect(
+      rpc("publish_network_signal", admin.user, [overlap, null]),
+    ).rejects.toThrow(/overlaps/);
+    await db.query(
+      "update private.network_signals set starts_at=now()-interval '2 hours',ends_at=now()-interval '1 hour' where id=$1",
+      [future],
+    );
+    expect(await rpc("current_network_signal", ordinary.user)).toBeNull();
+    await expect(
+      rpc("save_signal_draft", admin.user, [
+        null,
+        "SPONSORED",
+        "Ad",
+        "Ad",
+        null,
+        null,
+        null,
+        null,
+      ]),
+    ).rejects.toThrow();
+    const sponsored = randomUUID();
+    await db.query(
+      "insert into private.network_signals(id,type,title,message) values($1,'SPONSORED','Reserved','Disabled')",
+      [sponsored],
+    );
+    await expect(
+      rpc("publish_network_signal", admin.user, [sponsored, null]),
+    ).rejects.toThrow();
+    await rpc("deactivate_my_account", admin.user);
+    await recentAccess(admin.user);
+    await expect(rpc("signal_admin_history", admin.user)).rejects.toThrow();
+    await expect(rpc("current_network_signal", admin.user)).rejects.toThrow();
+    await rpc("delete_my_account", admin.user, ["DELETE"]);
+    await db.query("delete from auth.users where id=$1", [admin.user]);
+    expect(
+      (
+        await db.query(
+          "select count(*)::int n from private.signal_administrators where auth_user_id=$1",
+          [admin.user],
+        )
+      ).rows[0],
+    ).toEqual({ n: 0 });
+  });
+});
