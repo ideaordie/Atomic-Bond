@@ -3,6 +3,14 @@
 Version: 0.10.0, persistent Network Signal. The owner published the first
 welcome Signal; this correction does not change that record or publish another.
 
+Current approved beta operations: the same founding owner now resolves to Atom #1
+following the separately accepted canonical maintenance. Administrator authority
+still derives from verified Auth membership, never the public number. Atom #3 is
+retired and unavailable; do not provision a new membership or republish the welcome
+Signal. The historical candidate-verification record below describes its original
+state at that time. Final v0.10.0 includes the accepted v0.10.1/v0.10.2 follow-ups;
+this explicit beta designation does not rewrite their history.
+
 ## Purpose and presentation
 
 Occasional global COMMUNITY or ATOMIC_BOND announcements appear beside Network
@@ -113,3 +121,25 @@ The owner subsequently published the first welcome Signal and approved persisten
 compact visibility in place of dismissal. Replacement and expiration retain their
 automated coverage; the existing production welcome Signal must not be changed
 merely for testing this correction.
+
+## Final v0.10.0 beta verification
+
+The approved beta baseline includes the accepted mobile and canonical-maintenance
+follow-ups without rewriting their historical releases. Final verification passed
+235 unit/integration/security tests, native PostgreSQL concurrency/restart tests,
+81 main browser cases, 3 persistence cases and 54 Auth/QR/lifecycle/growth/PWA cases.
+Browser coverage uses 390×844, 768×1024 and 1440×900. Formatting, lint, TypeScript,
+production build, privileged-client-boundary checks and secret scans passed.
+An obsolete persistence assertion was updated to the approved generic unavailable
+state; the three cases then passed. No application behavior changed for that fix.
+
+Production checks confirmed exactly one active WELCOME TO THE BETA Signal, unchanged
+content, persistent visibility after closing/reloading/navigation, and authorized
+administration by the verified founding owner now numbered 1. Retired 3 remains
+unavailable without redirect. All ten hosted migrations match the repository.
+Growth remains enabled with cap 10 and Tuesday 16:00 UTC scheduling; its read-only
+dry run attempted and accepted zero emails. No Signal, lifecycle, Bond, Pulse,
+preference, migration or scheduler mutation was made for finalization.
+
+The approved beta feature freeze permits bug/security fixes, serious usability
+corrections and small approved UI changes. New features require a new product task.

@@ -56,6 +56,11 @@ test("Supabase mode retrieves only real public projection and has no simulated o
   await page.reload();
   await expect(page.getByTestId("selected-atom")).toHaveText("#1");
   await page.goto("/explore?atom=9999");
-  await expect(page.getByRole("status")).toContainText("No active Atoms");
+  await expect(
+    page.getByRole("heading", { name: "ATOM UNAVAILABLE", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This Atom is not currently available.", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByTestId("living-atom")).toHaveCount(0);
 });

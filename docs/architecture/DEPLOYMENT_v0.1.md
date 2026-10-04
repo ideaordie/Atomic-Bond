@@ -313,7 +313,7 @@ complete the durable private cleanup marker using the supported server adapter.
 Do not roll back anonymized user data or reset numbers. Disable the deletion key
 for emergency shutdown; existing transactional email and growth credentials stay
 independent. Production acceptance requires a specifically approved disposable
-account, never Atom #3 or another genuine participant.
+account, never the founding administrator (currently Atom #1) or another genuine participant.
 
 ## Task #9.3 accepted lifecycle release
 
@@ -328,3 +328,15 @@ If a deployment must be rolled back, keep the additive database state and use a
 lifecycle-aware build. Do not restore a pre-deactivation application that assumes
 every owned Atom is ACTIVE. Never change lifecycle rows or reset Atom numbers as
 part of deployment recovery. Permanent deletion remains irreversible.
+
+## Task #10 beta baseline
+
+The approved final designation is v0.10.0, including the previously published
+mobile refinement and canonical maintenance. Preserve earlier release history.
+Migration 202610060001 is already applied; release finalization applies no migration.
+The existing verified owner now publicly numbered 1 retains Signal administration
+through private Auth membership. Never provision duplicate membership or restore
+retired number 3. Preserve the active WELCOME TO THE BETA Signal during deployment.
+Normal main → Vercel deployment uses https://atomicbond.ideaordie.com.
+Tuesday 16:00 UTC growth scheduling, enabled state and safety cap remain unchanged.
+The separately documented one-time maintenance SQL must never be replayed.

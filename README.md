@@ -1,6 +1,13 @@
 # Atomic Bond
 
-Current approved release: **v0.9.3 — Account Deactivation & Reactivation**.
+Current approved beta baseline: **v0.10.0 — Network Signal**.
+See [Network Signal](docs/architecture/NETWORK_SIGNAL_v0.1.md) for persistent global
+announcements and private verified-owner administration. The founding administrator
+is now Atom #1; retired #3 remains unavailable. The accepted mobile and canonical
+maintenance follow-ups are included in this explicitly designated beta baseline.
+Feature freeze applies: no additional features without a new approved product task.
+
+Preserved lifecycle release: **v0.9.3 — Account Deactivation & Reactivation**.
 See [account deactivation and reactivation](docs/architecture/ACCOUNT_DEACTIVATION_v0.1.md).
 Explicit deactivation preserves the account, number, profile and Bonds for verified return.
 Permanent [account deletion](docs/architecture/ACCOUNT_DELETION_v0.1.md) remains separate

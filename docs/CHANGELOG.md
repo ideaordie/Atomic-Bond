@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.10.0 — Approved Network Signal beta baseline
+
+- Final beta designation explicitly approved after the v0.10.1 mobile refinement and v0.10.2 canonical maintenance. Earlier release entries and commits remain historical and unchanged; this designation includes their accepted changes.
+- Network Signal remains global and persistent, with no participant dismissal. The approved mobile information row remains side by side. Sponsorship remains disabled.
+- Current founding administrator is Atom #1 through unchanged verified Auth membership. Retired #3 remains unavailable, without a redirect. The one-time maintenance acceptance is documented separately.
+- Beta feature freeze: further work requires approval and is limited to bugs, security, serious usability issues, or small approved UI corrections unless a new product task is authorized.
+
 ## 0.10.2 — Canonical Atom maintenance support
 
 - Added a generic unavailable public Atom page without identity disclosure or redirects.
