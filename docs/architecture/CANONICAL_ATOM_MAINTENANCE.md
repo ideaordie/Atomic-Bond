@@ -1,6 +1,8 @@
 # One-time pre-beta maintenance exception
 
-Status: implementation tested locally; production execution and live acceptance pending.
+Status: production transaction committed on October 4, 2026. Database and
+refreshed-session acceptance passed; fresh passwordless and physical PWA
+acceptance remain pending.
 
 The owner approved assigning public number 1 to the genuine account formerly
 numbered 3. This is not product renumbering functionality. Normal permanent-number
@@ -63,3 +65,35 @@ worker has no owner/graph runtime cache; stale open tabs require refresh.
 
 Local tests run the exact SQL and changed-source, missing-admin, destination-data,
 changed-Bonds and repeat-operation aborts. Ordinary renumbering must still fail.
+
+## Execution record
+
+The support release bc991bb deployed successfully before execution. Vercel runtime
+logs showed no growth endpoint requests in the preceding 30 minutes, outside the
+Tuesday schedule. No conflicting delivery was present. Fresh production guards
+matched the audited state. The exact version-controlled transaction committed.
+
+All 14 before/after comparisons passed: normalized Atom rows, Auth users, private
+identities, preferences, Bonds, invitations, Pulses, growth state, deliveries,
+Signal membership/content, ledger, sequence, and UUID traversal. The genuine UUID
+now has number 1 and its five unchanged confirmed Bonds. The obsolete test row is
+unnumbered DELETED with no location; number 2 is unchanged. Number 3 remains in
+the ledger with no Atom assignment. The protection trigger is enabled. Sequence
+last_value=13/is_called=true; no allocation was made to test the next value.
+
+Public 1 returned HTTP 200 normally. Public 3 returned HTTP 200 with only the
+generic unavailable page and no redirect. Refreshed owner/profile screens showed
+Atom 1; Signal administration remained authorized and the welcome Signal stayed
+active. The browser was then explicitly signed out for fresh-email acceptance.
+
+Production dry run: evaluated 12, eligible 7, would-send 0, initial-baseline 6,
+disabled 3, ineligible 2, already-sent 1, attempted/accepted/failed 0. The owner
+appeared once under number 1 and never under number 3. No baseline was persisted
+by dry run: 5 connected Atoms/2 direct Bonds/1 region/1 country and completed period
+2026-09-28 remained intact. No rollback or compensating recovery was needed.
+
+Verification: 235 automated tests, exact-operation abort/rollback checks including
+interruption with the protection trigger disabled, production build/TypeScript,
+lint, secret scan, and three unavailable-page browser checks at 390x844, 768x1024,
+1440x900 passed. New invitation/Pulse actions after fresh sign-in and a physical
+installed-PWA launch have not yet been claimed as verified.
