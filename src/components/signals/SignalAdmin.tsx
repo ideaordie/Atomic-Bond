@@ -187,7 +187,6 @@ export function SignalAdmin({ initial }: { initial: AdminSignal[] }) {
         <section aria-label="Signal preview">
           <h2>PREVIEW</h2>
           <SignalPanel
-            preview
             signal={{ ...draft, id: id ?? "preview", publishedAt: null }}
           />
           <p>

@@ -1,65 +1,28 @@
 "use client";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import { readNetworkSignal } from "../../services/signals/actions";
 import {
   safeSignalUrl,
   type NetworkSignal as Signal,
 } from "../../services/signals/model";
 import "./signals.css";
-function subscribeDismissal(callback: () => void) {
-  window.addEventListener("storage", callback);
-  window.addEventListener("signal-dismissed", callback);
-  return () => {
-    window.removeEventListener("storage", callback);
-    window.removeEventListener("signal-dismissed", callback);
-  };
-}
 export function SignalPanel({
   signal,
   available = true,
-  preview = false,
 }: {
   signal: Signal | null;
   available?: boolean;
-  preview?: boolean;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [localDismissed, setLocalDismissed] = useState<string | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const id = signal?.id ?? null;
-  const storedDismissed = useSyncExternalStore(
-    subscribeDismissal,
-    () => {
-      try {
-        return (
-          !!id &&
-          localStorage.getItem(`atomic-bond:signal:${id}`) === "dismissed"
-        );
-      } catch {
-        return false;
-      }
-    },
-    () => false,
-  );
-  const dismissed =
-    !preview && (storedDismissed || (localDismissed === id && id !== null));
   const expanded = expandedId === id && id !== null;
   const setExpanded = (value: boolean) => setExpandedId(value ? id : null);
   const close = () => {
     setExpanded(false);
     trigger.current?.focus();
   };
-  const dismiss = () => {
-    if (signal && !preview) {
-      try {
-        localStorage.setItem(`atomic-bond:signal:${signal.id}`, "dismissed");
-      } catch {}
-      setLocalDismissed(signal.id);
-      window.dispatchEvent(new Event("signal-dismissed"));
-      close();
-    }
-  };
-  const visible = signal && !dismissed;
+  const visible = signal;
   return (
     <section className="signal-panel" aria-label="Network Signal">
       <button
@@ -76,9 +39,7 @@ export function SignalPanel({
             ? "SIGNAL UNAVAILABLE"
             : visible
               ? signal.title
-              : dismissed
-                ? "SIGNAL DISMISSED"
-                : "NO CURRENT SIGNAL"}
+              : "NO CURRENT SIGNAL"}
         </span>
         {visible && <span className="signal-preview">{signal.message}</span>}
       </button>
@@ -116,7 +77,6 @@ export function SignalPanel({
               </a>
             </p>
           )}
-          {!preview && <button onClick={dismiss}>DISMISS THIS SIGNAL</button>}
         </div>
       )}
     </section>
@@ -126,8 +86,19 @@ export function NetworkSignal() {
   const [result, setResult] = useState<{
     signal: Signal | null;
     available: boolean;
-  }>({ signal: null, available: true });
+  }>({ signal: null, available: false });
   useEffect(() => {
+    // Retire keys written by the earlier candidate; never use them for visibility.
+    for (const name of ["localStorage", "sessionStorage"] as const) {
+      try {
+        const storage = window[name];
+        for (const key of Object.keys(storage)) {
+          if (key.startsWith("atomic-bond:signal:")) storage.removeItem(key);
+        }
+      } catch {
+        // Storage may be unavailable. Signal visibility never depends on it.
+      }
+    }
     let cancelled = false;
     let busy = false;
     const refresh = async () => {

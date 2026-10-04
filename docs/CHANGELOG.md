@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0 — Task #10 / Persistent Network Signal
+
+- Removed participant dismissal and browser-local suppression. Closing the expanded view now leaves the current Signal visible across reloads and visits; only the administrative publication lifecycle changes its visibility.
+- Updated persistence browser coverage. Existing Signal records, administrator authorization and publication rules remain unchanged.
+- Retired obsolete Signal-only dismissal keys without changing other browser preferences. The owner-published welcome Signal remains the controlled live-verification target; no additional publication or migration is required.
+
 ## 0.10.0-rc.1 — Task #10 / Network Signal candidate
 
 - Added global Signal authoring, private administrator membership, verified ACTIVE-owner authorization, draft preview and database-time publication windows.

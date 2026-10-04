@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-test("admin drafts, preview, global panel, dismissal and ending", async ({
+test("admin drafts, persistent global panel, close, reload and ending", async ({
   page,
   request,
 }, info) => {
@@ -51,6 +51,11 @@ test("admin drafts, preview, global panel, dismissal and ending", async ({
   await expect(page.getByLabel("Signal preview")).toBeVisible();
   await page.getByRole("button", { name: "PUBLISH SAVED DRAFT" }).click();
   await expect(page.getByRole("status")).toHaveText("Signal updated.");
+  await page.evaluate(() => {
+    localStorage.setItem("atomic-bond:signal:legacy", "dismissed");
+    sessionStorage.setItem("atomic-bond:signal:legacy", "dismissed");
+    localStorage.setItem("unrelated-test-preference", "preserved");
+  });
   await page.goto("/explore");
   const panel = page.getByRole("region", {
     name: "Network Signal",
@@ -102,9 +107,50 @@ test("admin drafts, preview, global panel, dismissal and ending", async ({
     path: info.outputPath("network-signal.png"),
     fullPage: true,
   });
-  await page.getByRole("button", { name: "DISMISS THIS SIGNAL" }).click();
+  await expect(page.getByRole("button", { name: /DISMISS/i })).toHaveCount(0);
+  await page.getByRole("button", { name: "Close Network Signal" }).click();
+  await expect(
+    page.getByRole("region", { name: "Network Signal details" }),
+  ).toHaveCount(0);
+  await expect(panel).toContainText("Global update");
+  expect(
+    await page.evaluate(() =>
+      [...Object.keys(localStorage), ...Object.keys(sessionStorage)].filter(
+        (key) => key.startsWith("atomic-bond:signal:"),
+      ),
+    ),
+  ).toEqual([]);
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("unrelated-test-preference"),
+    ),
+  ).toBe("preserved");
   await page.reload();
-  await expect(panel).toContainText("SIGNAL DISMISSED");
+  await expect(panel).toContainText("Global update");
+  await page.goto("/about");
+  await page.goto("/explore");
+  await expect(panel).toContainText("Global update");
+  await expect(page.getByText("SIGNAL DISMISSED", { exact: true })).toHaveCount(
+    0,
+  );
+  await page.goto("/admin/signals");
+  await page.getByLabel("TITLE", { exact: true }).fill("Replacement Signal");
+  await page
+    .getByLabel("MESSAGE", { exact: true })
+    .fill("An administrator changed the global message.");
+  await page.getByRole("button", { name: "SAVE DRAFT", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("DRAFT SAVED");
+  await page.getByRole("button", { name: "PREVIEW", exact: true }).click();
+  await page.getByRole("button", { name: "PUBLISH SAVED DRAFT" }).click();
+  await expect(page.getByRole("status")).toContainText("Operation rejected");
+  await page
+    .getByRole("checkbox", { name: /Explicitly end and replace/ })
+    .check();
+  await page.getByRole("button", { name: "PUBLISH SAVED DRAFT" }).click();
+  await expect(page.getByRole("status")).toHaveText("Signal updated.");
+  await page.goto("/explore");
+  await expect(panel).toContainText("Replacement Signal");
+  await expect(panel).not.toContainText("Global update");
   await page.goto("/admin/signals");
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "END / UNPUBLISH" }).click();

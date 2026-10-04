@@ -1,6 +1,7 @@
 # Network Signal v0.1 — Task #10
 
-Status: implementation candidate. No production Signal is authorized for publication.
+Version: 0.10.0, persistent Network Signal. The owner published the first
+welcome Signal; this correction does not change that record or publish another.
 
 ## Purpose and presentation
 
@@ -60,7 +61,7 @@ Scheduled conflicts must be explicitly ended before scheduling. Multiple disjoin
 future windows are allowed; at most one is effective at a time. Direct application
 table writes are denied, so clients cannot bypass this controlled operation.
 
-## Delivery and dismissal
+## Persistent delivery and closing
 
 Reads are independent of graph size. Active owners poll every 30 seconds while the
 page is visible and refresh on focus. Changes appear on the next successful read;
@@ -68,10 +69,15 @@ database time always decides eligibility. Private responses are not service-work
 cached. Public anonymous views receive no Signal panel. Every eligible owner receives
 the same record, independent of geography, emotions, identity or graph position.
 
-Dismissal stores only `atomic-bond:signal:<id> = dismissed` in localStorage. It applies
-to this browser, including other owners using it, until storage is cleared. New IDs
-are not dismissed. When storage is unavailable dismissal lasts for the mounted view.
-Dismissed cards show a quiet SIGNAL DISMISSED state without repeatedly opening.
+The compact panel persistently represents the current authoritative Signal. Closing
+the expanded view only closes that view; it never changes publication or visibility.
+There is no dismissal control or browser-storage state used for Signal visibility.
+A narrow cleanup removes obsolete Signal dismissal keys from the initial candidate
+when the network mounts; it creates no new keys and touches no other storage.
+If browser storage is unavailable, those inert keys are ignored.
+Reloading or navigating away/back still shows the active Signal. Only administrator
+replacement, unpublication or database-time expiration removes it. No forced popup
+is introduced; the expanded view remains independently closable.
 
 ## Migration and rollout
 
@@ -102,6 +108,7 @@ operator function. The candidate deployed successfully on the production custom
 domain. Atom #3 opened the admin route and saved/previewed WELCOME TO THE BETA as
 one DRAFT; the ordinary owner-facing panel still showed NO CURRENT SIGNAL.
 Anonymous production admin access was denied. No production Signal was published.
-First-publication approval remains the rollout gate. Dismissal, replacement and
-expiration have automated coverage; their production-visible acceptance follows
-only after explicit publication approval.
+The owner subsequently published the first welcome Signal and approved persistent
+compact visibility in place of dismissal. Replacement and expiration retain their
+automated coverage; the existing production welcome Signal must not be changed
+merely for testing this correction.
