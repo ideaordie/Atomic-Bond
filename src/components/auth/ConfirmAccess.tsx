@@ -72,7 +72,10 @@ export function ConfirmAccess() {
                 const r = await completeAccess(link.token, link.next);
                 setLink(null);
                 if ("error" in r) setError(r.error);
-                else if (r.next.startsWith("/bond/"))
+                else if (
+                  r.next.startsWith("/bond/") ||
+                  r.next === "/account/delete"
+                )
                   window.location.replace(r.next);
                 else setResult(r);
               } catch {

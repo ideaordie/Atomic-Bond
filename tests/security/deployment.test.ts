@@ -18,6 +18,7 @@ describe("deployment publication boundaries", () => {
       "AUTH_ALLOWED_ORIGINS=",
       "AUTH_ALLOW_LOCALHOST=",
       "SUPABASE_GROWTH_SECRET_KEY=",
+      "SUPABASE_ACCOUNT_DELETION_SECRET_KEY=",
       "CRON_SECRET=",
       "GROWTH_EMAIL_ENABLED=",
       "GROWTH_TEST_ATOM=",

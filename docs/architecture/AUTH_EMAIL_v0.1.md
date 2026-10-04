@@ -280,3 +280,13 @@ introduce another identity or confirmation mechanism.
 References: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client),
 [passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless),
 [Send Email Hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook).
+
+## Task #9.2 deletion extension (candidate)
+
+Owner-authorized account removal adds a separate server-only Auth Admin adapter;
+ordinary owner actions continue using the authenticated user's RPC client.
+Recent deletion authentication uses the signed OTP/magic-link AMR timestamp and
+live session row, not JWT refresh time. The existing passwordless email flow can
+return to the fixed `/account/delete` confirmation route. Email verification never
+itself triggers deletion. See `ACCOUNT_DELETION_v0.1.md` for data removal, retained
+structural tombstones, Auth failure recovery and re-registration with a new number.

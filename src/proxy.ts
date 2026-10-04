@@ -43,6 +43,7 @@ export const config = {
     "/auth/:path*",
     "/bond/:path*",
     "/owner/:path*",
+    "/account/:path*",
     "/return",
   ],
 };

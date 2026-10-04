@@ -20,6 +20,13 @@ export function publicNumber(value: unknown): string {
 }
 /** Allowlist, never object spread: RPC additions cannot accidentally widen public data. */
 export function publicAtom(value: unknown): PublicAtomProfile {
+  const safe = record(value);
+  if (safe.status === "DELETED")
+    return {
+      publicId: publicNumber(safe.publicId),
+      createdAt: string(safe.createdAt),
+      status: "DELETED",
+    };
   const row = record(value),
     metadata = record(row.metadata);
   const name = row.displayName == null ? undefined : string(row.displayName);
@@ -52,12 +59,22 @@ export function publicGraph(value: unknown): GraphData {
       raw = record(value);
     if (!Number.isSafeInteger(raw.degree) || Number(raw.degree) < 0)
       throw new Error("Invalid graph degree");
+    if (atom.status === "DELETED")
+      return {
+        id: atom.publicId,
+        publicId: atom.publicId,
+        degree: Number(raw.degree),
+        status: "DELETED",
+      };
+    if (!atom.location) throw new Error("Missing public region");
     // Legacy city rows keep their UUID/association; map known region names only in the public projection.
-    const country = COUNTRIES.find((c) => c.code === atom.location.countryCode);
+    const country = COUNTRIES.find(
+      (c) => c.code === atom.location?.countryCode,
+    );
     const subdivision = country?.subdivisions.find(
       (s) =>
-        s.code === atom.location.subdivisionCode ||
-        s.name === atom.location.region,
+        s.code === atom.location?.subdivisionCode ||
+        s.name === atom.location?.region,
     );
     return {
       id: atom.publicId,

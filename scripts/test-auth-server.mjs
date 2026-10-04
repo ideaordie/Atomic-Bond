@@ -16,6 +16,11 @@ const users = new Map(),
   tokens = new Map(),
   links = new Map(),
   mail = new Map();
+await db.exec(
+  "create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade)",
+);
+const claimsByUser = new Map();
+let failNextRemoval = false;
 const owner = randomUUID();
 users.set("inviter@example.invalid", {
   id: owner,
@@ -29,11 +34,16 @@ await db.query("insert into auth.users values($1,$2,now())", [
   owner,
   "inviter@example.invalid",
 ]);
-async function rpc(name, args = [], user = null) {
+async function rpc(name, args = [], user = null, admin = false) {
   return db.transaction(async (tx) => {
-    await tx.exec(`set local role ${user ? "authenticated" : "anon"}`);
+    await tx.exec(
+      `set local role ${admin ? "service_role" : user ? "authenticated" : "anon"}`,
+    );
     await tx.query("select set_config('request.jwt.claim.sub',$1,true)", [
       user || "",
+    ]);
+    await tx.query("select set_config('request.jwt.claims',$1,true)", [
+      JSON.stringify(claimsByUser.get(user) || {}),
     ]);
     return (
       await tx.query(
@@ -50,8 +60,18 @@ const place = (
 ).rows[0].id;
 await rpc("begin_atom", [place, "Inviting Atom", null], owner);
 await rpc("activate_atom", [], owner);
-function session(user) {
+async function session(user) {
   const seconds = Math.floor(Date.now() / 1000);
+  const sessionId = randomUUID();
+  await db.query("insert into auth.sessions values($1,$2)", [
+    sessionId,
+    user.id,
+  ]);
+  const claims = {
+    session_id: sessionId,
+    amr: [{ method: "otp", timestamp: seconds }],
+  };
+  claimsByUser.set(user.id, claims);
   const payload = Buffer.from(
     JSON.stringify({
       sub: user.id,
@@ -59,6 +79,7 @@ function session(user) {
       role: "authenticated",
       iat: seconds,
       exp: seconds + 3600,
+      ...claims,
     }),
   ).toString("base64url");
   const head = Buffer.from(
@@ -79,6 +100,10 @@ function session(user) {
   };
 }
 const methods = {
+  account_deletion_status: [],
+  delete_my_account: ["p_confirmation"],
+  account_cleanup_pending: ["p_user"],
+  account_cleanup_finish: ["p_user"],
   public_graph: ["p_public_id"],
   canonical_locations: ["p_query"],
   canonical_location: ["p_id"],
@@ -103,6 +128,10 @@ const server = createServer(async (req, res) => {
   };
   try {
     if (url.pathname === "/health") return reply(200, { ready: true });
+    if (url.pathname === "/__test/fail-removal-once") {
+      failNextRemoval = true;
+      return reply(200, {});
+    }
     if (url.pathname === "/__test/invite")
       return reply(200, await rpc("create_bond_invitation", [], owner));
     if (url.pathname === "/__test/mail")
@@ -111,6 +140,11 @@ const server = createServer(async (req, res) => {
       });
     if (url.pathname === "/__test/expire-access") {
       for (const entry of links.values()) entry.expires = 0;
+      return reply(200, {});
+    }
+    if (url.pathname === "/__test/stale-auth") {
+      for (const claims of claimsByUser.values())
+        claims.amr[0].timestamp -= 3600;
       return reply(200, {});
     }
     if (url.pathname === "/__test/expire-invites") {
@@ -136,6 +170,31 @@ const server = createServer(async (req, res) => {
     const body = raw ? JSON.parse(raw) : {};
     const bearer = req.headers.authorization?.replace(/^Bearer /, "");
     const current = tokens.get(bearer);
+    const admin = req.headers.apikey === "sb_secret_account_deletion_test_only";
+    if (
+      url.pathname.startsWith("/auth/v1/admin/users/") &&
+      req.method === "DELETE"
+    ) {
+      if (!admin) return reply(403, {});
+      if (failNextRemoval) {
+        failNextRemoval = false;
+        return reply(503, {
+          code: "unexpected_failure",
+          message: "Fixture unavailable",
+        });
+      }
+      const id = url.pathname.split("/").at(-1);
+      const user = [...users.values()].find((u) => u.id === id);
+      if (!user)
+        return reply(404, { code: "user_not_found", message: "Not found" });
+      await db.query("delete from auth.users where id=$1", [id]);
+      users.delete(user.email);
+      for (const [key, value] of tokens)
+        if (value.id === id) tokens.delete(key);
+      for (const [key, value] of links)
+        if (value.user.id === id) links.delete(key);
+      return reply(200, { user });
+    }
     if (url.pathname === "/auth/v1/otp") {
       const email = body.email.trim().toLowerCase();
       let user = users.get(email);
@@ -177,7 +236,7 @@ const server = createServer(async (req, res) => {
         "update auth.users set email_confirmed_at=now() where id=$1",
         [entry.user.id],
       );
-      return reply(200, session(entry.user));
+      return reply(200, await session(entry.user));
     }
     if (url.pathname === "/auth/v1/user")
       return current
@@ -186,7 +245,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === "/auth/v1/token") {
       const user = tokens.get(body.refresh_token);
       return user
-        ? reply(200, session(user))
+        ? reply(200, await session(user))
         : reply(401, { msg: "Invalid refresh" });
     }
     if (url.pathname === "/auth/v1/logout") {
@@ -201,6 +260,7 @@ const server = createServer(async (req, res) => {
           name,
           methods[name].map((k) => body[k] ?? null),
           current?.id,
+          admin,
         ),
       );
     return reply(404, {});

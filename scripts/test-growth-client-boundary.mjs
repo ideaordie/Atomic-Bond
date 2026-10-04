@@ -10,6 +10,13 @@ const fixture = await mkdtemp(join(root, "probe-"));
 await mkdir(join(fixture, "app"));
 await mkdir(join(fixture, "src/data/growth"), { recursive: true });
 await mkdir(join(fixture, "src/services/growth"), { recursive: true });
+await mkdir(join(fixture, "src/services/auth"), { recursive: true });
+await mkdir(join(fixture, "src/data/supabase"), { recursive: true });
+for (const path of [
+  "src/services/auth/account-removal.ts",
+  "src/data/supabase/config.ts",
+])
+  await copyFile(path, join(fixture, path));
 await copyFile(
   "src/data/growth/store.ts",
   join(fixture, "src/data/growth/store.ts"),
@@ -34,7 +41,7 @@ await writeFile(
 );
 await writeFile(
   join(fixture, "app/page.jsx"),
-  '"use client"; import {growthStore} from "../src/data/growth/store"; export default function Page(){return <button onClick={()=>growthStore.scan("0",1)}>Probe</button>}',
+  '"use client"; import {growthStore} from "../src/data/growth/store"; import {accountRemovalAdapter} from "../src/services/auth/account-removal"; export default function Page(){return <button onClick={()=>{growthStore.scan("0",1); accountRemovalAdapter()}}>Probe</button>}',
 );
 const result = spawnSync(
   process.execPath,
@@ -54,6 +61,7 @@ assert.notEqual(result.status, 0, "Client import unexpectedly compiled");
 assert.match(output, /server-only/);
 assert.match(output, /only available in Server Components|Client Component/);
 assert.match(output, /app\/page.jsx/);
+assert.match(output, /account-removal/);
 console.log(
-  "PASS: Next rejects privileged growth adapter in a client component.",
+  "PASS: Next rejects privileged growth and Auth deletion adapters in a client component.",
 );

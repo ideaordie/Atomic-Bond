@@ -36,6 +36,7 @@ try {
   await admin.connect();
   await admin.query(`create role anon; create role authenticated; create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
+ create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
   for (const file of (await readdir("supabase/migrations"))
@@ -47,6 +48,7 @@ try {
     "insert into public.locations(id,canonical_key,city,region,country,country_code,display_name) values($1,'concurrency-test','Test','Test','Test','US','Test')",
     [location],
   );
+  const deletionClaims = new Map();
   async function call(user, name, args = []) {
     const client = postgres.getPgClient();
     await client.connect();
@@ -55,6 +57,9 @@ try {
       await client.query("set local role authenticated");
       await client.query("select set_config('request.jwt.claim.sub',$1,true)", [
         user,
+      ]);
+      await client.query("select set_config('request.jwt.claims',$1,true)", [
+        JSON.stringify(deletionClaims.get(user) || {}),
       ]);
       const result = await client.query(
         `select public.${name}(${args.map((_, i) => `$${i + 1}`).join(",")}) as result`,
@@ -243,6 +248,112 @@ try {
   assert.equal(
     (await worker("select growth_jobs.reserve($1) as id", [number])).rows[0].id,
     null,
+  );
+  // Real PostgreSQL sessions exercise concurrent deletion against owner/job writes.
+  for (const mode of ["pulse", "bond", "digest"]) {
+    const owner = await active(),
+      peer = await active();
+    const session = randomUUID();
+    await admin.query("insert into auth.sessions values($1,$2)", [
+      session,
+      owner,
+    ]);
+    deletionClaims.set(owner, {
+      session_id: session,
+      amr: [{ method: "otp", timestamp: Date.now() / 1000 }],
+    });
+    const atom = (
+      await admin.query(
+        "select atom_id from private.atom_identities where auth_user_id=$1",
+        [owner],
+      )
+    ).rows[0].atom_id;
+    const n = (
+      await admin.query(
+        "select public_id::text n from public.atoms where id=$1",
+        [atom],
+      )
+    ).rows[0].n;
+    const invitation = await call(owner, "create_bond_invitation");
+    let job, delivery;
+    if (mode === "digest") {
+      await worker("select growth_jobs.evaluate($1,true)", [n]);
+      await call(peer, "accept_bond_invitation", [invitation.token]);
+      job = (await worker("select growth_jobs.reserve($1) id", [n])).rows[0].id;
+      delivery = (await worker("select growth_jobs.claim($1) result", [job]))
+        .rows[0].result;
+    }
+    const results = await Promise.allSettled([
+      call(owner, "delete_my_account", ["DELETE"]),
+      mode === "pulse"
+        ? call(owner, "send_emotional_pulse", ["CURIOUS"])
+        : mode === "bond"
+          ? call(peer, "accept_bond_invitation", [invitation.token])
+          : worker("select growth_jobs.authorize_send($1,$2,$3) allowed", [
+              job,
+              delivery.attemptId,
+              "a".repeat(64),
+            ]),
+      call(owner, "delete_my_account", ["DELETE"]),
+    ]);
+    for (const index of [0, 2])
+      assert.equal(results[index].status, "fulfilled");
+    if (mode === "digest") {
+      const authorization = results[1];
+      if (
+        authorization.status === "fulfilled" &&
+        authorization.value.rows[0].allowed
+      ) {
+        assert.equal(
+          (
+            await admin.query("select status from public.atoms where id=$1", [
+              atom,
+            ])
+          ).rows[0].status,
+          "ACTIVE",
+        );
+        await worker("select growth_jobs.finish($1,$2,false)", [
+          job,
+          delivery.attemptId,
+        ]);
+        await call(owner, "delete_my_account", ["DELETE"]);
+      }
+      assert.equal(
+        (
+          await worker("select growth_jobs.authorize_send($1,$2,$3) allowed", [
+            job,
+            delivery.attemptId,
+            "a".repeat(64),
+          ])
+        ).rows[0].allowed,
+        false,
+      );
+    }
+    assert.equal(
+      (await admin.query("select status from public.atoms where id=$1", [atom]))
+        .rows[0].status,
+      "DELETED",
+    );
+    assert.equal(
+      (
+        await admin.query(
+          "select count(*)::int n from public.emotional_pulses where atom_id=$1",
+          [atom],
+        )
+      ).rows[0].n,
+      0,
+    );
+    await assert.rejects(call(owner, "send_emotional_pulse", ["JOY"]));
+    await assert.rejects(
+      call(peer, "accept_bond_invitation", [invitation.token]),
+    );
+    assert.equal(
+      (await call(owner, "delete_my_account", ["DELETE"])).state,
+      "auth_cleanup_pending",
+    );
+  }
+  console.log(
+    "PASS: concurrent deletion/Pulse/Bond/provider-authorization/repeated deletion invariants.",
   );
   console.log(
     "PASS: identity/Bond concurrency, dedicated growth LOGIN denial checks, overlapping growth reservations/claims, and restart-persistent idempotency.",

@@ -10,6 +10,7 @@ beforeAll(async () => {
   db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
+ create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
   for (const file of readdirSync("supabase/migrations").sort()) {
@@ -70,7 +71,19 @@ async function call(
     await tx.query("select set_config('request.jwt.claim.sub',$1,true)", [
       user ?? "",
     ]);
+    await tx.query("select set_config('request.jwt.claims',$1,true)", [
+      JSON.stringify(deletionClaims.get(user || "") || {}),
+    ]);
     return (await tx.query<{ result: unknown }>(sql, args)).rows;
+  });
+}
+const deletionClaims = new Map<string, unknown>();
+async function recentAccess(user: string, age = 0) {
+  const session = randomUUID();
+  await db.query("insert into auth.sessions values($1,$2)", [session, user]);
+  deletionClaims.set(user, {
+    session_id: session,
+    amr: [{ method: "otp", timestamp: Date.now() / 1000 - age }],
   });
 }
 async function rpc(
@@ -735,6 +748,200 @@ describe("coarse region migration", () => {
           transactionalAccess: true,
         });
       }
+    }
+  });
+});
+
+describe("owner-authorized account deletion", () => {
+  it("requires recent real session, deliberate confirmation, and denies public/admin RPC access", async () => {
+    const a = await active();
+    expect(await rpc("delete_my_account", a.user, ["DELETE"])).toEqual({
+      state: "reauthenticate",
+    });
+    await recentAccess(a.user, 601);
+    expect(await rpc("delete_my_account", a.user, ["DELETE"])).toEqual({
+      state: "reauthenticate",
+    });
+    await recentAccess(a.user);
+    await expect(
+      rpc("delete_my_account", a.user, ["delete"]),
+    ).rejects.toThrow();
+    await expect(
+      call("select public.delete_my_account('DELETE')", [], null, "anon"),
+    ).rejects.toThrow();
+    await expect(
+      rpc("account_cleanup_pending", a.user, [a.user]),
+    ).rejects.toThrow();
+    await expect(
+      call("select * from private.account_deletions", [], a.user),
+    ).rejects.toThrow();
+    await db.query("delete from auth.sessions where user_id=$1", [a.user]);
+    expect(await rpc("delete_my_account", a.user, ["DELETE"])).toEqual({
+      state: "reauthenticate",
+    });
+    expect((await rpc("my_atom", a.user)).status).toBe("ACTIVE");
+  });
+  it("anonymizes atomically, retains topology/number, removes capabilities and allows a new identity only after Auth cleanup", async () => {
+    const a = await active(),
+      b = await active(),
+      c = await active();
+    const id = await internal(b.user);
+    const email = (
+      await db.query<{ email: string }>(
+        "select email from auth.users where id=$1",
+        [b.user],
+      )
+    ).rows[0]!.email;
+    for (const [from, to] of [
+      [a, b],
+      [b, c],
+    ] as const) {
+      const invite = await rpc("create_bond_invitation", from.user);
+      await rpc("accept_bond_invitation", to.user, [invite.token]);
+    }
+    const invitation = await rpc("create_bond_invitation", b.user);
+    await rpc("send_emotional_pulse", b.user, ["CURIOUS"]);
+    await recentAccess(b.user);
+    const sequence = (
+      await db.query("select last_value from private.atom_number_seq")
+    ).rows;
+    expect(await rpc("delete_my_account", b.user, ["DELETE"])).toMatchObject({
+      state: "auth_cleanup_pending",
+      publicId: b.number,
+    });
+    expect(await rpc("delete_my_account", b.user, ["DELETE"])).toEqual({
+      state: "auth_cleanup_pending",
+    });
+    expect(
+      (await db.query("select last_value from private.atom_number_seq")).rows,
+    ).toEqual(sequence);
+    expect(
+      (
+        await db.query(
+          "select status,public_id::text,display_name,x_handle,location_id,last_active_at from public.atoms where id=$1",
+          [id],
+        )
+      ).rows[0],
+    ).toEqual({
+      status: "DELETED",
+      public_id: b.number,
+      display_name: null,
+      x_handle: null,
+      location_id: null,
+      last_active_at: null,
+    });
+    for (const table of [
+      "private.atom_identities",
+      "private.notification_preferences",
+      "private.growth_state",
+      "private.growth_deliveries",
+      "public.emotional_pulses",
+    ])
+      expect(
+        (
+          await db.query(
+            `select count(*)::int n from ${table} where atom_id=$1`,
+            [id],
+          )
+        ).rows[0],
+      ).toEqual({ n: 0 });
+    expect(await rpc("my_atom", b.user)).toBeNull();
+    for (const [name, args] of [
+      ["send_emotional_pulse", ["JOY"]],
+      ["create_bond_invitation", []],
+      ["activate_atom", []],
+      ["begin_atom", [location, null, null]],
+    ] as const)
+      await expect(rpc(name, b.user, [...args])).rejects.toThrow();
+    await expect(
+      rpc("accept_bond_invitation", c.user, [invitation.token]),
+    ).rejects.toThrow();
+    const graph = await rpc("public_graph", null, [a.number]);
+    expect(graph.edges).toHaveLength(2);
+    expect(graph.nodes).toHaveLength(3);
+    const tombstone = (graph.nodes as { publicId: string }[]).find(
+      (n) => n.publicId === b.number,
+    );
+    expect(tombstone).toMatchObject({ status: "DELETED", metadata: {} });
+    expect(JSON.stringify(tombstone)).not.toMatch(
+      /Alex|curious_person|email|country|location/,
+    );
+    expect(await rpc("connected_emotional_pulses", a.user)).toEqual([]);
+    expect(await growth("evaluate", [b.number, false])).toEqual({
+      outcome: "ineligible",
+    });
+    expect((await rpc("my_atom", a.user)).status).toBe("ACTIVE");
+    expect(
+      (
+        await call(
+          "select public.account_cleanup_finish($1) as result",
+          [b.user],
+          null,
+          "service_role",
+        )
+      )[0]!.result,
+    ).toBe(false);
+    await db.query("delete from auth.users where id=$1", [b.user]);
+    expect(
+      (
+        await call(
+          "select public.account_cleanup_finish($1) as result",
+          [b.user],
+          null,
+          "service_role",
+        )
+      )[0]!.result,
+    ).toBe(true);
+    const replacement = await pending(true, email);
+    const newAtom = await rpc("activate_atom", replacement.user);
+    expect(BigInt(newAtom.publicId as string)).toBeGreaterThan(
+      BigInt(b.number),
+    );
+    expect((await rpc("public_graph", null, [newAtom.publicId])).edges).toEqual(
+      [],
+    );
+    await expect(
+      rpc("begin_atom", b.user, [location, null, null]),
+    ).rejects.toThrow();
+  });
+  it("blocks prepared sends after deletion and waits for already authorized provider handoff", async () => {
+    for (const authorized of [false, true]) {
+      const a = await active(),
+        b = await active();
+      await growth("evaluate", [a.number, true]);
+      const invite = await rpc("create_bond_invitation", a.user);
+      await rpc("accept_bond_invitation", b.user, [invite.token]);
+      const job = await growth("reserve", [a.number]);
+      const delivery = (await growth("claim", [job]))!;
+      await recentAccess(a.user);
+      if (authorized) {
+        expect(
+          await growth("authorize_send", [
+            job,
+            delivery.attemptId,
+            "a".repeat(64),
+          ]),
+        ).toBe(true);
+        expect(await rpc("delete_my_account", a.user, ["DELETE"])).toEqual({
+          state: "delivery_in_progress",
+        });
+        expect((await rpc("my_atom", a.user)).status).toBe("ACTIVE");
+        await growth("finish", [job, delivery.attemptId, true]);
+      }
+      expect(await rpc("delete_my_account", a.user, ["DELETE"])).toMatchObject({
+        state: "auth_cleanup_pending",
+      });
+      expect(
+        await growth("authorize_send", [
+          job,
+          delivery.attemptId,
+          "a".repeat(64),
+        ]),
+      ).toBe(false);
+      expect(await growth("claim", [job])).toBeNull();
+      expect(await growth("unsubscribe", [delivery.unsubscribeToken])).toBe(
+        false,
+      );
     }
   });
 });

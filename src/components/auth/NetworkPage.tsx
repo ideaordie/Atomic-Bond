@@ -41,7 +41,7 @@ export async function NetworkPage({
             <p className="network-view-label">
               {ownView
                 ? `MY ATOM #${ownerId}`
-                : `PUBLIC ATOM VIEW · ATOM #${requested}`}
+                : `PUBLIC ATOM VIEW · ATOM #${requested}${source.graph.nodes.find((node) => node.publicId === requested)?.status === "DELETED" ? " · DELETED" : ""}`}
             </p>
           )}
         </div>

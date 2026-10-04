@@ -16,7 +16,11 @@ export function emotionalNetwork(
   const perspective = getPerspective(graph, viewerId);
   const latest = new Map<string, EmotionalPulse>();
   for (const pulse of visible) {
-    if (!perspective.distances.has(pulse.atomId)) continue;
+    if (
+      !perspective.distances.has(pulse.atomId) ||
+      perspective.nodes.get(pulse.atomId)?.status === "DELETED"
+    )
+      continue;
     const old = latest.get(pulse.atomId);
     if (!old || pulse.createdAt >= old.createdAt)
       latest.set(pulse.atomId, pulse);
@@ -61,7 +65,9 @@ export function emotionalNetwork(
   }
   return {
     active,
-    connectedCount: perspective.distances.size,
+    connectedCount: [...perspective.distances.keys()].filter(
+      (id) => perspective.nodes.get(id)?.status !== "DELETED",
+    ).length,
     counts,
     percentages: Object.fromEntries(
       EMOTIONS.map((emotion) => [

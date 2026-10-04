@@ -1,5 +1,12 @@
 # Atomic Bond
 
+Task #9.2 account deletion is a v0.9.2 candidate, not yet production accepted.
+See [account deletion, tombstones and rollout](docs/architecture/ACCOUNT_DELETION_v0.1.md)
+for the reviewed migration, separate server-only Auth credential, confirmation,
+recovery and controlled acceptance requirements. Destructive acceptance requires
+an explicitly approved test account (Atom #8 is approved; Atom #3 is excluded).
+No automatic inactivity deletion is introduced.
+
 Task #9.1: **0.9.1 — Weekly Atom Growth**. see [growth operations and rollout gates](docs/architecture/GROWTH_EMAIL_v0.1.md).
 The pilot uses an isolated server-only Supabase secret and seven approved RPCs.
 Configure SUPABASE_GROWTH_SECRET_KEY only in ignored local/sensitive server

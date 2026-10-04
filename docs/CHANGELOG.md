@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.2 candidate — Task #9.2 account deletion
+
+- Added two-stage DELETE ACCOUNT confirmation and recent passwordless authentication, with owner-derived database authorization and recoverable server-only Auth cleanup.
+- Anonymized numbered tombstones retain confirmed Bonds and traversal. Deleted accounts lose private identity, alias/X, home region, Pulse, invitations and engagement delivery state; numbers are never recycled. Connected Atoms describes structural reach; emotional coverage excludes deleted participants.
+- Added version-controlled deletion migration, concurrency/security/browser tests, beta privacy copy and operator documentation. No inactivity deletion or automatic dormancy. The separate server secret is configured and migration 202610040001 is applied without changing existing participants, Bonds or numbers. Controlled live acceptance remains pending. The user approved Atom #8 for acceptance; Atom #3 is protected from destructive testing.
+
 ## Unreleased — Overview action placement
 
 - Moved YOUR NETWORK OVERVIEW to the bottom center, just above the CREATE BOND/PULSE dock. The expanded panel remains centered in the viewport.

@@ -184,6 +184,29 @@ describe("weekly growth service", () => {
     expect(JSON.stringify(r)).not.toContain("private");
     expect(JSON.stringify(r)).not.toContain(delivery.email);
   });
+  it("does not send after a stalled authorization response", async () => {
+    const { store, transport, sender } = fixture();
+    let now = 0;
+    vi.mocked(store.authorize).mockImplementation(async () => {
+      now += 11_000;
+      return true;
+    });
+    const result = await runGrowth(
+      store,
+      sender,
+      options,
+      async () => {},
+      () => now,
+    );
+    expect(transport.send).not.toHaveBeenCalled();
+    expect(result.accepted).toBe(0);
+    expect(result.failed).toBeGreaterThan(0);
+    expect(store.finish).toHaveBeenCalledWith(
+      delivery.id,
+      delivery.attemptId,
+      false,
+    );
+  });
   it("paginates stably with bounded pages and no skips", async () => {
     const { store, sender } = fixture();
     vi.mocked(store.scan)

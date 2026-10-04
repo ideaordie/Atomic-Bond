@@ -1,5 +1,6 @@
 "use client";
 import { InstallOffer } from "../pwa/InstallOffer";
+import { AccountDeletion } from "./AccountDeletion";
 import { WeeklyGrowthPreference } from "./WeeklyGrowthPreference";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -105,6 +106,7 @@ export function OwnerSettings({
       <form action={signOut}>
         <SignOutButton />
       </form>
+      <AccountDeletion />
     </section>
   );
 }

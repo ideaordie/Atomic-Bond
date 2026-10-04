@@ -44,7 +44,11 @@ export function NetworkEmotionResults({
             ? `${summary.active.length} active ${summary.active.length === 1 ? "Pulse" : "Pulses"}`
             : "Emotional state unavailable"}{" "}
           · {summary.connectedCount} connected{" "}
-          {summary.connectedCount === 1 ? "Atom" : "Atoms"}
+          {reach.people > summary.connectedCount
+            ? "participants"
+            : summary.connectedCount === 1
+              ? "Atom"
+              : "Atoms"}
         </span>
       </button>
       {expanded && (
@@ -79,6 +83,12 @@ export function NetworkEmotionResults({
                   ? "Updating your connected network…"
                   : `Updated ${age === 0 ? "just now" : `${age} ${age === 1 ? "minute" : "minutes"} ago`}`}
           </p>
+          {reach.people > summary.connectedCount && (
+            <p>
+              Structural reach includes anonymized deleted Atoms. Emotional
+              coverage below includes only remaining participants.
+            </p>
+          )}
           <div
             className="emotion-distribution"
             aria-busy={status === "refreshing"}
@@ -96,8 +106,12 @@ export function NetworkEmotionResults({
                     {summary.active.length === 1 ? "Pulse" : "Pulses"}
                   </strong>{" "}
                   across {summary.connectedCount} connected{" "}
-                  {summary.connectedCount === 1 ? "Atom" : "Atoms"}, including
-                  you.
+                  {reach.people > summary.connectedCount
+                    ? "participants"
+                    : summary.connectedCount === 1
+                      ? "Atom"
+                      : "Atoms"}
+                  , including you.
                 </p>
                 {summary.active.length === 0 && (
                   <p>

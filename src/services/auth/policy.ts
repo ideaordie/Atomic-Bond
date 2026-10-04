@@ -18,7 +18,7 @@ export function appOrigin(env: Record<string, string | undefined>) {
   return url.origin;
 }
 export function nextPath(value: unknown): string {
-  if (value === "/explore") return value;
+  if (value === "/explore" || value === "/account/delete") return value;
   if (typeof value === "string" && /^\/bond\/[a-f0-9]{64}$/.test(value))
     return value;
   return "/explore";

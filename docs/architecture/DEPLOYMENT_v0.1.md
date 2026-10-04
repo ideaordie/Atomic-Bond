@@ -297,3 +297,20 @@ Follow [AUTH_EMAIL_v0.1.md](AUTH_EMAIL_v0.1.md) before enabling real signup. App
 ## Task #8.3 geography deployment
 
 Apply reviewed migration `202609280001_coarse_regions.sql` before deploying v0.8.3. It seeds canonical country/subdivision choices while preserving historical location associations. No external location provider or location API key is required. See [Home Region](LOCATION_v0.1.md) for snapshot maintenance and compatibility.
+
+## Task #9.2 account deletion candidate
+
+Use `ACCOUNT_DELETION_v0.1.md` for the exact reviewed migration and acceptance gate.
+Configure a separately rotatable server-only `SUPABASE_ACCOUNT_DELETION_SECRET_KEY`
+(Supabase secret key with Auth Admin access) in Vercel Production and local ignored
+configuration. Do not reuse the growth key or expose the key to Next public code.
+Apply only the previewed `202610040001_account_deletion.sql` before deploying the
+owner deletion UI. Check existing participant/Bond/number integrity before and
+after application. No existing participant is deleted by the migration itself.
+
+If external Auth cleanup fails, the anonymized Atom cannot regain ownership;
+complete the durable private cleanup marker using the supported server adapter.
+Do not roll back anonymized user data or reset numbers. Disable the deletion key
+for emergency shutdown; existing transactional email and growth credentials stay
+independent. Production acceptance requires a specifically approved disposable
+account, never Atom #3 or another genuine participant.

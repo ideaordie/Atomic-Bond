@@ -69,6 +69,9 @@ export async function completeAccess(tokenHash: string, next: string) {
       };
     const context = await ownerContext();
     if (!context.user?.email_confirmed_at) throw new Error();
+    const deletion = await context.client.rpc("account_deletion_status");
+    if (!deletion.error && deletion.data?.pending)
+      return { next: "/account/delete", publicId: null, returning: true };
     const returning = Boolean(context.atom?.publicId);
     if (!context.atom) {
       const details = registration(

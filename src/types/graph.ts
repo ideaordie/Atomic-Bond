@@ -2,6 +2,7 @@ import type { PublicSocialProfiles } from "./public-profile";
 
 /** Public, renderer-independent graph data. Never attach private identity data. */
 export interface GraphNode {
+  readonly status?: "ACTIVE" | "DORMANT" | "DELETED";
   readonly id: string;
   readonly publicId: string;
   /** Number of incident edges, not distance from a selected Atom. */

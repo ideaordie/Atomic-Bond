@@ -92,6 +92,13 @@ test("iOS manual guidance stays optional and fits each viewport", async ({
   });
   await page.clock.install();
   await owner(page, request, `pwa-ios-${info.project.name}@example.invalid`);
+  // Verify hydration before advancing the install timer. A visible streamed
+  // canvas alone does not prove that client effects have registered yet.
+  await page.getByRole("button", { name: "Pause motion", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Resume motion", exact: true }),
+  ).toBeVisible();
+  await page.clock.runFor(100);
   await page.clock.fastForward(31_000);
   const offer = page.getByRole("region", { name: "Install Atomic Bond" });
   await offer

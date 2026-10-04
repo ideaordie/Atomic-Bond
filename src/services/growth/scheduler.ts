@@ -115,9 +115,14 @@ export async function runGrowth(
                     ),
                   )
                   .digest("hex");
+                const authorizationStarted = clock();
                 if (
                   await store.authorize(delivery.id, delivery.attemptId, hash)
                 ) {
+                  // Never start a provider handoff after a stalled authorization.
+                  // Deletion waits for the DB lease; the HTTP transport has an 8s timeout.
+                  if (clock() - authorizationStarted > 10_000)
+                    throw new Error("Stale send authorization");
                   result.attempted++;
                   await sender.sendGrowthDigest(delivery, options.origin);
                   // Provider acceptance is not inbox delivery. If persistence fails,

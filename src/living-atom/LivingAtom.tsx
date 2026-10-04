@@ -238,14 +238,14 @@ export function LivingAtom({
           <div>
             <span>{isMine ? "MY BONDS" : "THEIR BONDS"}</span>
             <strong data-testid="direct-count">{scene.directCount}</strong>
-            <small>people</small>
+            <small>confirmed connections</small>
           </div>
           <div>
             <span>{isMine ? "MY NETWORK" : "THEIR NETWORK"}</span>
             <strong data-testid="reachable-count">
               {scene.reachableCount}
             </strong>
-            <small>people, including {isMine ? "you" : "this Atom"}</small>
+            <small>Atoms, including {isMine ? "you" : "this Atom"}</small>
           </div>
           <div>
             <span>REGIONAL REACH</span>
@@ -263,11 +263,17 @@ export function LivingAtom({
               ? "Coarse, synthetic geography"
               : "Coarse geography"}
           </p>
+          {graph.nodes.some((node) => node.status === "DELETED") && (
+            <p>Includes retained deleted Atoms.</p>
+          )}
         </div>
       }
       <div className="perspective-label" aria-live="polite">
         <span>{isMine ? "YOUR PERSPECTIVE" : "VIEWING THEIR NETWORK"}</span>
         <strong data-testid="selected-atom">#{scene.selected.publicId}</strong>
+        {scene.selected.status === "DELETED" && (
+          <span>DELETED · Anonymized connection</span>
+        )}
         {isMine && ownPulse && (
           <p className="sr-only" data-testid="own-pulse">
             Your Pulse: {EMOTION_DEFINITIONS[ownPulse.emotion].label} · active
@@ -329,54 +335,56 @@ export function LivingAtom({
             status={emotional?.status ?? "ready"}
           />
         )}
-        <div
-          className="primary-actions"
-          role="group"
-          aria-label="Primary network actions"
-        >
-          {isMine && onCreateBond && (
-            <button
-              type="button"
-              className="create-bond"
-              onClick={onCreateBond}
-              disabled={creatingBond}
-              aria-busy={creatingBond}
-            >
-              {creatingBond ? "Creating invitation…" : "CREATE BOND"}
-            </button>
-          )}
-
-          {ownerMode && !isMine && (
-            <button
-              type="button"
-              className="create-bond"
-              onClick={home}
-              aria-label="My Atom"
-              title="Return to your own network perspective"
-            >
-              MY ATOM
-            </button>
-          )}
-
-          <button
-            type="button"
-            className="pulse-button"
-            disabled={!emotionalView}
-            ref={pulseButton}
-            onClick={() => {
-              if (running) setPulse(idlePulse(selection.selectedId));
-              else {
-                setComposerOpen(true);
-                setInspectedId(null);
-              }
-            }}
+        {(ownerMode || scene.selected.status !== "DELETED") && (
+          <div
+            className="primary-actions"
+            role="group"
+            aria-label="Primary network actions"
           >
-            <span aria-hidden="true" className="pulse-symbol">
-              ◉
-            </span>
-            {running ? "Stop Pulse" : "Pulse"}
-          </button>
-        </div>
+            {isMine && onCreateBond && (
+              <button
+                type="button"
+                className="create-bond"
+                onClick={onCreateBond}
+                disabled={creatingBond}
+                aria-busy={creatingBond}
+              >
+                {creatingBond ? "Creating invitation…" : "CREATE BOND"}
+              </button>
+            )}
+
+            {ownerMode && !isMine && (
+              <button
+                type="button"
+                className="create-bond"
+                onClick={home}
+                aria-label="My Atom"
+                title="Return to your own network perspective"
+              >
+                MY ATOM
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="pulse-button"
+              disabled={!emotionalView}
+              ref={pulseButton}
+              onClick={() => {
+                if (running) setPulse(idlePulse(selection.selectedId));
+                else {
+                  setComposerOpen(true);
+                  setInspectedId(null);
+                }
+              }}
+            >
+              <span aria-hidden="true" className="pulse-symbol">
+                ◉
+              </span>
+              {running ? "Stop Pulse" : "Pulse"}
+            </button>
+          </div>
+        )}
         <p
           className="pulse-status"
           role="status"

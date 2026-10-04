@@ -41,7 +41,8 @@ export function AtomContextPanel({
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, [atomId]);
-  const alias = context.selected.displayName?.trim();
+  const deleted = context.selected.status === "DELETED";
+  const alias = deleted ? undefined : context.selected.displayName?.trim();
   const homeRegion =
     context.selected.metadata?.homeRegion ??
     [context.selected.metadata?.region, context.selected.metadata?.countryCode]
@@ -63,7 +64,7 @@ export function AtomContextPanel({
     "YOU",
     ...(path.length <= 6
       ? path.slice(1, -1).map(() => "●")
-      : [`${path.length - 2} people`]),
+      : [`${path.length - 2} Atoms`]),
     alias || `ATOM #${context.selected.publicId}`,
   ];
   return (
@@ -95,7 +96,11 @@ export function AtomContextPanel({
           )}
         </div>
       </div>
-      <PublicXProfile profiles={context.selected.socialProfiles} />
+      {deleted ? (
+        <p>DELETED · Anonymized structural connection</p>
+      ) : (
+        <PublicXProfile profiles={context.selected.socialProfiles} />
+      )}
       {ownerMode && (
         <p
           className="context-relationship"
@@ -105,15 +110,19 @@ export function AtomContextPanel({
           {relationship}
         </p>
       )}
-      <CurrentPulse
-        {...(activePulse ? { pulse: activePulse } : {})}
-        now={pulseNow}
-      />
-      {homeRegion && <p className="bond-date">Home region: {homeRegion}</p>}
+      {!deleted && (
+        <CurrentPulse
+          {...(activePulse ? { pulse: activePulse } : {})}
+          now={pulseNow}
+        />
+      )}
+      {!deleted && homeRegion && (
+        <p className="bond-date">Home region: {homeRegion}</p>
+      )}
       <dl className="context-metrics">
         <div>
           <dt>Network</dt>
-          <dd>{context.reachableCount} people</dd>
+          <dd>{context.reachableCount} Atoms</dd>
         </div>
         <div>
           <dt>Reach</dt>

@@ -29,6 +29,8 @@ export default defineConfig({
         AUTH_ALLOW_LOCALHOST: "true",
         RESEND_API_KEY: "",
         SUPABASE_AUTH_HOOK_SECRET: "",
+        SUPABASE_ACCOUNT_DELETION_SECRET_KEY:
+          "sb_secret_account_deletion_test_only",
       },
     },
   ],
