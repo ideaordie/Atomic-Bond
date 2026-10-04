@@ -263,15 +263,6 @@ export function LivingAtom({
               ? "Coarse, synthetic geography"
               : "Coarse geography"}
           </p>
-          {emotionalView && (
-            <NetworkEmotionResults
-              summary={emotionalSummary}
-              reach={reach}
-              now={emotional?.now ?? 0}
-              updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
-              status={emotional?.status ?? "ready"}
-            />
-          )}
         </div>
       }
       <div className="perspective-label" aria-live="polite">
@@ -329,6 +320,15 @@ export function LivingAtom({
       )}
 
       <div className="spatial-dock">
+        {emotionalView && (
+          <NetworkEmotionResults
+            summary={emotionalSummary}
+            reach={reach}
+            now={emotional?.now ?? 0}
+            updatedAt={emotional?.updatedAt ?? emotional?.now ?? 0}
+            status={emotional?.status ?? "ready"}
+          />
+        )}
         <div
           className="primary-actions"
           role="group"

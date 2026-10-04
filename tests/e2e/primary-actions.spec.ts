@@ -60,13 +60,26 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
   const disclosure = page.getByRole("button", {
     name: /YOUR NETWORK OVERVIEW/,
   });
-  const regionBox = (await page
-    .getByText("REGIONAL REACH", { exact: true })
-    .locator("..")
-    .boundingBox())!;
   const overviewBox = (await disclosure.boundingBox())!;
-  expect(overviewBox.y).toBeGreaterThan(regionBox.y + regionBox.height);
-  expect(overviewBox.y - regionBox.y - regionBox.height).toBeLessThan(60);
+  const dockBox = (await page.locator(".spatial-dock").boundingBox())!;
+  expect(overviewBox.x + overviewBox.width / 2).toBeCloseTo(
+    page.viewportSize()!.width / 2,
+    0,
+  );
+  const overviewGap = dockBox.y - overviewBox.y - overviewBox.height;
+  expect(overviewGap).toBeGreaterThanOrEqual(10);
+  expect(overviewGap).toBeLessThanOrEqual(14);
+  expect(
+    await disclosure.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      return el.contains(
+        document.elementFromPoint(
+          box.x + box.width / 2,
+          box.y + box.height / 2,
+        ),
+      );
+    }),
+  ).toBe(true);
   await disclosure.focus();
   await page.keyboard.press("Enter");
   await expect(disclosure).toHaveAttribute("aria-expanded", "true");

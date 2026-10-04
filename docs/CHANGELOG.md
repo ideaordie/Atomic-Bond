@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — Overview action placement
+
+- Moved YOUR NETWORK OVERVIEW to the bottom center, just above the CREATE BOND/PULSE dock. The expanded panel remains centered in the viewport.
+
 ## Unreleased — Centered network overview
 
 - Centered the expanded YOUR NETWORK OVERVIEW panel in the viewport on mobile, tablet and desktop. The trigger remains below regional reach; scrolling and close behavior are preserved.

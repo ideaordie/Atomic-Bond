@@ -262,9 +262,12 @@
 /* Informational disclosure, separate from the two primary actions. */
 .network-now {
   padding: 0;
-  margin: 12px 0 0;
-  position: relative;
-  width: 260px;
+  margin: 0 auto;
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  width: min(300px, calc(100% - 32px));
   z-index: 5;
   pointer-events: auto;
 }
@@ -357,13 +360,6 @@
   }
 }
 @media (max-width: 600px) {
-  .network-now {
-    grid-column: 2 / -1;
-    justify-self: end;
-    margin-top: 0;
-    width: 230px;
-    max-width: 100%;
-  }
   .network-now .network-emotion-results {
     width: min(330px, calc(100vw - 32px));
   }

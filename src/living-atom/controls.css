@@ -237,6 +237,16 @@
   }
 }
 
+/* Leave clearance for the overview disclosure above the action dock. */
+.living-atom:has(.network-now) .atom-context {
+  bottom: 275px;
+}
+@media (max-width: 600px) {
+  .living-atom:has(.network-now) .simulation-label {
+    bottom: 225px;
+  }
+}
+
 /* Keep non-pointer access without an exploration panel. Revealed only on keyboard focus. */
 .canvas-keyboard-selector {
   position: absolute;
