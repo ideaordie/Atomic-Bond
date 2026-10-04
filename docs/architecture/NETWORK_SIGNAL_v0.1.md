@@ -98,5 +98,10 @@ Formatting, lint, TypeScript, production build and configured-secret scans passe
 Migration 202610060001 is applied. Existing Atom, Bond, private identity, invitation,
 preference, Pulse and number-sequence integrity comparisons are unchanged. Atom #3's
 verified ownership was resolved and membership provisioned through the controlled
-operator function. No production Signal was published. Live admin draft/preview
-acceptance and the separate first-publication approval remain rollout gates.
+operator function. The candidate deployed successfully on the production custom
+domain. Atom #3 opened the admin route and saved/previewed WELCOME TO THE BETA as
+one DRAFT; the ordinary owner-facing panel still showed NO CURRENT SIGNAL.
+Anonymous production admin access was denied. No production Signal was published.
+First-publication approval remains the rollout gate. Dismissal, replacement and
+expiration have automated coverage; their production-visible acceptance follows
+only after explicit publication approval.

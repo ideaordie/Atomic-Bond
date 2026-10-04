@@ -7,6 +7,7 @@
 - Production publication remains gated on explicit approval. No initial Signal is automatically published.
 - Applied the additive Signal migration with existing participant/network data unchanged and provisioned verified Atom #3 membership. No new server credential, scheduling change or Master Spec revision.
 - Regression/security/build checks passed, including 234 unit/integration cases, PostgreSQL concurrency, 81 main browser cases, 3 persistence cases and 51 Auth/browser cases; timing/offline-navigation failures passed isolated reruns. Live first-publication acceptance remains pending.
+- Production candidate deployment and Atom #3 admin access passed. The welcome draft was saved/previewed and remains hidden from the normal Signal panel; zero Signals are published. Awaiting explicit first-publication approval.
 
 ## 0.9.3 — Task #9.3 / Account Deactivation & Reactivation
 
