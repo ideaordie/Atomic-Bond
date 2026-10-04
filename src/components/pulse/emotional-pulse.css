@@ -273,9 +273,6 @@
   font-weight: 700;
   letter-spacing: 0.06em;
 }
-.network-now-toggle strong span {
-  float: right;
-}
 .network-now-toggle > span {
   font-size: 10px;
 }
@@ -286,7 +283,7 @@
   left: 50%;
   bottom: auto;
   transform: translate(-50%, -50%);
-  width: min(300px, calc(100vw - 32px));
+  width: min(480px, calc(100vw - 32px));
   max-height: min(42svh, 380px);
 }
 .pulse-composer {
@@ -342,10 +339,5 @@
 @media (max-height: 550px) {
   .network-now .network-emotion-results {
     max-height: min(240px, calc(100dvh - 32px));
-  }
-}
-@media (max-width: 600px) {
-  .network-now .network-emotion-results {
-    width: min(330px, calc(100vw - 32px));
   }
 }

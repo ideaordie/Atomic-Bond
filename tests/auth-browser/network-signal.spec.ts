@@ -98,6 +98,9 @@ test("admin drafts, persistent global panel, close, reload and ending", async ({
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(panel).toContainText("Global update");
   await panel.getByRole("button").click();
+  const signalWidth = await page
+    .locator(".signal-details")
+    .evaluate((el) => el.getBoundingClientRect().width);
   await expect(
     page.getByRole("region", { name: "Network Signal details" }),
   ).toBeVisible();
@@ -129,6 +132,12 @@ test("admin drafts, persistent global panel, close, reload and ending", async ({
     name: "Your Network Overview details",
   });
   await expect(overview).toBeVisible();
+  expect(
+    await overview.evaluate((el) => el.getBoundingClientRect().width),
+  ).toBe(signalWidth);
+  await expect(page.locator(".network-now-toggle strong").first()).toHaveText(
+    "YOUR NETWORK OVERVIEW",
+  );
   expect(
     await overview.evaluate((el) => {
       const heading = getComputedStyle(el.querySelector("h2")!);

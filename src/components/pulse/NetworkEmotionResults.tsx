@@ -36,10 +36,7 @@ export function NetworkEmotionResults({
         aria-controls="network-now-details"
         onClick={() => setExpanded(!expanded)}
       >
-        <strong>
-          YOUR NETWORK OVERVIEW{" "}
-          <span aria-hidden="true">{expanded ? "−" : "+"}</span>
-        </strong>
+        <strong>YOUR NETWORK OVERVIEW</strong>
         <span data-testid="active-pulse-count">
           {available
             ? `${summary.active.length} active ${summary.active.length === 1 ? "Pulse" : "Pulses"}`

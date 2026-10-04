@@ -2,6 +2,7 @@
 
 ## Unreleased — Information-panel visual consistency
 
+- Removed the Overview expand/collapse glyph and matched its expanded responsive width to Network Signal (480px maximum with 16px page margins).
 - Unified expanded Network Overview and Network Signal headings, close controls, body typography and panel styling without changing content, persistence or publication behavior.
 
 ## v0.10.0 — Approved Network Signal beta baseline
