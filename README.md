@@ -1,6 +1,8 @@
 # Atomic Bond
 
-Current approved beta baseline: **v0.10.0 — Network Signal**.
+Current approved beta baseline: **v0.10.1 — Beta UI Polish**.
+This graphical follow-up preserves the approved v0.10.0 commit
+`8fe3e6678c78085000fb3e27e7c0cb91b34042f9` in history and changes no product mechanics.
 See [Network Signal](docs/architecture/NETWORK_SIGNAL_v0.1.md) for persistent global
 announcements and private verified-owner administration. The founding administrator
 is now Atom #1; retired #3 remains unavailable. The accepted mobile and canonical

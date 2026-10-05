@@ -1,9 +1,15 @@
 # Changelog
 
-## Unreleased — Information-panel visual consistency
+## v0.10.1 — Beta UI Polish
+
+- Product-reviewed graphical follow-up to approved v0.10.0 commit `8fe3e6678c78085000fb3e27e7c0cb91b34042f9`, retained unchanged in Git history. This final beta release designation preserves earlier historical version entries.
+- No changes to product mechanics, Auth, database, Bonds, Pulse, Signal persistence/publication, growth scheduling, lifecycle, PWA, authorization or Master Spec.
 
 - Removed the Overview expand/collapse glyph and matched its expanded responsive width to Network Signal (480px maximum with 16px page margins).
 - Unified expanded Network Overview and Network Signal headings, close controls, body typography and panel styling without changing content, persistence or publication behavior.
+- Release audit: the baseline delta is limited to these presentation files, browser regression assertions and release documentation. All ten hosted migrations and Tuesday growth scheduling are unchanged. Master Spec is unchanged.
+- Verification: formatting, lint, TypeScript/build, 235 unit/integration/security cases, native PostgreSQL concurrency/restart checks and server-only client-boundary checks passed. The main browser suite passed 80 cases initially; one desktop Pulse timing timeout passed an unchanged targeted rerun. All three persistence cases passed. Secret scans found no repository or browser credential leakage.
+- All 54 authenticated browser cases passed. Visual review at 390×844, 768×1024 and 1440×900 confirmed the approved side-by-side information row, matched pop-up widths, readable scrolling content and primary-control/navigation alignment. Beta feature freeze remains in effect.
 
 ## v0.10.0 — Approved Network Signal beta baseline
 
