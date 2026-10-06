@@ -3,6 +3,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { randomUUID, createHash } from "node:crypto";
+import type { NetworkReport } from "../../src/services/admin/network";
 
 let db: PGlite;
 const location = randomUUID();
@@ -1351,5 +1352,155 @@ describe("Network Signal database authorization and scheduling", () => {
         )
       ).rows[0],
     ).toEqual({ n: 0 });
+  });
+});
+
+describe("read-only administrator connected groups", () => {
+  it("protects access and computes current components without claiming history or changing data", async () => {
+    const admin = await active(),
+      ordinary = await active();
+    await recentAccess(admin.user);
+    await recentAccess(ordinary.user);
+    await db.query("select private.provision_signal_administrator($1,true)", [
+      admin.number,
+    ]);
+    for (const user of [null, ordinary.user]) {
+      await expect(rpc("admin_network_report", user)).rejects.toThrow();
+    }
+    await expect(
+      call("select public.admin_network_report()", [], null, "anon"),
+    ).rejects.toThrow();
+    const read = async () =>
+      (await rpc(
+        "admin_network_report",
+        admin.user,
+      )) as unknown as NetworkReport;
+    const a = await active(),
+      b = await active(),
+      c = await active(),
+      d = await active();
+    const ids = await Promise.all([a, b, c, d].map((x) => internal(x.user)));
+    const hiddenPlace = randomUUID();
+    await db.query(
+      "insert into public.locations(id,canonical_key,city,region,country,country_code,display_name) values($1,'admin-private-test','','Hidden Region','Hidden Country','ZZ','Hidden Region')",
+      [hiddenPlace],
+    );
+    await db.query("update public.atoms set location_id=$1 where id=$2", [
+      hiddenPlace,
+      ids[1],
+    ]);
+    const bond = async (left: string, right: string, confirmed = true) => {
+      await db.query(
+        "insert into public.bonds(atom_a_id,atom_b_id,status,confirmed_at) values(least($1::uuid,$2::uuid),greatest($1::uuid,$2::uuid),$3::public.bond_status,$4)",
+        [
+          left,
+          right,
+          confirmed ? "CONFIRMED" : "PENDING",
+          confirmed ? "2026-09-30T12:00:00Z" : null,
+        ],
+      );
+    };
+    let report = await read();
+    expect(report.isolatedAtoms).toEqual(
+      expect.arrayContaining([a.number, b.number, c.number, d.number]),
+    );
+    const baseGroups = report.connectedGroups,
+      baseOrganic = report.organicGroups;
+    await bond(ids[1]!, ids[0]!); // reversed representation is the same undirected edge
+    await bond(ids[2]!, ids[3]!);
+    await bond(ids[0]!, ids[2]!, false); // pending does not merge components
+    report = await read();
+    expect(report.connectedGroups).toBe(baseGroups + 2);
+    expect(report.organicGroups).toBe(baseOrganic + 2);
+    expect(
+      report.groups.find((g) => g.publicNumbers.includes(a.number)),
+    ).toMatchObject({ atomCount: 2, bondCount: 1, founding: false });
+    await db.query(
+      "delete from public.bonds where status='PENDING' and atom_a_id=least($1::uuid,$2::uuid) and atom_b_id=greatest($1::uuid,$2::uuid)",
+      [ids[0], ids[2]],
+    );
+    await bond(ids[0]!, ids[2]!); // organic -> organic current-state merge
+    report = await read();
+    expect(report.connectedGroups).toBe(baseGroups + 1);
+    expect(
+      report.groups.find((g) => g.publicNumbers.includes(a.number)),
+    ).toMatchObject({ atomCount: 4, bondCount: 3 });
+    await recentAccess(b.user);
+    await rpc("deactivate_my_account", b.user);
+    await recentAccess(c.user);
+    await rpc("delete_my_account", c.user, ["DELETE"]);
+    report = await read();
+    expect(
+      report.groups.find((g) => g.publicNumbers.includes(a.number)),
+    ).toMatchObject({
+      atomCount: 4,
+      activeAtomCount: 2,
+      bondCount: 3,
+      regions: 1,
+      countries: 1,
+    });
+    const founder = (
+      await db.query<{ id: string }>(
+        "select id from public.atoms where public_id=1",
+      )
+    ).rows[0]!;
+    const beforeFounding = report.foundingNetwork!;
+    await bond(ids[3]!, founder.id); // organic -> founding current-state merge
+    report = await read();
+    expect(report.foundingNetwork!.atomCount).toBe(
+      beforeFounding.atomCount + 4,
+    );
+    expect(report.foundingNetwork!.bondCount).toBe(
+      beforeFounding.bondCount + 4,
+    );
+    expect(report.organicGroups).toBe(baseOrganic);
+    const all = report.groups.flatMap((g) => g.publicNumbers);
+    expect(new Set(all).size).toBe(all.length);
+    expect(report.historyAvailable).toBe(false);
+    expect(JSON.stringify(report)).not.toMatch(
+      /email|auth_user|display_name|x_handle|emotion|preference|location_id/i,
+    );
+    expect(Object.keys(report).sort()).toEqual(
+      [
+        "generatedAt",
+        "activeAtoms",
+        "confirmedBonds",
+        "connectedGroups",
+        "organicGroups",
+        "isolatedAtoms",
+        "largestGroup",
+        "foundingNetwork",
+        "groups",
+        "historyAvailable",
+      ].sort(),
+    );
+    // The actual RPC runs successfully inside a database-enforced read-only transaction.
+    await db.transaction(async (tx) => {
+      await tx.exec("set transaction read only; set local role authenticated");
+      await tx.query("select set_config('request.jwt.claim.sub',$1,true)", [
+        admin.user,
+      ]);
+      await tx.query("select set_config('request.jwt.claims',$1,true)", [
+        JSON.stringify(deletionClaims.get(admin.user)),
+      ]);
+      expect(
+        (await tx.query("select public.admin_network_report() result")).rows,
+      ).toHaveLength(1);
+    });
+    expect(
+      (
+        await db.query(
+          "select provolatile from pg_proc where oid='public.admin_network_report()'::regprocedure",
+        )
+      ).rows,
+    ).toEqual([{ provolatile: "s" }]);
+    await rpc("deactivate_my_account", admin.user);
+    await expect(read()).rejects.toThrow();
+    await recentAccess(admin.user);
+    await expect(read()).rejects.toThrow();
+    await rpc("reactivate_my_account", admin.user);
+    expect((await read()).historyAvailable).toBe(false);
+    await rpc("delete_my_account", admin.user, ["DELETE"]);
+    await expect(read()).rejects.toThrow();
   });
 });

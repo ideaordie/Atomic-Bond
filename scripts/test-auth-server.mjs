@@ -114,6 +114,7 @@ const methods = {
   canonical_locations: ["p_query"],
   canonical_location: ["p_id"],
   signal_admin_history: [],
+  admin_network_report: [],
   current_network_signal: [],
   save_signal_draft: [
     "p_id",

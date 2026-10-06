@@ -1,0 +1,84 @@
+.admin-page {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 20px;
+  color: var(--text);
+}
+.admin-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+}
+.admin-navigation a,
+.admin-card a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.admin-page a:focus-visible,
+.admin-navigation a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+.admin-brand {
+  letter-spacing: 0.2em;
+  font-size: 14px;
+}
+.admin-cards,
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.admin-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.admin-page h1 {
+  font-size: 24px;
+}
+.admin-page h2 {
+  font-size: 18px;
+}
+.admin-page h3 {
+  font-size: 16px;
+}
+.admin-page p {
+  line-height: 1.6;
+}
+.admin-page section {
+  margin-top: 28px;
+  padding: 0;
+}
+.admin-metrics {
+  margin: 24px 0;
+}
+.admin-metrics div {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.admin-metrics dt {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.admin-metrics dd {
+  font-size: 24px;
+  margin: 8px 0 0;
+}
+.admin-number-list {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 599px) {
+  .admin-cards {
+    grid-template-columns: 1fr;
+  }
+  .admin-page {
+    margin: 12px auto;
+    padding: 16px;
+  }
+}

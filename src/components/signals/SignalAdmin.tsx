@@ -7,6 +7,7 @@ import {
   type SignalDraft,
 } from "../../services/signals/model";
 import { SignalPanel } from "./NetworkSignal";
+import { AdminNavigation } from "../admin/AdminNavigation";
 const blank: SignalDraft = {
   type: "ATOMIC_BOND",
   title: "",
@@ -64,7 +65,7 @@ export function SignalAdmin({ initial }: { initial: AdminSignal[] }) {
   };
   return (
     <main className="signal-admin">
-      <a href="/explore">RETURN TO MY ATOM</a>
+      <AdminNavigation />
       <h1>NETWORK SIGNAL ADMINISTRATION</h1>
       <p>
         Global beta announcements. No targeting, sponsorship or outbound

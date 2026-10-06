@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.10.2 — Admin Hub and Connected Groups
+
+- Added a private admin navigation hub and read-only current connected-component report using existing verified ACTIVE administrator membership.
+- Report separates structural groups, founding/organic components and isolated ACTIVE Atoms; history limitations are explicit and no formation/merge events are invented.
+- Added Admin Home navigation to Signal administration. No public mechanics, Signal content, scheduler, credentials or Master Spec changes.
+
 ## v0.10.1 — Beta UI Polish
 
 - Product-reviewed graphical follow-up to approved v0.10.0 commit `8fe3e6678c78085000fb3e27e7c0cb91b34042f9`, retained unchanged in Git history. This final beta release designation preserves earlier historical version entries.

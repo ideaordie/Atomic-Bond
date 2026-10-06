@@ -1,7 +1,12 @@
 # Atomic Bond
 
-Current approved beta baseline: **v0.10.1 — Beta UI Polish**.
-This graphical follow-up preserves the approved v0.10.0 commit
+The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
+adds `/admin` navigation and read-only `/admin/network` structural analytics using
+the existing verified ACTIVE administrator membership. Network Signal publication
+and public product mechanics are unchanged.
+
+Current release: **v0.10.2 — Admin Hub and Connected Groups**.
+The previous approved v0.10.1 Beta UI Polish baseline preserves the v0.10.0 commit
 `8fe3e6678c78085000fb3e27e7c0cb91b34042f9` in history and changes no product mechanics.
 See [Network Signal](docs/architecture/NETWORK_SIGNAL_v0.1.md) for persistent global
 announcements and private verified-owner administration. The founding administrator
