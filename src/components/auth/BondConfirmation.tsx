@@ -33,6 +33,8 @@ export function BondConfirmation({
           publicId={result.publicId}
           initialPulses={result.pulses}
           initialArrivalId={result.arrivalId}
+          initialFirstBond={result.firstBond}
+          activeOwner={result.activeOwner}
         />
       </div>
     );

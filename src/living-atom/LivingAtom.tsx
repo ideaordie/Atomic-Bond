@@ -28,6 +28,8 @@ import type { Emotion, EmotionalPulse } from "../types/emotional-pulse";
 const EMPTY_PULSES: readonly EmotionalPulse[] = [];
 
 export interface LivingAtomProps {
+  firstBond?: boolean;
+  firstBondBegun?: boolean;
   informationPanel?: React.ReactNode;
   ownerMode?: boolean;
   synthetic?: boolean;
@@ -46,6 +48,8 @@ export interface LivingAtomProps {
 }
 
 export function LivingAtom({
+  firstBond = false,
+  firstBondBegun = false,
   informationPanel,
   graph,
   originalAtomId,
@@ -195,6 +199,7 @@ export function LivingAtom({
       <h1 className="sr-only">The Living Atom</h1>
       <div className="atom-stage" ref={canvasContainer}>
         <AtomCanvas
+          firstBond={firstBond && isMine}
           emotions={paints}
           feelNetwork={emotionalView}
           {...(sentEmotion
@@ -331,6 +336,24 @@ export function LivingAtom({
       )}
 
       <div className="spatial-dock">
+        {firstBondBegun && isMine && (
+          <p className="first-bond-guidance" role="status">
+            <strong>YOUR NETWORK HAS BEGUN</strong>
+          </p>
+        )}
+        {firstBond && isMine && (
+          <div className="first-bond-guidance">
+            <strong>YOUR ATOM IS READY</strong>
+            <p>
+              Create your first Bond with someone you know and watch your
+              network come alive.
+            </p>
+            <span className="sr-only">
+              Your Atom has no confirmed Bonds yet. The dotted rings are
+              potential connections, not participants.
+            </span>
+          </div>
+        )}
         <div
           className={informationPanel ? "network-information-row" : undefined}
         >
@@ -362,7 +385,11 @@ export function LivingAtom({
                 disabled={creatingBond}
                 aria-busy={creatingBond}
               >
-                {creatingBond ? "Creating invitation…" : "CREATE BOND"}
+                {creatingBond
+                  ? "Creating invitation…"
+                  : firstBond
+                    ? "CREATE YOUR FIRST BOND"
+                    : "CREATE BOND"}
               </button>
             )}
 
@@ -404,7 +431,7 @@ export function LivingAtom({
           data-testid="pulse-status"
           data-degree={pulse.distance ?? "idle"}
         >
-          {pulseMessage}
+          {firstBond && !running && !pulse.completed ? "" : pulseMessage}
         </p>
 
         <div className="dock-navigation" aria-label="View controls">

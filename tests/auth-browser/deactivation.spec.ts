@@ -75,7 +75,7 @@ test("deactivate, anonymous reopen, explicit same-Atom reactivation and preserve
     page.getByText(`ATOM #${number} is currently deactivated.`),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "CREATE BOND", exact: true }),
+    page.getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ }),
   ).toHaveCount(0);
   await page.screenshot({
     path: info.outputPath("reactivation.png"),

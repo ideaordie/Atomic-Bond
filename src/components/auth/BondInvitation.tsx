@@ -12,10 +12,12 @@ export function BondInvitation({
   invite,
   publicId,
   close,
+  firstBond = false,
 }: {
   invite: DisplayInvitation;
   publicId: string;
   close: () => void;
+  firstBond?: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
@@ -47,9 +49,13 @@ export function BondInvitation({
           ×
         </button>
       </div>
-      <h2 id="owner-invite-title">CREATE BOND</h2>
+      <h2 id="owner-invite-title">
+        {firstBond ? "CREATE YOUR FIRST BOND" : "CREATE BOND"}
+      </h2>
       <p className="invite-instruction">
-        Have the other person scan this QR with their phone&apos;s camera.
+        {firstBond
+          ? "Ask someone you're with to scan this QR code."
+          : "Have the other person scan this QR with their phone’s camera."}
       </p>
       <div className="invite-layout">
         {remaining !== 0 ? (
@@ -65,8 +71,11 @@ export function BondInvitation({
             />
             <div className="invite-details">
               <p>
-                Keep this screen open while they create or access their Atom.
+                {firstBond
+                  ? "They’ll create or access their own Atom, then confirm your Bond to connect your two Atoms."
+                  : "Keep this screen open while they create or access their Atom."}
               </p>
+              {firstBond && <p role="status">Waiting for connection…</p>}
               <p role="timer" aria-label="Invitation time remaining">
                 Invitation expires in:{" "}
                 {remaining === null

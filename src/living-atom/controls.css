@@ -1,4 +1,21 @@
 /* Shared action hierarchy; graph layout and rendering are unchanged. */
+.first-bond-guidance {
+  grid-column: 1 / -1;
+  text-align: center;
+  max-width: 540px;
+  justify-self: center;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.first-bond-guidance strong {
+  letter-spacing: 0.08em;
+}
+.first-bond-guidance p {
+  margin: 4px 0 8px;
+}
+.living-atom:has(.first-bond-guidance) .atom-stage {
+  bottom: 340px;
+}
 .living-atom .spatial-dock {
   grid-template-columns: 1fr 1fr;
   gap: 6px 24px;

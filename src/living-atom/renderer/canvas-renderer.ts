@@ -1,4 +1,5 @@
 import { SCIENTIFIC_PALETTE as palette } from "./scientific-palette";
+import { paintInvitation } from "./invitation-paint";
 import { spatialPositions } from "../animation/spatial-motion";
 import { arrivalVisibility } from "../animation/bond-arrival";
 import { pulsePhase } from "../pulse/presentation";
@@ -119,6 +120,16 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
       );
       const coreRadius = Math.max(24, Math.min(42, 43 * scale));
       targets = [];
+      if (frame.invitation)
+        paintInvitation(
+          ctx,
+          positions.get(`atom:${scene.selected.id}`)!.point,
+          Math.min(135, Math.min(width, height) * 0.38) *
+            Math.min(1.3, camera.zoom),
+          frame.invitation.opacity,
+          frame.elapsedMs,
+          frame.invitation.still,
+        );
       const commands: { z: number; id: string; draw: () => void }[] = [];
 
       for (const edge of scene.edges) {

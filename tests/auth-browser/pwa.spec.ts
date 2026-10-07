@@ -148,10 +148,12 @@ test("standalone restores the same owner and suppresses install UI", async ({
     fullPage: true,
   });
   await page.getByRole("link", { name: "RETURN TO MY ATOM" }).click();
-  await page.getByRole("button", { name: "CREATE BOND", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ })
+    .click();
   await expect(
     page
-      .getByRole("dialog", { name: "CREATE BOND", exact: true })
+      .getByRole("dialog", { name: /^CREATE (YOUR FIRST )?BOND$/ })
       .getByRole("img"),
   ).toBeVisible();
   await page.getByRole("button", { name: "Close invitation" }).click();

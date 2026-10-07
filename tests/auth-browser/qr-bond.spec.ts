@@ -29,8 +29,12 @@ async function register(page: Page, request: APIRequestContext, email: string) {
   return number;
 }
 async function invitation(page: Page) {
-  await page.getByRole("button", { name: "CREATE BOND", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "CREATE BOND", exact: true });
+  await page
+    .getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ })
+    .click();
+  const dialog = page.getByRole("dialog", {
+    name: /^CREATE (YOUR FIRST )?BOND$/,
+  });
   await expect(dialog.getByRole("timer")).toContainText(
     "Invitation expires in:",
   );
@@ -44,6 +48,46 @@ async function invitation(page: Page) {
   expect(url.search + url.hash).toBe("");
   return { dialog, url: qr.data, src };
 }
+test("first invitation cancellation and expiry preserve the genuine zero-Bond state", async ({
+  page,
+  request,
+}, info) => {
+  await register(
+    page,
+    request,
+    `first-expiry-${info.project.name}@example.invalid`,
+  );
+  const before = await (
+    await request.get("http://127.0.0.1:54330/__test/counts")
+  ).json();
+  const cancelled = await invitation(page);
+  await cancelled.dialog
+    .getByRole("button", { name: "CANCEL INVITATION" })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "CREATE YOUR FIRST BOND", exact: true }),
+  ).toBeVisible();
+  const expired = await invitation(page);
+  expect(expired.url).not.toBe(cancelled.url);
+  await page.clock.install();
+  await page.clock.fastForward(301000);
+  await expect(expired.dialog.getByText("Waiting for connection…")).toHaveCount(
+    0,
+  );
+  await expect(expired.dialog.getByRole("img")).toHaveCount(0);
+  await expired.dialog
+    .getByRole("button", { name: "Back to CREATE BOND" })
+    .click();
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-invitation-markers",
+    "4 decorative",
+  );
+  await expect(page.getByTestId("reachable-count")).toHaveText("1");
+  expect(
+    await (await request.get("http://127.0.0.1:54330/__test/counts")).json(),
+  ).toEqual(before);
+});
 test("real QR transport, isolated recipients, consent, reciprocal graph, reuse and connected Pulse", async ({
   page,
   browser,
@@ -56,6 +100,39 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     `qr-a-${info.project.name}@example.invalid`,
   );
   await expect(page.getByTestId("reachable-count")).toHaveText("1");
+  await expect(
+    page.getByText("YOUR ATOM IS READY", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-invitation-markers",
+    "4 decorative",
+  );
+  await expect(
+    page.getByRole("button", { name: "CREATE YOUR FIRST BOND", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Select an Atom", { exact: true }).locator("option"),
+  ).toHaveCount(2);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-motion",
+    "still",
+  );
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-invitation-markers",
+    "4 decorative",
+  );
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const publicPage = await browser.newPage();
+  await publicPage.goto(`http://127.0.0.1:3104/a/${first}`);
+  await expect(publicPage.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-invitation-markers",
+    "none",
+  );
+  await expect(
+    publicPage.getByText("YOUR ATOM IS READY", { exact: true }),
+  ).toHaveCount(0);
+  await publicPage.close();
   await page.getByRole("button", { name: /YOUR NETWORK OVERVIEW/ }).click();
   const empty = page.getByRole("region", {
     name: "Your Network Overview details",
@@ -74,9 +151,14 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   const original = await invitation(page);
   const qrBox = await original.dialog.getByRole("img").boundingBox();
   expect(qrBox!.width).toBeGreaterThanOrEqual(250);
-  await expect(original.dialog.getByText(/other person scan/)).toBeVisible();
   await expect(
-    original.dialog.getByText(/Keep this screen open/),
+    original.dialog.getByText(/Ask someone you're with to scan/),
+  ).toBeVisible();
+  await expect(
+    original.dialog.getByText(/their own Atom, then confirm/),
+  ).toBeVisible();
+  await expect(
+    original.dialog.getByText("Waiting for connection…"),
   ).toBeVisible();
   await page.setViewportSize({ width: 844, height: 390 });
   const qrImage = original.dialog.getByRole("img");
@@ -152,14 +234,33 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     .getByRole("button", { name: "CONFIRM BOND", exact: true })
     .click();
   await expect(
-    receiver.getByText("BOND CREATED", { exact: true }),
+    receiver.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),
   ).toBeVisible();
   await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${second}`);
   await expect(receiver.getByTestId("reachable-count")).toHaveText("2");
   await expect(page.getByTestId("reachable-count")).toHaveText("2", {
     timeout: 65000,
   });
-  await expect(page.getByText("BOND CREATED", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-invitation-markers",
+    "none",
+  );
+  await expect(
+    page.getByText("YOUR ATOM IS READY", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "CREATE BOND", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath("first-bond-confirmed.png"),
+    fullPage: true,
+  });
+  await expect(
+    page.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),
+  ).toHaveCount(0, { timeout: 5000 });
   const after = await (
     await request.get("http://127.0.0.1:54330/__test/counts")
   ).json();

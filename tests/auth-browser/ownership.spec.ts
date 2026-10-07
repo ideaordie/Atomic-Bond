@@ -39,7 +39,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await expect(receiver).toHaveURL(`/bond/${invite.token}`);
   await receiver.getByRole("button", { name: "CONFIRM BOND" }).click();
   await expect(
-    receiver.getByText("BOND CREATED", { exact: true }),
+    receiver.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),
   ).toBeVisible();
   const number = (
     await receiver.getByTestId("selected-atom").innerText()

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.10.3 — First Bond Invitation State
+
+- Added ACTIVE zero-Bond owner guidance, contextual CTA and clearer first-invitation QR/waiting copy.
+- Added four non-interactive decorative potential-connection rings to the existing renderer, with calm motion, pause/reduced-motion support and a brief first-confirmation acknowledgement.
+- Placeholders are never graph/data entities. Established/public experiences, Bond security, Pulse, statistics, Signal, database and Master Spec remain unchanged. Publication approved after local review.
+
 ## v0.10.2 — Admin Hub and Connected Groups
 
 - Added a private admin navigation hub and read-only current connected-component report using existing verified ACTIVE administrator membership.

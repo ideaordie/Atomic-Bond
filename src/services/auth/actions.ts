@@ -171,6 +171,12 @@ export async function confirmOwnerBond(token: string) {
       next: "/explore",
       publicId: atom!.publicId!,
       arrivalId: invite.creatorPublicId,
+      activeOwner: atom!.status === "ACTIVE",
+      firstBond:
+        atom!.status === "ACTIVE" &&
+        !graph.edges.some(
+          (e) => e.source === atom!.publicId || e.target === atom!.publicId,
+        ),
       graph: await services.bonds.graph(atom!.publicId!),
       pulses: await services.pulses.visible(),
     };

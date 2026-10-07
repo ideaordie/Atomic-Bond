@@ -16,23 +16,34 @@ import {
 import "./auth.css";
 import { createNetworkReconciler } from "../../services/pulses/network-reconciliation";
 import { usePulseClock } from "../pulse/use-pulse-clock";
+import { firstBondEligible } from "../../living-atom/animation/first-bond";
 export function OwnerExperience({
   graph: initialGraph,
   publicId,
   initialPulses,
   initialArrivalId = null,
+  initialFirstBond = false,
+  activeOwner = false,
 }: {
   graph: GraphData;
   publicId: string;
   initialPulses: readonly EmotionalPulse[];
   initialArrivalId?: string | null;
+  initialFirstBond?: boolean;
+  activeOwner?: boolean;
 }) {
   const [graph, setGraph] = useState(initialGraph);
   const [arrival, setArrival] = useState(initialArrivalId);
   const graphRef = useRef(initialGraph);
   const [creating, setCreating] = useState(false);
   const creatingRef = useRef(false);
-  const [notice, setNotice] = useState(initialArrivalId ? "BOND CREATED" : "");
+  const [notice, setNotice] = useState(
+    initialFirstBond
+      ? "YOUR NETWORK HAS BEGUN"
+      : initialArrivalId
+        ? "BOND CREATED"
+        : "",
+  );
   const [pulses, setPulses] = useState(initialPulses),
     [invite, setInvite] = useState<DisplayInvitation | null>(null),
     [error, setError] = useState("");
@@ -43,6 +54,12 @@ export function OwnerExperience({
   >("ready");
   const pendingUntil = useRef(0);
   const localPulse = useRef<EmotionalPulse | null>(null);
+  const firstBond = firstBondEligible(graph, publicId, activeOwner);
+  useEffect(() => {
+    if (notice !== "YOUR NETWORK HAS BEGUN") return;
+    const timer = setTimeout(() => setNotice(""), 2800);
+    return () => clearTimeout(timer);
+  }, [notice]);
   useEffect(() => {
     let cancelled = false;
     let generation = 0;
@@ -71,7 +88,11 @@ export function OwnerExperience({
               setArrival(
                 added.source === publicId ? added.target : added.source,
               );
-              setNotice("BOND CREATED");
+              setNotice(
+                firstBondEligible(graphRef.current, publicId, activeOwner)
+                  ? "YOUR NETWORK HAS BEGUN"
+                  : "BOND CREATED",
+              );
               setInvite(null);
               pendingUntil.current = 0;
             }
@@ -125,7 +146,7 @@ export function OwnerExperience({
       window.removeEventListener("offline", offline);
       document.removeEventListener("visibilitychange", resume);
     };
-  }, [publicId]);
+  }, [publicId, activeOwner]);
   async function send(emotion: Emotion) {
     const pulse = await sendOwnerPulse(emotion);
     setPulses((p) => [...p.filter((x) => x.atomId !== publicId), pulse]);
@@ -135,6 +156,8 @@ export function OwnerExperience({
   return (
     <>
       <LivingAtom
+        firstBond={firstBond}
+        firstBondBegun={notice === "YOUR NETWORK HAS BEGUN"}
         informationPanel={<NetworkSignal />}
         graph={graph}
         originalAtomId={publicId}
@@ -166,10 +189,15 @@ export function OwnerExperience({
       {error && <p role="alert">{error}</p>}
       <InstallOffer />
       <p className="bond-update" role="status">
-        {creating ? "Preparing your invitation…" : notice}
+        {creating
+          ? "Preparing your invitation…"
+          : notice === "YOUR NETWORK HAS BEGUN"
+            ? ""
+            : notice}
       </p>
       {invite && (
         <BondInvitation
+          firstBond={firstBond}
           invite={invite}
           publicId={publicId}
           close={() => setInvite(null)}

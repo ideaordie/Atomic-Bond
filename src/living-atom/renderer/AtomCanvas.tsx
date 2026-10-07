@@ -12,6 +12,7 @@ import { createCanvasRenderer } from "./canvas-renderer";
 import type { EmotionPaint } from "../pulse/emotion-presentation";
 
 interface Props {
+  firstBond?: boolean;
   emotions?: ReadonlyMap<string, EmotionPaint>;
   feelNetwork?: boolean;
   pulseColor?: string;
@@ -62,6 +63,8 @@ export function AtomCanvas({
     let lastPaint = 0;
     let arrivalId: string | null = null;
     let arrivalStarted = 0;
+    let invitationVisible = Boolean(current.current.firstBond);
+    let invitationEnded = -Infinity;
     const ambientClock = createAmbientClock();
     let dirty = true;
     let emotionTarget = current.current.emotions;
@@ -71,6 +74,13 @@ export function AtomCanvas({
       frameId = 0;
       if (!alive) return;
       const state = current.current;
+      if (invitationVisible && !state.firstBond) invitationEnded = time;
+      invitationVisible = Boolean(state.firstBond);
+      const invitationOpacity = state.firstBond
+        ? 1
+        : state.reducedMotion
+          ? 0
+          : Math.max(0, 1 - (time - invitationEnded) / 350);
       if (state.arrivalId && state.arrivalId !== arrivalId) {
         arrivalId = state.arrivalId;
         arrivalStarted = time;
@@ -100,6 +110,9 @@ export function AtomCanvas({
       if (time - lastPaint >= 30 || dirty) {
         const elapsedMs = ambientClock.sample(time, !still && !document.hidden);
         renderer.draw({
+          ...(invitationOpacity > 0
+            ? { invitation: { opacity: invitationOpacity, still } }
+            : {}),
           ...(material ? { emotions: material } : {}),
           ...(state.pulseColor ? { pulseColor: state.pulseColor } : {}),
           feelNetwork: state.feelNetwork ?? false,
@@ -295,6 +308,7 @@ export function AtomCanvas({
         aria-label={`Living Atom network centered on Atom #${props.scene.selected.publicId}`}
         aria-describedby="network-instructions"
         data-testid="atom-canvas"
+        data-invitation-markers={props.firstBond ? "4 decorative" : "none"}
         data-emotional-view={props.feelNetwork ? "active" : "structural"}
         data-pulse-color={props.pulseColor ?? "none"}
         data-motion={props.reducedMotion || props.paused ? "still" : "gentle"}

@@ -75,6 +75,7 @@ export async function NetworkPage({
         />
       ) : ownView && ownerId && owner ? (
         <OwnerExperience
+          activeOwner={owner.atom?.status === "ACTIVE"}
           graph={source.graph}
           publicId={ownerId}
           initialPulses={await owner.services.pulses.visible()}

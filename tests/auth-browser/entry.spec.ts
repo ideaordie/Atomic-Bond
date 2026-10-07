@@ -68,7 +68,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   await page.getByRole("link", { name: /RETURN TO ATOMIC BOND/ }).click();
   await expect(page.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await expect(
-    page.getByRole("button", { name: "CREATE BOND", exact: true }),
+    page.getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ }),
   ).toBeEnabled();
   const isolated = await browser.newContext({
     viewport: info.project.use.viewport ?? { width: 390, height: 844 },
@@ -84,7 +84,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
     visitor.getByText(`PUBLIC ATOM VIEW · ATOM #${number}`, { exact: true }),
   ).toBeVisible();
   await expect(
-    visitor.getByRole("button", { name: "CREATE BOND", exact: true }),
+    visitor.getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ }),
   ).toHaveCount(0);
   await expect(
     visitor.getByRole("button", { name: "Pulse", exact: true }),
@@ -108,7 +108,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
     page.getByText(`PUBLIC ATOM VIEW · ATOM #${number}`, { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "CREATE BOND", exact: true }),
+    page.getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ }),
   ).toHaveCount(0);
   await page.goto("/");
   await expect(
