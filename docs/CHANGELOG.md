@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.11.0 — Expanded Pulse: Feeling, Energy & Vibe
+
+- Added Feeling / Energy / Vibe, 24 selectable states, vibrant colors and unsent Canvas preview.
+- Preserved legacy Angry/Afraid meanings and JOY storage mapping, single state, six-second propagation and 24-hour expiry through staged additive migrations.
+- Added approved Master Spec v0.3; frozen v0.2 remains unchanged. Publication approved after local review.
+- Verified persistent Network Signal visibility alongside expanded Pulse at mobile, tablet and desktop sizes; existing authorization and publication behavior remain unchanged.
+
 ## v0.10.3 — First Bond Invitation State
 
 - Added ACTIVE zero-Bond owner guidance, contextual CTA and clearer first-invitation QR/waiting copy.

@@ -38,14 +38,14 @@ async function setup(page: Page) {
   );
   await page.clock.runFor(50);
 }
-test("explicit emotion selection, eight visual states, replacement and full graph reach", async ({
+test("explicit emotion selection, 24 visual states, replacement and full graph reach", async ({
   page,
 }, info) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   await setup(page);
   const canvas = page.getByTestId("atom-canvas");
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "How are you feeling?" });
+  const dialog = page.getByRole("dialog", { name: "How are you right now?" });
   await expect(dialog.getByRole("radio")).toHaveCount(8);
   await expect(
     dialog.getByRole("button", { name: "Send Pulse", exact: true }),
@@ -84,7 +84,7 @@ test("explicit emotion selection, eight visual states, replacement and full grap
     );
     await capture(page, info, `active-${emotion}`);
   }
-  expect(frames.size).toBe(8);
+  expect(frames.size).toBe(24);
   await expect(canvas).toHaveAttribute("data-motion", "still");
 });
 
@@ -119,7 +119,7 @@ test("Living emotional network coverage, progressive clouds, selected state and 
   await capture(page, info, "coverage");
   await expect(
     page.locator(".emotion-distribution li").filter({ hasText: "Curious" }),
-  ).toHaveText("Curious16 · 12.5%");
+  ).toHaveText("Curious6 · 4.7%");
   await page
     .getByRole("button", { name: "Close Your Network Overview" })
     .click();
@@ -134,7 +134,7 @@ test("Living emotional network coverage, progressive clouds, selected state and 
     await page.getByLabel("Select an Atom", { exact: true }).selectOption(id);
     await expect(page.getByTestId("current-pulse")).toHaveCount(active ? 1 : 0);
     if (active)
-      await expect(page.getByTestId("current-pulse")).toContainText("Calm");
+      await expect(page.getByTestId("current-pulse")).toContainText("Excited");
     await capture(page, info, `context-${name}`);
     await page.getByRole("button", { name: "Close selected Atom" }).click();
   }
@@ -240,7 +240,7 @@ test("Your Network Overview expands, updates without losing scroll, expires and 
   await expect(results).toBeVisible();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await expect(results).toContainText("128 active Pulses");
-  await expect(results.locator("li")).toHaveCount(8);
+  await expect(results.locator("li")).toHaveCount(24);
   expect(
     (await results.locator(".emotion-distribution").boundingBox())!.height,
   ).toBeGreaterThan(140);
@@ -257,7 +257,7 @@ test("Your Network Overview expands, updates without losing scroll, expires and 
   await expect(results).toContainText("129 active Pulses");
   await expect(
     results.locator("li").filter({ hasText: "Curious" }),
-  ).toContainText("17");
+  ).toContainText("7 · 5.4%");
   await page.clock.fastForward(60_000);
   await expect(results.locator("ul")).toHaveAttribute(
     "data-stable-results",

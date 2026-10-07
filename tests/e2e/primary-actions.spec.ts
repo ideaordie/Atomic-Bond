@@ -53,7 +53,7 @@ test("primary actions align, remain reachable and preserve keyboard behavior", a
   await expect(buttons.nth(1)).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(
-    page.getByRole("dialog", { name: "How are you feeling?" }),
+    page.getByRole("dialog", { name: "How are you right now?" }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(buttons.nth(1)).toBeFocused();

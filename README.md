@@ -1,11 +1,13 @@
 # Atomic Bond
 
+Expanded Pulse uses the approved [Master Spec v0.3](docs/MASTER_SPEC_v0.3.md). Frozen v0.2 is preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
+
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
 adds `/admin` navigation and read-only `/admin/network` structural analytics using
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.10.3 — First Bond Invitation State**.
+Current release: **v0.11.0 — Expanded Pulse: Feeling, Energy & Vibe**.
 The previous approved v0.10.1 Beta UI Polish baseline preserves the v0.10.0 commit
 `8fe3e6678c78085000fb3e27e7c0cb91b34042f9` in history and changes no product mechanics.
 See [Network Signal](docs/architecture/NETWORK_SIGNAL_v0.1.md) for persistent global
@@ -67,7 +69,7 @@ Registration uses bundled country/subdivision data with no location API key.
 ## Authority
 
 Read [AGENTS.md](AGENTS.md), the frozen
-[Master Product Specification v0.2](docs/MASTER_SPEC_v0.2.md), and the
+[Master Product Specification v0.3](docs/MASTER_SPEC_v0.3.md), and the
 [Build Blueprint](docs/BUILD_BLUEPRINT_v0.1.md) before substantial changes.
 Specification revisions require explicit approval. Material blueprint changes
 must be proposed before implementation.
@@ -92,7 +94,7 @@ on the canvas or through **Explore Atoms**, then choose **View their network**
 to change perspective. **My Atom** restores your starting perspective. Drag to
 pan; use the wheel, pinch or zoom buttons to change scale. **Recenter** resets
 the camera. People, Networks and Regions emphasize different levels of detail.
-**PULSE** asks how you feel; select one of eight states and **Send Pulse** to
+**PULSE** asks how you are right now; select one of 24 Feeling, Energy or Vibe states, preview it, and **Send Pulse** to
 propagate through your connected network. Your latest state lasts 24 hours or
 until replaced. Authorized emotional state is visible automatically in MY ATOM.
 **YOUR NETWORK NOW** expands coverage and distribution without changing the view.

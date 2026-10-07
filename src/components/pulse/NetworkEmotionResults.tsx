@@ -1,7 +1,7 @@
 ﻿import { useRef, useState } from "react";
 import type { emotionalNetwork } from "../../graph/metrics/emotional-network";
 import type { networkReach } from "../../graph/metrics/network-reach";
-import { EMOTIONS } from "../../types/emotional-pulse";
+import { READABLE_EMOTIONS } from "../../types/emotional-pulse";
 import { EMOTION_DEFINITIONS } from "../../living-atom/pulse/emotions";
 import "../network-details.css";
 
@@ -121,11 +121,13 @@ export function NetworkEmotionResults({
                   <p>Your network begins with you. Create a Bond to connect.</p>
                 )}
                 <p>
-                  Recent feelings voluntarily shared in your connected network,
+                  Current states voluntarily shared in your connected network,
                   not the general population.
                 </p>
                 <ul>
-                  {EMOTIONS.map((emotion) => (
+                  {READABLE_EMOTIONS.filter(
+                    (emotion) => summary.counts[emotion] > 0,
+                  ).map((emotion) => (
                     <li key={emotion}>
                       <span
                         className="emotion-label"

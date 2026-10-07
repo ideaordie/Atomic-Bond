@@ -1,6 +1,7 @@
 import type { GraphData } from "../../types/graph";
 import {
-  EMOTIONS,
+  isReadablePulse,
+  isSelectablePulse,
   PULSE_LIFETIME_MS,
   isActivePulse,
   type Emotion,
@@ -25,7 +26,7 @@ export class MockPulseService implements PulseService {
   ) {
     for (const pulse of initial) {
       if (
-        !EMOTIONS.includes(pulse.emotion) ||
+        !isReadablePulse(pulse.emotion) ||
         pulse.expiresAt !== pulse.createdAt + PULSE_LIFETIME_MS
       )
         throw new Error("Invalid Emotional Pulse");
@@ -47,7 +48,7 @@ export class MockPulseService implements PulseService {
     return this.clock();
   }
   send(emotion: Emotion): EmotionalPulse {
-    if (!EMOTIONS.includes(emotion))
+    if (!isSelectablePulse(emotion))
       throw new Error("Select an approved emotion");
     const createdAt = this.clock();
     const pulse = Object.freeze({

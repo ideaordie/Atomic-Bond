@@ -1,7 +1,12 @@
 "use client";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { EMOTIONS, type Emotion } from "../../types/emotional-pulse";
-import { EMOTION_DEFINITIONS } from "../../living-atom/pulse/emotions";
+import {
+  EMOTION_DEFINITIONS,
+  PULSE_CATEGORIES,
+  type PulseCategory,
+} from "../../living-atom/pulse/emotions";
+import { PulsePreview } from "./PulsePreview";
 import "./emotional-pulse.css";
 
 export function PulseComposer({
@@ -17,6 +22,8 @@ export function PulseComposer({
   const [error, setError] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
   const [emotion, setEmotion] = useState<Emotion | null>(null);
+  const [category, setCategory] = useState<PulseCategory>("FEELING");
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   useEffect(() => {
     const element = dialog.current!;
     const opener = document.activeElement;
@@ -51,38 +58,87 @@ export function PulseComposer({
           }
         }}
       >
-        <p className="emotion-eyebrow">YOUR EMOTIONAL PULSE</p>
-        <h2 id="emotion-heading">How are you feeling?</h2>
+        <p className="emotion-eyebrow">YOUR PULSE</p>
+        <h2 id="emotion-heading">How are you right now?</h2>
         <p>
-          Share how you feel now with your connected network for 24 hours. A new
-          Pulse replaces your previous state.
+          Share one current state with your connected network for 24 hours. A
+          new Pulse replaces your previous state.
         </p>
-        <fieldset>
-          <legend>Choose one emotional state</legend>
-          <div className="emotion-options">
-            {EMOTIONS.map((key) => {
-              const definition = EMOTION_DEFINITIONS[key];
-              return (
-                <label
-                  key={key}
-                  style={
-                    { "--emotion-color": definition.color } as CSSProperties
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="emotion"
-                    value={key}
-                    checked={emotion === key}
-                    onChange={() => setEmotion(key)}
-                  />
-                  <span className="emotion-dot" aria-hidden="true" />
-                  <span>{definition.label}</span>
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
+        <div
+          className="pulse-categories"
+          role="tablist"
+          aria-label="Pulse categories"
+        >
+          {PULSE_CATEGORIES.map((item, index) => (
+            <button
+              key={item}
+              type="button"
+              role="tab"
+              id={`pulse-tab-${item}`}
+              aria-controls="pulse-options"
+              aria-selected={category === item}
+              tabIndex={category === item ? 0 : -1}
+              ref={(node) => {
+                tabs.current[index] = node;
+              }}
+              disabled={pending}
+              onClick={() => setCategory(item)}
+              onKeyDown={(event) => {
+                const next =
+                  event.key === "ArrowRight"
+                    ? (index + 1) % 3
+                    : event.key === "ArrowLeft"
+                      ? (index + 2) % 3
+                      : event.key === "Home"
+                        ? 0
+                        : event.key === "End"
+                          ? 2
+                          : null;
+                if (next === null) return;
+                event.preventDefault();
+                setCategory(PULSE_CATEGORIES[next]!);
+                tabs.current[next]?.focus();
+              }}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+        <div
+          id="pulse-options"
+          role="tabpanel"
+          aria-labelledby={`pulse-tab-${category}`}
+        >
+          <fieldset disabled={pending}>
+            <legend>Choose one state · {category.toLowerCase()}</legend>
+            <div className="emotion-options">
+              {EMOTIONS.filter(
+                (key) => EMOTION_DEFINITIONS[key].category === category,
+              ).map((key) => {
+                const definition = EMOTION_DEFINITIONS[key];
+                return (
+                  <label
+                    key={key}
+                    style={
+                      { "--emotion-color": definition.color } as CSSProperties
+                    }
+                  >
+                    <input
+                      type="radio"
+                      name="emotion"
+                      value={key}
+                      checked={emotion === key}
+                      onChange={() => setEmotion(key)}
+                    />
+                    <span className="emotion-dot" aria-hidden="true" />
+                    <span>{definition.label}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        </div>
+        <PulsePreview emotion={emotion} />
         <div className="emotion-actions">
           <button type="button" onClick={onClose}>
             Cancel

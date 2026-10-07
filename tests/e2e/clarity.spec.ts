@@ -30,7 +30,7 @@ test("network panels fit breakpoint widths and recover after orientation", async
   }
   await page.setViewportSize({ width: 844, height: 390 });
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
-  const composer = page.getByRole("dialog", { name: "How are you feeling?" });
+  const composer = page.getByRole("dialog", { name: "How are you right now?" });
   await expect(composer.getByRole("radio")).toHaveCount(8);
   await composer.getByRole("radio", { name: "Curious", exact: true }).check();
   await composer

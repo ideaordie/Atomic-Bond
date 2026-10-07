@@ -8,6 +8,47 @@
   color: var(--text);
   background: var(--surface);
 }
+.pulse-categories {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.pulse-categories button {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.pulse-categories button[aria-selected="true"] {
+  background: var(--surface-muted);
+  border-color: var(--accent);
+  box-shadow: inset 0 -2px var(--accent);
+}
+.pulse-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 88px;
+  border-block: 1px solid var(--border);
+}
+.pulse-preview canvas {
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+}
+.pulse-preview strong,
+.pulse-preview small {
+  display: block;
+}
+.pulse-preview strong {
+  font-size: 16px;
+}
+.pulse-preview small {
+  margin-top: 5px;
+}
 .pulse-composer::backdrop {
   background: var(--surface);
   backdrop-filter: blur(5px);
@@ -49,6 +90,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
+  font-size: 13px;
 }
 .emotion-options label:has(:checked) {
   border-color: var(--emotion-color);

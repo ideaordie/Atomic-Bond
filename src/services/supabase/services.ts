@@ -8,7 +8,9 @@ import {
 } from "../../data/supabase/projections";
 import { normalizeXHandle } from "../../utils/x-profile";
 import {
-  EMOTIONS,
+  isSelectablePulse,
+  pulseFromDatabase,
+  pulseToDatabase,
   PULSE_LIFETIME_MS,
   type Emotion,
   type EmotionalPulse,
@@ -122,9 +124,8 @@ export class SupabaseBondService {
 }
 function pulse(value: unknown): EmotionalPulse {
   const row = record(value),
-    emotion = string(row.emotion) as Emotion;
+    emotion = pulseFromDatabase(row.emotion);
   if (
-    !EMOTIONS.includes(emotion) ||
     !Number.isFinite(row.createdAt) ||
     !Number.isFinite(row.expiresAt) ||
     Number(row.expiresAt) - Number(row.createdAt) !== PULSE_LIFETIME_MS
@@ -141,11 +142,11 @@ function pulse(value: unknown): EmotionalPulse {
 export class SupabasePulseService {
   constructor(private readonly rpc: RpcTransport) {}
   async send(emotion: Emotion) {
-    if (!EMOTIONS.includes(emotion))
+    if (!isSelectablePulse(emotion))
       throw new Error("Select an approved emotion");
     return pulse(
       await this.rpc.call("send_emotional_pulse", {
-        p_emotion: emotion.toUpperCase(),
+        p_emotion: pulseToDatabase(emotion),
       }),
     );
   }

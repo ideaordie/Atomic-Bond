@@ -119,7 +119,7 @@ test("iOS manual guidance stays optional and fits each viewport", async ({
   await expect(offer).toHaveCount(0);
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
   await expect(
-    page.getByRole("dialog", { name: "How are you feeling?" }),
+    page.getByRole("dialog", { name: "How are you right now?" }),
   ).toBeVisible();
 });
 
@@ -158,12 +158,13 @@ test("standalone restores the same owner and suppresses install UI", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "Close invitation" }).click();
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
-  const composer = page.getByRole("dialog", { name: "How are you feeling?" });
-  await composer.getByRole("radio", { name: "Curious", exact: true }).check();
+  const composer = page.getByRole("dialog", { name: "How are you right now?" });
+  await composer.getByRole("tab", { name: "VIBE", exact: true }).click();
+  await composer.getByRole("radio", { name: "Tipsy", exact: true }).check();
   await composer
     .getByRole("button", { name: "Send Pulse", exact: true })
     .click();
-  await expect(page.getByTestId("own-pulse")).toContainText("Curious");
+  await expect(page.getByTestId("own-pulse")).toContainText("Tipsy");
   await page.getByRole("button", { name: /^YOUR NETWORK OVERVIEW/ }).click();
   await expect(
     page.getByRole("region", { name: "Your Network Overview details" }),

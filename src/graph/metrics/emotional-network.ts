@@ -1,7 +1,7 @@
 import { getPerspective } from "../degrees/perspective";
 import type { GraphData } from "../../types/graph";
 import {
-  EMOTIONS,
+  READABLE_EMOTIONS,
   isActivePulse,
   type Emotion,
   type EmotionalPulse,
@@ -29,7 +29,7 @@ export function emotionalNetwork(
   }
   const active = [...latest.values()].filter((p) => isActivePulse(p, now));
   const counts = Object.fromEntries(
-    EMOTIONS.map((emotion) => [emotion, 0]),
+    READABLE_EMOTIONS.map((emotion) => [emotion, 0]),
   ) as Record<Emotion, number>;
   const regions = new Map<
     string,
@@ -58,7 +58,7 @@ export function emotionalNetwork(
       label,
       count: 0,
       counts: Object.fromEntries(
-        EMOTIONS.map((emotion) => [emotion, 0]),
+        READABLE_EMOTIONS.map((emotion) => [emotion, 0]),
       ) as Record<Emotion, number>,
     };
     region.count++;
@@ -75,7 +75,7 @@ export function emotionalNetwork(
     ).length,
     counts,
     percentages: Object.fromEntries(
-      EMOTIONS.map((emotion) => [
+      READABLE_EMOTIONS.map((emotion) => [
         emotion,
         active.length ? (counts[emotion] / active.length) * 100 : 0,
       ]),

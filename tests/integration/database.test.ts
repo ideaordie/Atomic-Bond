@@ -3,6 +3,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { randomUUID, createHash } from "node:crypto";
+import { EMOTIONS, pulseToDatabase } from "../../src/types/emotional-pulse";
 import type { NetworkReport } from "../../src/services/admin/network";
 
 let db: PGlite;
@@ -303,25 +304,21 @@ describe("migrations and production database invariants", () => {
       ).rows,
     ).toEqual(before);
   });
-  it("persists all eight emotions, replaces instead of accumulating history, and gates connected visibility", async () => {
+  it("persists all 24 states, replaces instead of accumulating history, and gates connected visibility", async () => {
     const a = await active(),
       b = await active(),
       c = await active();
-    for (const emotion of [
-      "JOY",
-      "CALM",
-      "EXCITED",
-      "CURIOUS",
-      "SAD",
-      "ANXIOUS",
-      "ANGRY",
-      "AFRAID",
-    ]) {
+    for (const emotion of EMOTIONS.map(pulseToDatabase)) {
       const p = await rpc("send_emotional_pulse", a.user, [emotion]);
       expect(p.emotion).toBe(emotion.toLowerCase());
       expect(Number(p.expiresAt) - Number(p.createdAt)).toBe(86_400_000);
     }
     const ai = await internal(a.user);
+    for (const retired of ["ANGRY", "AFRAID"]) {
+      await expect(
+        rpc("send_emotional_pulse", a.user, [retired]),
+      ).rejects.toThrow("approved Pulse state");
+    }
     expect(
       (
         await db.query(

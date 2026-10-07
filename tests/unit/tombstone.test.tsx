@@ -15,7 +15,7 @@ it.each(["DELETED", "DEACTIVATED"])(
       xHandle: "old_handle",
       email: "private@example.invalid",
       metadata: { region: "Former region" },
-      emotion: "joy",
+      emotion: "joyful",
     };
     expect(publicAtom(raw)).toEqual({
       publicId: "2",
@@ -33,7 +33,7 @@ it.each(["DELETED", "DEACTIVATED"])(
     const pulse = {
       id: "p",
       atomId: "2",
-      emotion: "joy" as const,
+      emotion: "joyful" as const,
       createdAt: now,
       expiresAt: now + 86400000,
     };

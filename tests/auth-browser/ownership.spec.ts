@@ -57,7 +57,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
     .getByRole("button", { name: "Send Pulse", exact: true })
     .click();
   await expect(
-    receiver.getByRole("dialog", { name: "How are you feeling?" }),
+    receiver.getByRole("dialog", { name: "How are you right now?" }),
   ).toHaveCount(0);
   await receiver.getByRole("link", { name: "Profile & preferences" }).click();
   await expect(receiver.getByLabel("Pulse notifications")).toHaveCount(0);

@@ -1,4 +1,6 @@
-﻿# Living Emotional Network — Task #8.1 / v0.8.1
+Task #10.4 supersedes the eight-state vocabulary below locally. See [Expanded Pulse](EXPANDED_PULSE_v0.1.md) for current semantics and rollout gates.
+
+# Living Emotional Network — Task #8.1 / v0.8.1
 
 Master Specification v0.2 remains authoritative, with the explicitly approved
 interaction revision. The v0.8.0 tag and baseline report remain historical.

@@ -140,7 +140,7 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   await expect(empty).toContainText("0 active Pulses");
   await expect(empty).toContainText("1 connected Atom");
   await expect(empty).toContainText("No active Pulses right now");
-  await expect(empty.locator("li")).toHaveCount(8);
+  await expect(empty.locator("li")).toHaveCount(0);
   await page
     .getByRole("button", { name: "Close Your Network Overview" })
     .click();

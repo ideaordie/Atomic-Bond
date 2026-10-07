@@ -28,7 +28,9 @@ export function CurrentPulse({
       >
         {definition.label}
       </strong>
-      <small>Shared {age} · expires after 24 hours</small>
+      <small>
+        {definition.category} · Shared {age} · expires after 24 hours
+      </small>
     </p>
   );
 }

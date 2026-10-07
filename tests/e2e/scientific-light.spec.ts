@@ -54,13 +54,13 @@ test("scientific light surfaces, readable controls and dimensional neutral canva
     fullPage: true,
   });
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "How are you feeling?" });
-  await dialog.getByRole("radio", { name: "Joy", exact: true }).check();
+  const dialog = page.getByRole("dialog", { name: "How are you right now?" });
+  await dialog.getByRole("radio", { name: "Joyful", exact: true }).check();
   await expect(
-    dialog.getByRole("radio", { name: "Joy", exact: true }),
+    dialog.getByRole("radio", { name: "Joyful", exact: true }),
   ).toBeFocused();
   await expect(
-    dialog.getByRole("radio", { name: "Joy", exact: true }).locator(".."),
+    dialog.getByRole("radio", { name: "Joyful", exact: true }).locator(".."),
   ).toHaveCSS("outline-style", "solid");
   await page.screenshot({
     path: info.outputPath("scientific-selector-focus.png"),

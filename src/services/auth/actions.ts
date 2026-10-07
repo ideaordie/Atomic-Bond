@@ -9,7 +9,7 @@ import {
   registration,
   isAuthTokenHash,
 } from "./policy";
-import { EMOTIONS, type Emotion } from "../../types/emotional-pulse";
+import { isSelectablePulse, type Emotion } from "../../types/emotional-pulse";
 import { invitationPresentation } from "../bonds/qr-invitation";
 import { bondRelationship } from "../bonds/relationship";
 import { isCanonicalRegionId } from "../locations/canonical-regions";
@@ -189,7 +189,7 @@ export async function confirmOwnerBond(token: string) {
 }
 export async function sendOwnerPulse(emotion: Emotion) {
   await sameOrigin();
-  if (!EMOTIONS.includes(emotion)) throw new Error("Select an emotion");
+  if (!isSelectablePulse(emotion)) throw new Error("Select an emotion");
   const { services } = await requireOwner();
   return services.pulses.send(emotion);
 }

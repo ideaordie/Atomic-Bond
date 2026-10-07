@@ -36,18 +36,18 @@ describe("Emotional Pulse lifecycle and boundaries", () => {
     );
     const visible = service.visible(graph, own);
     const summary = emotionalNetwork(graph, own, visible, epoch);
-    expect(summary.counts.curious).toBe(16);
-    expect(summary.percentages.curious).toBe(12.5);
+    expect(summary.counts.curious).toBe(6);
+    expect(summary.percentages.curious).toBe((6 / 128) * 100);
     expect(
       summary.regions.reduce(
         (count, region) => count + region.counts.curious,
         0,
       ),
-    ).toBe(16);
+    ).toBe(6);
     const definition = EMOTION_DEFINITIONS.curious;
     expect(definition.accessibleLabel).toContain("Curious");
     expect(definition.color).not.toBe(EMOTION_DEFINITIONS.calm.color);
-    expect(definition.color).not.toBe(EMOTION_DEFINITIONS.joy.color);
+    expect(definition.color).not.toBe(EMOTION_DEFINITIONS.joyful.color);
     const pulse = service.send("curious");
     expect(
       renderToStaticMarkup(<CurrentPulse pulse={pulse} now={epoch} />),
@@ -162,7 +162,7 @@ describe("Emotional Pulse lifecycle and boundaries", () => {
       direct: 1,
       countries: ["CA", "US"],
     });
-    expect(emotionalNetwork(tiny, "0", [], epoch).percentages.joy).toBe(0);
+    expect(emotionalNetwork(tiny, "0", [], epoch).percentages.joyful).toBe(0);
   });
   it("keeps full-network traversal exact while changing zoom aggregation", () => {
     const base = createScene(graph, own, true);
@@ -199,7 +199,7 @@ describe("Emotional Pulse lifecycle and boundaries", () => {
   });
   it("omits expired/absent context and keeps Pulse out of unrestricted profile serialization", () => {
     const service = new MockPulseService(own, [], () => epoch);
-    const pulse = service.send("joy");
+    const pulse = service.send("joyful");
     expect(
       renderToStaticMarkup(<CurrentPulse pulse={pulse} now={epoch} />),
     ).toContain("Joy");

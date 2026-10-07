@@ -62,6 +62,24 @@ test("admin drafts, persistent global panel, close, reload and ending", async ({
     exact: true,
   });
   await expect(panel).toContainText("Global update");
+  // Expanded Pulse must not suppress or replace the persistent global Signal.
+  await page.getByRole("button", { name: "Pulse", exact: true }).click();
+  let composer = page.getByRole("dialog", { name: "How are you right now?" });
+  await composer.getByRole("tab", { name: "VIBE", exact: true }).click();
+  await composer.getByRole("radio", { name: "Cozy", exact: true }).check();
+  await composer.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("Global update");
+  await page.getByRole("button", { name: "Pulse", exact: true }).click();
+  composer = page.getByRole("dialog", { name: "How are you right now?" });
+  await composer.getByRole("tab", { name: "ENERGY", exact: true }).click();
+  await composer.getByRole("radio", { name: "Focused", exact: true }).check();
+  await composer
+    .getByRole("button", { name: "Send Pulse", exact: true })
+    .click();
+  await expect(page.getByTestId("own-pulse")).toContainText("Focused");
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("Global update");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
