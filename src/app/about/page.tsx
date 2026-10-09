@@ -103,6 +103,14 @@ export default function About() {
           public profile information and is shown according to the
           connected-network privacy rules of Atomic Bond.
         </p>
+        <p>
+          We use Vercel Web Analytics for aggregate visits to selected general
+          pages, including browser, device and approximate geographic
+          statistics. It does not use tracking cookies. We do not send account
+          identifiers, Pulse selections or custom events. Account,
+          authentication, invitation and unsubscribe pages are excluded, as are
+          URLs containing parameters.
+        </p>
       </section>
       <section aria-labelledby="about-email">
         <h2 id="about-email">EMAIL</h2>

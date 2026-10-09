@@ -7,7 +7,9 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.11.0 — Expanded Pulse: Feeling, Energy & Vibe**.
+Current release: **v0.11.1 — Privacy-filtered Vercel Web Analytics**.
+See the [Web Analytics audit](docs/architecture/WEB_ANALYTICS_v0.1.md) for scope,
+privacy exclusions and deployment verification. Expanded Pulse remains unchanged.
 The previous approved v0.10.1 Beta UI Polish baseline preserves the v0.10.0 commit
 `8fe3e6678c78085000fb3e27e7c0cb91b34042f9` in history and changes no product mechanics.
 See [Network Signal](docs/architecture/NETWORK_SIGNAL_v0.1.md) for persistent global

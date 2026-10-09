@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.1 — Privacy-filtered Vercel Web Analytics
+
+- Added the official Next.js Analytics component and dependency from Vercel's generated integration branch, with privacy filtering for static general-page totals only.
+- Excluded capability/account/individual-Atom routes, parameterized URLs, custom events and unsafe referrers; added beta privacy disclosure. No changes to Admin Network Analytics, Connected Groups, Master Spec, database or product mechanics.
+- Publication approved after local review and reconciliation with Vercel PR #1; the generated unfiltered component is superseded by the single privacy-filtered integration.
+
 ## v0.11.0 — Expanded Pulse: Feeling, Energy & Vibe
 
 - Added Feeling / Energy / Vibe, 24 selectable states, vibrant colors and unsent Canvas preview.
