@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { PwaProvider } from "../components/pwa/PwaProvider";
 import type { ReactNode } from "react";
 import "./globals.css";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <div id="pwa-app">{children}</div>
         <PwaProvider />
+        <Analytics />
       </body>
     </html>
   );
