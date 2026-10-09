@@ -1,7 +1,7 @@
 import type { BeforeSendEvent } from "@vercel/analytics/next";
 
 // Static page totals only: never collect capabilities, Atom IDs or account routes.
-const PAGES = new Set(["/", "/about", "/explore"]);
+const PAGES = new Set(["/", "/about", "/explore", "/welcome"]);
 
 export function safePageView(
   event: BeforeSendEvent,

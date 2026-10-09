@@ -7,7 +7,13 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.11.2 — Monochrome UI**.
+Current release: **v0.11.3 — Animated Welcome**.
+The public `/welcome` page uses the approved silent 25-second synthetic introduction,
+with accessible playback and the existing secure registration flow. See
+[Animated Welcome](docs/architecture/ANIMATED_WELCOME_v0.1.md) for playback,
+privacy, responsive verification and the separate local advertising export.
+
+Preserved baseline: **v0.11.2 — Monochrome UI**.
 Product-reviewed neutral interface and structural graph materials preserve all 24
 Pulse colors, existing layouts and application behavior. Standalone/offline colors
 match the interface; the public asset cache revision refreshes that presentation.

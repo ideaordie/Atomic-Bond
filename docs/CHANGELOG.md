@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.11.3 — Animated Welcome
+
+- Published the approved five-scene, 25-second synthetic introduction at public `/welcome`, sharing the deterministic Canvas renderer with the development-only review and advertising export.
+- Added silent one-time autoplay, pause/replay, reduced-motion still scenes, a static fallback and readable transcript. CREATE YOUR ATOM uses existing registration and returning-owner recognition.
+- Added only `/welcome` to the existing privacy-filtered page-view allowlist; parameterized URLs, unsafe referrers, sensitive routes and custom events remain excluded.
+- Exported a separate local 1080p H.264 advertising MP4 without adding the video to the application repository. Existing product behavior, PWA, production configuration, migrations and Master Spec v0.3 remain unchanged.
+
 ## v0.11.2 — Monochrome UI
 
 - Replaced blue/chromatic interface materials with white surfaces, near-black text/actions, neutral outlines and gray overlays across shared public, owner and administrative UI.

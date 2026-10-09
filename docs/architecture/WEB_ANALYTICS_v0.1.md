@@ -60,6 +60,10 @@ References: [Quickstart](https://vercel.com/docs/analytics/quickstart),
 
 ## Local verification
 
+Task #11.2 adds `/welcome` to the static general-page allowlist. All existing
+parameter, sensitive-route, referrer and custom-event exclusions still apply.
+External advertisement referrals are not exempted from the privacy filter.
+
 283 unit/integration/security tests passed. Thirty browser cases passed across
 390×844, 768×1024 and 1440×900, covering the SDK callback, sensitive URL suppression,
 blocked script behavior, Auth/owner restoration, PWA, Living Atom/Pulse, persistent

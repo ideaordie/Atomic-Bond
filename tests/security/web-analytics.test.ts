@@ -3,7 +3,7 @@ import { safePageView } from "../../src/services/analytics/page-view";
 
 const origin = "https://atomicbond.ideaordie.com";
 describe("aggregate page-view privacy", () => {
-  it.each(["/", "/about", "/explore"])(
+  it.each(["/", "/about", "/explore", "/welcome"])(
     "allows only a general page %s",
     (path) => {
       expect(safePageView({ type: "pageview", url: origin + path })).toEqual({
@@ -28,6 +28,8 @@ describe("aggregate page-view privacy", () => {
     "/explore?atom=1",
     "/about?email=synthetic%40example.invalid",
     "/explore#access_token=test",
+    "/welcome?token=synthetic",
+    "/welcome#synthetic",
     "/unknown/test",
   ])("does not report sensitive or unapproved URL %s", (path) => {
     expect(safePageView({ type: "pageview", url: origin + path })).toBeNull();
