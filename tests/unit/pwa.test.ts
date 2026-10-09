@@ -18,7 +18,7 @@ describe("PWA identity and install policy", () => {
       start_url: "/",
       scope: "/",
       display: "standalone",
-      theme_color: "#f3f6f8",
+      theme_color: "#ffffff",
     });
     for (const icon of value.icons!) {
       const png = PNG.sync.read(readFileSync(`public${icon.src}`));

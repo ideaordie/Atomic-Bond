@@ -7,7 +7,10 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.11.1 — Privacy-filtered Vercel Web Analytics**.
+Current release: **v0.11.2 — Monochrome UI**.
+Product-reviewed neutral interface and structural graph materials preserve all 24
+Pulse colors, existing layouts and application behavior. Standalone/offline colors
+match the interface; the public asset cache revision refreshes that presentation.
 See the [Web Analytics audit](docs/architecture/WEB_ANALYTICS_v0.1.md) for scope,
 privacy exclusions and deployment verification. Expanded Pulse remains unchanged.
 The previous approved v0.10.1 Beta UI Polish baseline preserves the v0.10.0 commit

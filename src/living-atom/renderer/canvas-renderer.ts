@@ -344,7 +344,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 sphere.addColorStop(0, palette.highlight);
                 sphere.addColorStop(0.45, tint);
                 sphere.addColorStop(1, palette.shade);
-                ctx.shadowColor = "#29466330";
+                ctx.shadowColor = "#11111130";
                 ctx.shadowBlur = radius * 0.45;
                 ctx.shadowOffsetY = radius * 0.2;
                 ctx.fillStyle = sphere;

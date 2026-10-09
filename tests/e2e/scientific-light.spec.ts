@@ -31,6 +31,19 @@ test("scientific light surfaces, readable controls and dimensional neutral canva
   });
   expect(Math.min(...contrast)).toBeGreaterThanOrEqual(4.5);
   await expect(page.locator("html")).toHaveCSS("color-scheme", "light");
+  const chromeColors = await page
+    .locator("button, a, .spatial-shell")
+    .evaluateAll((nodes) =>
+      nodes.flatMap((node) => {
+        const style = getComputedStyle(node);
+        return [style.color, style.backgroundColor, style.borderTopColor];
+      }),
+    );
+  for (const color of chromeColors) {
+    const [r, g, b] = color.match(/[\d.]+/g)!.map(Number);
+    expect(r).toBe(g);
+    expect(g).toBe(b);
+  }
   const pixels = await page.getByTestId("atom-canvas").evaluate((node) => {
     const canvas = node as HTMLCanvasElement;
     const ctx = canvas.getContext("2d")!;

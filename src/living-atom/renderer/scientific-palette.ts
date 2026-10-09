@@ -1,17 +1,17 @@
 /** Neutral presentation materials; emotional identities live in pulse/emotions.ts. */
 export const SCIENTIFIC_PALETTE = {
-  background: "#f3f6f8",
-  atmosphere: "#96b0c5",
-  bond: "#527da1",
-  text: "#22364b",
-  muted: "#4e6478",
+  background: "#ffffff",
+  atmosphere: "#aaaaaa",
+  bond: "#888888",
+  text: "#111111",
+  muted: "#555555",
   highlight: "#ffffff",
-  core: "#8da9bf",
+  core: "#777777",
   // Structural distance from the centered Atom, not an emotional state.
-  layers: ["#bca06d", "#729fbe", "#a291bb", "#79a89f", "#a59c91"],
-  shade: "#304c66",
-  shadow: "#294663",
-  regions: ["#6c8da8", "#7895ac", "#63839e", "#8a9eae", "#587e9d", "#7a899d"],
+  layers: ["#888888", "#999999", "#aaaaaa", "#bbbbbb", "#cccccc"],
+  shade: "#444444",
+  shadow: "#111111",
+  regions: ["#888888", "#999999", "#777777", "#aaaaaa", "#666666", "#999999"],
 } as const;
 
 export function layerTint(distance: number): string {

@@ -20,6 +20,10 @@ const scene = createSpatialScene(
 test("Living Atom renders, recenters, returns home and supports view controls", async ({
   page,
 }, testInfo) => {
+  // Vercel's SDK endpoint is deployment-only; this suite checks local graph UI.
+  await page.route("**/_vercel/insights/script.js", (route) =>
+    route.fulfill({ contentType: "application/javascript", body: "" }),
+  );
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {

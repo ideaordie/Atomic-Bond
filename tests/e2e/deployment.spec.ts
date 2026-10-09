@@ -4,6 +4,10 @@ test("direct routes, production assets and private artifact exclusion", async ({
   page,
   request,
 }) => {
+  // The provider SDK is verified separately; it is not a local Next asset.
+  await page.route("**/_vercel/insights/script.js", (route) =>
+    route.fulfill({ contentType: "application/javascript", body: "" }),
+  );
   const failedAssets: string[] = [];
   page.on("response", (response) => {
     if (response.url().includes("/_next/static/") && !response.ok())
@@ -17,7 +21,7 @@ test("direct routes, production assets and private artifact exclusion", async ({
     expect((await page.goto(route))?.status()).toBe(200);
     expect((await page.reload())?.status()).toBe(200);
     const assets = await page
-      .locator('script[src], link[rel="stylesheet"]')
+      .locator('script[src]:not([data-sdkn]), link[rel="stylesheet"]')
       .evaluateAll((elements) =>
         elements.map(
           (element) =>

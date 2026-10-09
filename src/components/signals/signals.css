@@ -34,7 +34,7 @@
 }
 .signal-details {
   z-index: 50;
-  background: #f8fafc;
+  background: #f7f7f7;
 }
 .signal-panel {
   flex: 1;
@@ -49,10 +49,10 @@
   min-height: 54px;
   padding: 10px 12px;
   text-align: left;
-  background: #f8fafc;
-  border: 1px solid var(--border, #abbac4);
+  background: #f7f7f7;
+  border: 1px solid var(--border, #d9d9d9);
   border-radius: 12px;
-  color: var(--text, #172b3e);
+  color: var(--text, #111111);
   height: 100%;
 }
 .signal-panel .network-now-toggle:disabled {
@@ -78,11 +78,11 @@
   max-height: 60vh;
   overflow: auto;
   background: var(--surface, #fff);
-  color: var(--text, #172b3e);
+  color: var(--text, #111111);
   padding: 0;
-  border: 1px solid var(--border, #abbac4);
+  border: 1px solid var(--border, #d9d9d9);
   border-radius: 18px;
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
   overflow-wrap: anywhere;
 }
 .signal-details-content {
@@ -136,7 +136,7 @@
 }
 .signal-admin article {
   padding: 16px 0;
-  border-bottom: 1px solid #abbac4;
+  border-bottom: 1px solid #d9d9d9;
   overflow-wrap: anywhere;
 }
 .signal-admin .signal-panel {
@@ -165,5 +165,5 @@
 
 /* Keep other information cards from showing through the expanded surface. */
 .signal-details {
-  background: #f8fafc;
+  background: #f7f7f7;
 }

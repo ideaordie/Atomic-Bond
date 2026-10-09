@@ -12,7 +12,7 @@
   font-size: 12px;
   letter-spacing: 0.09em;
   font-weight: 700;
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
 }
 .bond-dialog {
   width: min(480px, calc(100% - 28px));
@@ -25,7 +25,7 @@
   border-radius: 24px;
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
 }
 .bond-dialog::backdrop {
   background: var(--surface);
@@ -172,7 +172,7 @@
   top: 78px;
   left: 0;
   right: 0;
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
   list-style: none;
   padding: 4px;
   margin: 5px 0;
@@ -286,7 +286,7 @@
 }
 
 .bond-dialog::backdrop {
-  background: #243e5652;
+  background: #11111152;
   backdrop-filter: blur(5px);
 }
 .bond-dialog .flow-primary {
@@ -295,9 +295,9 @@
   border-color: var(--accent);
 }
 .flow-error {
-  color: #822f35;
-  background: #fff0ef;
-  border-color: #bb7378;
+  color: #222222;
+  background: #f7f7f7;
+  border-color: #777777;
 }
 .location-results li[aria-selected="true"],
 .location-results li:hover {

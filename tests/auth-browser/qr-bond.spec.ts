@@ -351,6 +351,7 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     receiver.getByText("YOU ARE ALREADY BONDED", { exact: true }),
   ).toBeVisible();
   await next.dialog.getByRole("button", { name: "CANCEL INVITATION" }).click();
+  await expect(next.dialog).not.toBeVisible();
   await receiver.reload();
   await expect(
     receiver.getByRole("heading", { name: "Invitation unavailable" }),

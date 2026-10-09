@@ -3,6 +3,10 @@ import { expect, test } from "@playwright/test";
 test("landing page is readable, responsive and free of browser errors", async ({
   page,
 }, testInfo) => {
+  // Vercel serves this asset only on deployments; keep local UI checks offline.
+  await page.route("**/_vercel/insights/script.js", (route) =>
+    route.fulfill({ contentType: "application/javascript", body: "" }),
+  );
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {

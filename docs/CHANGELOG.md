@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.11.2 — Monochrome UI
+
+- Replaced blue/chromatic interface materials with white surfaces, near-black text/actions, neutral outlines and gray overlays across shared public, owner and administrative UI.
+- Neutralized structural graph materials and inactive Atoms while preserving all 24 Pulse colors, state previews, motion, timing, topology and existing layouts.
+- Retained explicit destructive-action copy/confirmation and visible neutral keyboard focus. Added palette-preservation and browser neutral-control checks.
+- Matched standalone/offline presentation colors and refreshed the public asset cache revision without changing caching policy. Local browser asset checks stub the deployment-only Vercel SDK; analytics implementation is unchanged.
+- Product review passed; publication approved as the new production baseline. Master Spec v0.3, migrations, production configuration and product mechanics remain unchanged.
+
 ## v0.11.1 — Privacy-filtered Vercel Web Analytics
 
 - Added the official Next.js Analytics component and dependency from Vercel's generated integration branch, with privacy filtering for static general-page totals only.

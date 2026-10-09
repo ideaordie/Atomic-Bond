@@ -84,7 +84,7 @@ export function paintCore(
     radius * 1.2,
   );
   sphere.addColorStop(0, palette.highlight);
-  sphere.addColorStop(0.28, tone ?? "#c5d5e1");
+  sphere.addColorStop(0.28, tone ?? "#dddddd");
   sphere.addColorStop(0.72, tone ?? palette.core);
   sphere.addColorStop(1, palette.shade);
   ctx.fillStyle = sphere;
@@ -96,7 +96,7 @@ export function paintCore(
   for (let i = 0; i < 55; i++) {
     const angle = CORE_PARTICLES[i]!.angle + time / (45000 + i * 1500);
     const distance = CORE_PARTICLES[i]!.distance * radius;
-    ctx.fillStyle = i % 4 === 0 ? "#ffffffb3" : "#e8f0f66b";
+    ctx.fillStyle = i % 4 === 0 ? "#ffffffb3" : "#eeeeee6b";
     ctx.beginPath();
     ctx.arc(
       point.x + Math.cos(angle) * distance,

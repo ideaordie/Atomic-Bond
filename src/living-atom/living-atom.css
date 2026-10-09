@@ -142,7 +142,7 @@
   gap: 16px;
   border-top: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
 }
 .dock-navigation {
   display: flex;
@@ -187,7 +187,7 @@
   border-radius: 38px;
   border-color: var(--border);
   background: var(--surface);
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
   color: var(--text);
   font-size: 13px;
 }
@@ -252,7 +252,7 @@
   border-radius: 17px;
   padding: 17px;
   background: var(--surface);
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
   z-index: 4;
 }
 .atom-context {
@@ -618,14 +618,14 @@
   border-color: var(--accent);
 }
 .reach-readout {
-  background: linear-gradient(90deg, #f3f6f8e6, #f3f6f800);
+  background: linear-gradient(90deg, #ffffffe6, #ffffff00);
 }
 .spatial-dock {
-  background: #f8fafbee;
-  box-shadow: 0 -4px 24px #29466308;
+  background: #fafafaee;
+  box-shadow: 0 -4px 24px #11111108;
 }
 .context-avatar {
-  background: radial-gradient(circle at 30% 25%, #fff, #8ba7bd 55%, #365470);
+  background: radial-gradient(circle at 30% 25%, #fff, #aaaaaa 55%, #555555);
   color: #fff;
 }
 .living-atom .view-network {

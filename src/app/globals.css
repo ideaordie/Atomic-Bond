@@ -1,12 +1,12 @@
 :root {
-  --page: #f3f6f8;
-  --surface: #fbfcfdf5;
-  --surface-muted: #e6eef4;
-  --text: #22364b;
-  --muted: #4e6478;
-  --border: #9aafbf;
-  --accent: #285b83;
-  --focus: #12619b;
+  --page: #ffffff;
+  --surface: #fffffff5;
+  --surface-muted: #f7f7f7;
+  --text: #111111;
+  --muted: #555555;
+  --border: #d9d9d9;
+  --accent: #111111;
+  --focus: #222222;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -151,4 +151,21 @@ button:disabled {
       max(24px, env(safe-area-inset-bottom))
       max(16px, env(safe-area-inset-left));
   }
+}
+/* Controls retain a distinct edge against quiet panel dividers. */
+button,
+input,
+select,
+textarea {
+  accent-color: var(--accent);
+}
+:where(
+    .auth-panel,
+    .living-atom,
+    .pulse-composer,
+    .admin-page,
+    .participation-panel
+  )
+  :is(button, input, select, textarea) {
+  --border: #777777;
 }

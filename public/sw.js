@@ -1,5 +1,6 @@
 /* Deliberately no runtime data cache, request logging or background mutation. */
-const CACHE = "atomic-bond-public-v1";
+// Refresh the existing public-only assets for the monochrome offline page.
+const CACHE = "atomic-bond-public-v2";
 const OFFLINE = "/offline.html";
 const ASSETS = [
   OFFLINE,

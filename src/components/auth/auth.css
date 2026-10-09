@@ -289,7 +289,7 @@
   font-size: var(--helper-size);
 }
 .auth-panel [aria-invalid="true"] {
-  border-color: #822f35;
+  border-color: #222222;
 }
 .real-bond-invitation {
   padding: var(--space-4);
@@ -375,15 +375,15 @@
 .account-danger {
   margin-top: 2.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #d8dfe8;
+  border-top: 1px solid #d9d9d9;
 }
 .account-deactivation {
   margin-block: 1.5rem;
 }
 .account-danger .delete-account-button {
   background: #fff;
-  border: 1px solid #a52a36;
-  color: #94212d;
+  border: 1px solid #222222;
+  color: #111111;
   min-height: 44px;
   white-space: normal;
 }

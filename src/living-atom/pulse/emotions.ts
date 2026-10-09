@@ -55,4 +55,4 @@ export const EMOTION_DEFINITIONS: Record<Emotion, EmotionDefinition> = {
   angry: define("angry", "Angry", "#f08080", "FEELING"),
   afraid: define("afraid", "Afraid", "#b19aee", "FEELING"),
 };
-export const NEUTRAL_EMOTION_COLOR = "#64788e";
+export const NEUTRAL_EMOTION_COLOR = "#777777";

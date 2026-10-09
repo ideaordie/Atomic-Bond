@@ -12,7 +12,7 @@ export function paintInvitation(
 ) {
   const gesture = invitationGesture(elapsedMs, still);
   ctx.save();
-  ctx.strokeStyle = "#71899c";
+  ctx.strokeStyle = "#777777";
   ctx.lineWidth = 1;
   for (let i = 0; i < 4; i++) {
     const angle = -Math.PI / 2 + (i * Math.PI) / 2;

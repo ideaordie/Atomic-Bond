@@ -197,7 +197,7 @@
   border-radius: 18px;
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 6px 24px #29466312;
+  box-shadow: 0 6px 24px #11111112;
   overflow: hidden;
 }
 .measurement-status {
@@ -255,7 +255,7 @@
 }
 
 .pulse-composer::backdrop {
-  background: #243e5652;
+  background: #11111152;
   backdrop-filter: blur(5px);
 }
 .emotion-options label:has(:checked) {
@@ -267,7 +267,7 @@
   accent-color: var(--accent);
 }
 .emotion-dot {
-  box-shadow: 0 0 0 1px #22364b66;
+  box-shadow: 0 0 0 1px #11111166;
 }
 .emotion-actions button[type="submit"] {
   background: var(--accent);
