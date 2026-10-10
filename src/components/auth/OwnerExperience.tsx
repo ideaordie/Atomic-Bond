@@ -12,6 +12,7 @@ import {
   sendOwnerPulse,
   refreshOwnerNetwork,
   visibleOwnerPulses,
+  ownerGeographicNetwork,
 } from "../../services/auth/actions";
 import "./auth.css";
 import { createNetworkReconciler } from "../../services/pulses/network-reconciliation";
@@ -156,6 +157,13 @@ export function OwnerExperience({
   return (
     <>
       <LivingAtom
+        authorizeMap={async () => {
+          const result = await ownerGeographicNetwork();
+          graphRef.current = result.graph;
+          setGraph(result.graph);
+          return result;
+        }}
+        mapAccessAvailable={status !== "unavailable" && status !== "offline"}
         firstBond={firstBond}
         firstBondBegun={notice === "YOUR NETWORK HAS BEGUN"}
         informationPanel={<NetworkSignal />}

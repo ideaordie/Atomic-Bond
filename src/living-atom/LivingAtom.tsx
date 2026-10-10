@@ -24,10 +24,19 @@ import { emotionPaint } from "./pulse/emotion-presentation";
 import { emotionalNetwork } from "../graph/metrics/emotional-network";
 import { networkReach } from "../graph/metrics/network-reach";
 import type { Emotion, EmotionalPulse } from "../types/emotional-pulse";
+import { useAtomMotion } from "../components/appearance/motion";
+import {
+  connectedComponent,
+  geographicScene,
+  geographicLayout,
+  type Geography,
+} from "./geography/layout";
 
 const EMPTY_PULSES: readonly EmotionalPulse[] = [];
 
 export interface LivingAtomProps {
+  authorizeMap?: () => Promise<{ ownerId: string; graph: GraphData }>;
+  mapAccessAvailable?: boolean;
   firstBond?: boolean;
   firstBondBegun?: boolean;
   informationPanel?: React.ReactNode;
@@ -48,6 +57,8 @@ export interface LivingAtomProps {
 }
 
 export function LivingAtom({
+  authorizeMap,
+  mapAccessAvailable = true,
   firstBond = false,
   firstBondBegun = false,
   informationPanel,
@@ -70,8 +81,17 @@ export function LivingAtom({
       ?.querySelector("canvas")
       ?.focus({ preventScroll: true });
   const [inspectedId, setInspectedId] = useState<string | null>(null);
-  const [camera, setCamera] = useState(INITIAL_CAMERA);
-  const [paused, setPaused] = useState(false);
+  const [orbitalCamera, setOrbitalCamera] = useState(INITIAL_CAMERA);
+  const [mapCamera, setMapCamera] = useState(INITIAL_CAMERA);
+  const [mapOpen, setMapOpen] = useState(false);
+  const [clusterId, setClusterId] = useState<string | null>(null);
+  const [geography, setGeography] = useState<Geography | null>(null);
+  const [mapStatus, setMapStatus] = useState("");
+  const mapRequest = useRef(0);
+  const [mapLoading, setMapLoading] = useState(false);
+  const paused = !useAtomMotion();
+  const camera = mapOpen ? mapCamera : orbitalCamera;
+  const setCamera = mapOpen ? setMapCamera : setOrbitalCamera;
   const [composerOpen, setComposerOpen] = useState(false);
   const emotionalView = ownerMode && Boolean(emotional);
   const [sentEmotion, setSentEmotion] = useState<Emotion | null>(null);
@@ -85,10 +105,74 @@ export function LivingAtom({
     () => createScene(graph, selection.selectedId, emotionalView),
     [graph, selection.selectedId, emotionalView],
   );
-  const mode = viewScale(camera.zoom);
+  const mode = viewScale(orbitalCamera.zoom);
   const scene = useMemo(
     () => createSpatialScene(baseScene, graph, mode),
     [baseScene, graph, mode],
+  );
+  const mapScene = useMemo(
+    () =>
+      geography
+        ? geographicScene(
+            scene,
+            connectedComponent(graph, originalAtomId),
+            geography,
+          )
+        : null,
+    [scene, graph, originalAtomId, geography],
+  );
+  const mapLayout = useMemo(
+    () =>
+      mapScene && geography
+        ? geographicLayout(mapScene, graph, geography)
+        : null,
+    [mapScene, graph, geography],
+  );
+  async function toggleMap() {
+    const request = ++mapRequest.current;
+    if (mapOpen || mapLoading) {
+      setMapOpen(false);
+      setMapLoading(false);
+      setMapStatus("");
+      return;
+    }
+    setMapLoading(true);
+    setMapStatus("Loading geographic view…");
+    try {
+      if (!synthetic) {
+        if (!authorizeMap) throw new Error();
+        const allowed = await authorizeMap();
+        const ids = new Set(allowed.graph.nodes.map((n) => n.id));
+        if (
+          allowed.ownerId !== originalAtomId ||
+          graph.nodes.some((n) => !ids.has(n.id))
+        )
+          throw new Error();
+      }
+      const data =
+        geography ??
+        (await fetch("/geography/world-v1.json").then((r) => {
+          if (!r.ok) throw new Error();
+          return r.json() as Promise<Geography>;
+        }));
+      if (request !== mapRequest.current) return;
+      setGeography(data);
+      setMapOpen(true);
+      setMapStatus("");
+    } catch {
+      if (request === mapRequest.current)
+        setMapStatus(
+          "Map unavailable. Check your connection and owner access, then retry.",
+        );
+    } finally {
+      if (request === mapRequest.current) setMapLoading(false);
+    }
+  }
+  useEffect(
+    () => () => {
+      mapRequest.current++;
+    },
+    [],
   );
   const steps = useMemo(() => pulseSteps(scene), [scene]);
   const emotionalSummary = useMemo(
@@ -110,6 +194,18 @@ export function LivingAtom({
         originalAtomId,
       ),
     [scene, emotionalSummary.active, emotionalView, originalAtomId],
+  );
+  const mapPaints = useMemo(
+    () =>
+      mapScene
+        ? emotionPaint(
+            mapScene,
+            emotionalSummary.active,
+            emotionalView,
+            originalAtomId,
+          )
+        : paints,
+    [mapScene, emotionalSummary.active, emotionalView, originalAtomId, paints],
   );
   const reach = useMemo(
     () => networkReach(graph, originalAtomId),
@@ -199,6 +295,11 @@ export function LivingAtom({
       <h1 className="sr-only">The Living Atom</h1>
       <div className="atom-stage" ref={canvasContainer}>
         <AtomCanvas
+          mapOpen={mapOpen && mapAccessAvailable}
+          mapScene={mapAccessAvailable ? mapScene : null}
+          mapLayout={mapAccessAvailable ? mapLayout : null}
+          mapCamera={mapCamera}
+          mapEmotions={mapPaints}
           firstBond={firstBond && isMine}
           emotions={paints}
           feelNetwork={emotionalView}
@@ -206,7 +307,8 @@ export function LivingAtom({
             ? { pulseColor: EMOTION_DEFINITIONS[sentEmotion].color }
             : {})}
           scene={scene}
-          camera={camera}
+          camera={orbitalCamera}
+          interactionCamera={camera}
           reducedMotion={reducedMotion}
           paused={paused}
           pulseDistance={pulse.distance}
@@ -216,8 +318,61 @@ export function LivingAtom({
           inspectedId={inspectedId}
           arrivalId={arrivalId ?? null}
           onSelect={inspect}
+          onCluster={setClusterId}
           onCamera={setCamera}
         />
+        {mapOpen && mapAccessAvailable && mapScene && (
+          <div className="map-cluster-inspector">
+            <label>
+              Geographic clusters
+              <select
+                aria-label="Geographic clusters"
+                value={clusterId ?? ""}
+                onChange={(e) => setClusterId(e.target.value || null)}
+              >
+                <option value="">Select a location</option>
+                {mapScene.nodes.map((n) => (
+                  <option key={n.id} value={n.id}>
+                    {n.label} · {n.members.length} Atoms
+                  </option>
+                ))}
+              </select>
+            </label>
+            {mapScene.nodes
+              .filter((n) => n.id === clusterId)
+              .map((n) => (
+                <details key={n.id} open>
+                  <summary>
+                    {n.label} · {n.members.length} Atoms
+                  </summary>
+                  <p>
+                    Shared coarse location. Lines summarize confirmed Bonds, not
+                    new relationships between places.
+                  </p>
+                  <label>
+                    Inspect a member
+                    <select
+                      aria-label="Inspect cluster member"
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) inspect(e.target.value);
+                      }}
+                    >
+                      <option value="">Select an Atom</option>
+                      {n.members.map((id) => (
+                        <option key={id} value={id}>
+                          ATOM #{graph.nodes.find((a) => a.id === id)?.publicId}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button onClick={() => setClusterId(null)}>
+                    Close cluster
+                  </button>
+                </details>
+              ))}
+          </div>
+        )}
         <label className="canvas-keyboard-selector">
           Select an Atom
           <select
@@ -336,6 +491,21 @@ export function LivingAtom({
       )}
 
       <div className="spatial-dock">
+        {mapOpen && mapAccessAvailable && (
+          <p className="map-caption">
+            APPROXIMATE HOME REGIONS · Display spacing is not a precise
+            location.
+            {mapLayout?.unlocated
+              ? ` ${mapLayout.unlocated} Atoms: location not available.`
+              : ""}
+          </p>
+        )}
+        {mapStatus && (
+          <p className="map-caption" role="status">
+            {mapStatus}
+          </p>
+        )}
+
         {firstBondBegun && isMine && (
           <p className="first-bond-guidance" role="status">
             <strong>YOUR NETWORK HAS BEGUN</strong>
@@ -456,26 +626,23 @@ export function LivingAtom({
           >
             ◎<span>Recenter</span>
           </button>
-          <button
-            type="button"
-            disabled={reducedMotion}
-            aria-label={
-              reducedMotion
-                ? "Motion reduced"
-                : paused
-                  ? "Resume motion"
-                  : "Pause motion"
-            }
-            aria-pressed={paused || reducedMotion}
-            onClick={() => setPaused((value) => !value)}
-          >
-            <span aria-hidden="true" className="motion-symbol">
-              {paused ? "▶" : "Ⅱ"}
-            </span>
-            <span aria-hidden="true">Motion</span>
-          </button>
+          {ownerMode && (synthetic || authorizeMap) && (
+            <button
+              type="button"
+              aria-pressed={mapOpen}
+              className="map-toggle"
+              aria-busy={mapLoading}
+              onClick={() => void toggleMap()}
+            >
+              {mapLoading ? "CANCEL MAP" : mapOpen ? "HIDE MAP" : "SHOW MAP"}
+            </button>
+          )}
         </div>
-        <div className="scale-controls" aria-label="Network scale">
+        <div
+          className="scale-controls"
+          aria-label="Network scale"
+          hidden={mapOpen}
+        >
           <span>VIEW</span>
           {(
             [
@@ -526,7 +693,9 @@ export function LivingAtom({
         selection.
       </p>
 
-      <p className="simulation-label">
+      <p
+        className={`simulation-label${mapOpen ? " map-simulation-label" : ""}`}
+      >
         {[
           synthetic && ownerMode
             ? "Synthetic network"

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.11.5 — Geographic Network Map
+
+- Corrected geographic placement: one counted marker per canonical anchor, summarized inter-anchor Bonds and expandable member inspection; removed map separation rings without changing fixtures or topology.
+- Added owner-authorized SHOW MAP/HIDE MAP within the existing Canvas renderer, with independent cameras and coarse representative geography from bundled Natural Earth data.
+- Renamed the top-right account navigation link to Settings without changing its destination.
+- Moved continuous orbital-motion control to Profile & Preferences; browser-local ON/OFF respects device reduced motion.
+- Preserved structural graph/Pulse state, hidden lifecycle geography, Network Signal and existing production infrastructure. No schema or hosted changes.
+- Dataset coverage, explicit fallbacks and the proposed (unapplied) Master Spec clarification are documented in `architecture/GEOGRAPHIC_MAP_v0.1.md`. Publication approved after local product review. Master Spec remains unchanged.
+
 ## v0.11.4 — Design System & Dark Mode
 
 - Consolidated shared monochrome appearance, typography, radius and control tokens across public, owner and admin screens.

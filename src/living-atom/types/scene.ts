@@ -45,6 +45,11 @@ export interface Camera {
 }
 
 export interface RenderFrame {
+  readonly geographic?: {
+    readonly layout: import("../geography/layout").GeographicLayout;
+    readonly camera: Camera;
+    readonly progress: number;
+  };
   readonly appearance?: "light" | "dark";
   readonly invitation?: { readonly opacity: number; readonly still: boolean };
   readonly emotions?: ReadonlyMap<string, EmotionPaint>;

@@ -1,3 +1,4 @@
+import { setMotion } from "./motion-helpers";
 import {
   ACTION_DURATION_MS,
   pulseStepMs,
@@ -53,8 +54,8 @@ test("Living Atom renders, recenters, returns home and supports view controls", 
     page.getByRole("complementary", { name: "Exploration tools" }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Motion reduced" }),
-  ).toBeDisabled();
+    page.getByRole("button", { name: "SHOW MAP", exact: true }),
+  ).toBeEnabled();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -195,9 +196,9 @@ test("motion can be paused and responds to changed system preferences", async ({
   const canvas = page.getByTestId("atom-canvas");
   await expect(canvas).toHaveAttribute("data-motion", "gentle");
   await page.getByLabel("Select an Atom", { exact: true }).focus();
-  await page.getByRole("button", { name: "Pause motion" }).click();
+  await setMotion(page, false);
   await expect(canvas).toHaveAttribute("data-motion", "still");
-  await page.getByRole("button", { name: "Resume motion" }).click();
+  await setMotion(page, true);
   await expect(canvas).toHaveAttribute("data-motion", "gentle");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(canvas).toHaveAttribute("data-motion", "still");

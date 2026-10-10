@@ -293,3 +293,34 @@
 .dock-navigation button .motion-symbol {
   font-size: var(--type-body);
 }
+
+/* Map has a text label; keep its hit target clear of the adjacent scale controls. */
+.living-atom .dock-navigation button.map-toggle {
+  flex: 0 0 80px;
+  width: 80px;
+  font-size: 11px;
+  padding: 0 6px;
+}
+@media (min-width: 381px) and (max-width: 600px) {
+  .living-atom .spatial-dock {
+    grid-template-columns: 212px 1fr;
+  }
+  .living-atom .dock-navigation button {
+    flex-shrink: 0;
+  }
+  .living-atom .scale-controls {
+    gap: 2px;
+  }
+  .living-atom .scale-controls button {
+    min-width: 44px;
+    padding: 6px 2px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 380px) {
+  .living-atom .dock-navigation,
+  .living-atom .scale-controls {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+}

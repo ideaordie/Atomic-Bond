@@ -13,6 +13,8 @@ import type {
 import type { SpatialNode } from "../types/spatial";
 import { depthOrder, projectPoint } from "./projection";
 import { createStarfield, glow, paintCore } from "./celestial-paint";
+import { countryPath, mapScreen, mapTransform } from "../geography/paint";
+import { datelineSegments } from "../geography/layout";
 
 function curvePoint(
   a: Point,
@@ -45,6 +47,8 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
   let nodeMap = new Map<string, SpatialNode>();
   let arrivalKey: string | undefined;
   let revealedMembers = new Set<string>();
+  let mapData: unknown;
+  let mapPath: Path2D | null = null;
 
   return {
     resize(w, h, pixelRatio) {
@@ -81,6 +85,35 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.clearRect(0, 0, width, height);
       if (background) ctx.drawImage(background, 0, 0, width, height);
+      const geo = frame.geographic;
+      const blend = geo
+        ? geo.progress * geo.progress * (3 - 2 * geo.progress)
+        : 0;
+      if (geo) {
+        if (mapData !== geo.layout.geography) {
+          mapData = geo.layout.geography;
+          mapPath = countryPath(geo.layout.geography);
+        }
+        const t = mapTransform(width, height, geo.camera);
+        ctx.save();
+        ctx.globalAlpha = blend * 0.65;
+        ctx.strokeStyle = palette.muted;
+        ctx.translate(t.x, t.y);
+        ctx.scale(t.scale, t.scale);
+        ctx.lineWidth = 0.7 / t.scale;
+        if (mapPath) ctx.stroke(mapPath);
+        ctx.restore();
+        if (geo.layout.unlocated) {
+          const p = mapScreen({ x: 0, y: 253 }, width, height, geo.camera);
+          ctx.save();
+          ctx.globalAlpha = blend;
+          ctx.fillStyle = palette.muted;
+          ctx.font = "10px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText("LOCATION NOT AVAILABLE", p.x, p.y);
+          ctx.restore();
+        }
+      }
       const scale =
         (Math.min(width, height) / (scene.extent * 2)) * camera.zoom;
       const phase = pulsePhase(
@@ -124,7 +157,23 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
           ),
         ]),
       );
-      const coreRadius = Math.max(24, Math.min(42, 43 * scale));
+      if (geo)
+        for (const [id, position] of positions) {
+          const world = geo.layout.points.get(id);
+          if (!world) continue;
+          const destination = mapScreen(world, width, height, geo.camera);
+          positions.set(id, {
+            point: {
+              x: position.point.x + (destination.x - position.point.x) * blend,
+              y: position.point.y + (destination.y - position.point.y) * blend,
+            },
+            perspective:
+              position.perspective + (1 - position.perspective) * blend,
+            depth: position.depth * (1 - blend),
+          });
+        }
+      const coreRadius =
+        Math.max(24, Math.min(42, 43 * scale)) * (1 - blend) + 10 * blend;
       targets = [];
       if (frame.invitation)
         paintInvitation(
@@ -203,8 +252,28 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
               ctx.shadowBlur = active ? 5 : 0;
             }
             ctx.beginPath();
-            ctx.moveTo(origin.x, origin.y);
-            ctx.quadraticCurveTo(control.x, control.y, to.point.x, to.point.y);
+            const ga = geo?.layout.points.get(start.id),
+              gb = geo?.layout.points.get(end.id);
+            const crossing =
+              geo && blend === 1 && ga?.located && gb?.located
+                ? datelineSegments(ga, gb)
+                : null;
+            if (crossing && crossing.length > 1) {
+              for (const [a, b] of crossing) {
+                const x = mapScreen(a, width, height, geo!.camera),
+                  y = mapScreen(b, width, height, geo!.camera);
+                ctx.moveTo(x.x, x.y);
+                ctx.lineTo(y.x, y.y);
+              }
+            } else {
+              ctx.moveTo(origin.x, origin.y);
+              ctx.quadraticCurveTo(
+                control.x,
+                control.y,
+                to.point.x,
+                to.point.y,
+              );
+            }
             ctx.stroke();
             if (
               active &&
@@ -212,12 +281,35 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
               !sameLevel &&
               frame.pulseDirection === "outgoing"
             ) {
-              const energy = curvePoint(
+              let energy = curvePoint(
                 origin,
                 control,
                 to.point,
                 Math.min(1, phase / 0.72),
               );
+              if (crossing && crossing.length > 1) {
+                const t = Math.min(1, phase / 0.72);
+                const lengths = crossing.map(([a, b]) =>
+                  Math.hypot(a.x - b.x, a.y - b.y),
+                );
+                const total = lengths.reduce((a, b) => a + b, 0);
+                let remaining = t * total;
+                for (let i = 0; i < crossing.length; i++) {
+                  const [a, b] = crossing[i]!;
+                  const length = lengths[i]!;
+                  if (remaining <= length || i === crossing.length - 1) {
+                    const p = remaining / (length || 1);
+                    energy = mapScreen(
+                      { x: a.x + (b.x - a.x) * p, y: a.y + (b.y - a.y) * p },
+                      width,
+                      height,
+                      geo!.camera,
+                    );
+                    break;
+                  }
+                  remaining -= length;
+                }
+              }
               ctx.globalAlpha = 0.95;
               glow(ctx, energy, 9, energyColor, 0.65);
               ctx.fillStyle = energyColor;
@@ -257,6 +349,43 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
             );
             ctx.globalAlpha = alpha * brightness * visibility(node);
             if (node.kind === "aggregate") {
+              if (blend === 1) {
+                const radius = Math.min(
+                  9,
+                  3 + Math.log2(node.members.length + 1),
+                );
+                const colors = emotion?.colors.length ? emotion.colors : [tint];
+                for (let i = 0; i < colors.length; i++) {
+                  ctx.fillStyle = active ? energyColor : colors[i]!;
+                  ctx.beginPath();
+                  ctx.moveTo(point.x, point.y);
+                  ctx.arc(
+                    point.x,
+                    point.y,
+                    radius,
+                    (i / colors.length) * Math.PI * 2,
+                    ((i + 1) / colors.length) * Math.PI * 2,
+                  );
+                  ctx.closePath();
+                  ctx.fill();
+                }
+                ctx.fillStyle = palette.text;
+                ctx.font = "600 11px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(
+                  String(node.members.length),
+                  point.x,
+                  point.y + radius + 14,
+                );
+                targets.push({
+                  node,
+                  point,
+                  radius: Math.max(10, radius + 3),
+                  depth: 0,
+                });
+                ctx.restore();
+                return;
+              }
               const densityAlpha =
                 scene.mode === "people"
                   ? 0.25
@@ -285,7 +414,8 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                         )
                       ] ?? layerTint(node.distance, palette));
                 const particle = node.particles[i]!;
-                const drift = Math.sin(frame.elapsedMs / 6000 + i) * 3;
+                const drift =
+                  Math.sin(frame.elapsedMs / 6000 + i) * 3 * (1 - blend);
                 const shimmer =
                   0.85 + Math.sin(frame.elapsedMs / 4200 + i) * 0.15;
                 ctx.globalAlpha =
@@ -296,8 +426,16 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                   visibility(node);
                 const x =
                   point.x +
-                  (particle.x + drift) * scale * projected.perspective;
-                const y = point.y + particle.y * scale * projected.perspective;
+                  (particle.x + drift) *
+                    scale *
+                    projected.perspective *
+                    (1 - blend * 0.8);
+                const y =
+                  point.y +
+                  particle.y *
+                    scale *
+                    projected.perspective *
+                    (1 - blend * 0.8);
                 if (i % 9 === 0)
                   glow(
                     ctx,
@@ -313,12 +451,14 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
               }
             } else {
               const center = node.distance === 0;
-              const radius = center
+              const orbitalRadius = center
                 ? coreRadius
                 : Math.max(
                     node.distance === 1 ? 7.5 : 3.2,
                     (node.distance === 1 ? 15 : 8) * scale,
                   ) * projected.perspective;
+              const radius =
+                orbitalRadius * (1 - blend) + (center ? 7 : 4) * blend;
               if (center)
                 paintCore(
                   ctx,
@@ -364,7 +504,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                 ctx.shadowBlur = 0;
                 ctx.shadowOffsetY = 0;
                 ctx.stroke();
-                if (node.distance === 1) {
+                if (node.distance === 1 && blend < 1) {
                   ctx.strokeStyle = `${palette.bond}45`;
                   ctx.lineWidth = 0.5;
                   ctx.beginPath();
@@ -418,7 +558,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
         });
       }
       for (const command of depthOrder(commands)) command.draw();
-      if (scene.mode !== "people") {
+      if (scene.mode !== "people" && !geo) {
         for (const region of scene.regions.filter(
           (candidate) => candidate.representedCount > 0,
         )) {

@@ -8,6 +8,7 @@ next-env.d.ts
 playwright-report
 test-results
 coverage
+public/geography/world-v1.json
 AGENTS.md
 docs/MASTER_SPEC_v0.1.md
 docs/MASTER_SPEC_v0.2.md

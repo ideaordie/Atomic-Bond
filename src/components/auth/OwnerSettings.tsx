@@ -1,6 +1,7 @@
 "use client";
 import { InstallOffer } from "../pwa/InstallOffer";
 import { AppearancePreference } from "../appearance/AppearancePreference";
+import { MotionPreference } from "../appearance/MotionPreference";
 import { AccountDeletion } from "./AccountDeletion";
 import { AccountDeactivation } from "./AccountDeactivation";
 import { WeeklyGrowthPreference } from "./WeeklyGrowthPreference";
@@ -105,6 +106,7 @@ export function OwnerSettings({
       </form>
       <WeeklyGrowthPreference enabled={preferences.growthDigest === "weekly"} />
       <AppearancePreference />
+      <MotionPreference />
       <InstallOffer preferences />
       <form action={signOut}>
         <SignOutButton />

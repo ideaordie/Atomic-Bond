@@ -1,3 +1,4 @@
+import { setMotion } from "./motion-helpers";
 import {
   ACTION_DURATION_MS,
   pulseStepMs,
@@ -80,7 +81,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   await page.getByLabel("Select an Atom", { exact: true }).focus();
   await page.clock.runFor(50);
   const beforePause = await sample();
-  await page.getByRole("button", { name: "Pause motion", exact: true }).click();
+  await setMotion(page, false);
   await expect(canvas).toHaveAttribute("data-motion", "still");
   await page.clock.runFor(50);
   const frozen = await sample();
@@ -93,9 +94,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
     "paused ambient frame stays pixel-identical",
   ).toBe(true);
 
-  await page
-    .getByRole("button", { name: "Resume motion", exact: true })
-    .click();
+  await setMotion(page, true);
   await expect(canvas).toHaveAttribute("data-motion", "gentle");
   await page.clock.runFor(16);
   expect((await sample()).nodes).toEqual(frozen.nodes);
@@ -112,7 +111,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   expect(Math.max(...nearestDisplacements)).toBeLessThan(8);
 
   // Pulse energy still travels while ambient time is paused.
-  await page.getByRole("button", { name: "Pause motion", exact: true }).click();
+  await setMotion(page, false);
   await page.clock.runFor(50);
   const pausedNodes = (await sample()).nodes;
   await sendEmotionalPulse(page);
@@ -156,9 +155,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
     await page.getByTestId("pulse-status").getAttribute("data-degree"),
   );
   expect(degreeBeforeResume).toBeGreaterThanOrEqual(1);
-  await page
-    .getByRole("button", { name: "Resume motion", exact: true })
-    .click();
+  await setMotion(page, true);
   await page.clock.runFor(
     pulseStepMs(
       createScene(generateMockGraph(), mockAtomId(0), true).maxDistance,
@@ -179,8 +176,8 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(canvas).toHaveAttribute("data-motion", "still");
   await expect(
-    page.getByRole("button", { name: "Motion reduced" }),
-  ).toBeDisabled();
+    page.getByRole("button", { name: "SHOW MAP", exact: true }),
+  ).toBeEnabled();
   await page.clock.runFor(50);
   expect((await sample()).nodes).toEqual(beforeReduced.nodes);
   const reducedPixels = await pixels();

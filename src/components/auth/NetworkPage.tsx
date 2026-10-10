@@ -59,7 +59,7 @@ export async function NetworkPage({
         <span>See how connected we already are.</span>
         <div className="auth-entry">
           <Link href="/about">ABOUT</Link>
-          {ownerId && <Link href="/owner">Profile &amp; preferences</Link>}
+          {ownerId && <Link href="/owner">Settings</Link>}
           {source.mode === "supabase" && !ownerId && (
             <Link href="/auth">CREATE MY ATOM</Link>
           )}

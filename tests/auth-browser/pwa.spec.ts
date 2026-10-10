@@ -64,7 +64,7 @@ test("contextual native install, dismissal, owner preferences and installed supp
   await installEvent(page);
   await page.clock.fastForward(31_000);
   await expect(offer).toHaveCount(0);
-  await page.getByRole("link", { name: "Profile & preferences" }).click();
+  await page.getByRole("link", { name: "Settings" }).click();
   await expect(offer).toBeVisible();
   await page.screenshot({
     path: info.outputPath("preferences-install.png"),
@@ -94,10 +94,11 @@ test("iOS manual guidance stays optional and fits each viewport", async ({
   await owner(page, request, `pwa-ios-${info.project.name}@example.invalid`);
   // Verify hydration before advancing the install timer. A visible streamed
   // canvas alone does not prove that client effects have registered yet.
-  await page.getByRole("button", { name: "Pause motion", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Resume motion", exact: true }),
-  ).toBeVisible();
+  await page.getByRole("button", { name: "Zoom in" }).click();
+  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
+    "data-zoom",
+    "1.25",
+  );
   await page.clock.runFor(100);
   await page.clock.fastForward(31_000);
   const offer = page.getByRole("region", { name: "Install Atomic Bond" });
@@ -138,7 +139,7 @@ test("standalone restores the same owner and suppresses install UI", async ({
   const number = await page.getByTestId("selected-atom").textContent();
   await page.goto("/");
   await expect(page.getByTestId("selected-atom")).toHaveText(number!);
-  await page.getByRole("link", { name: "Profile & preferences" }).click();
+  await page.getByRole("link", { name: "Settings" }).click();
   await installEvent(page);
   await expect(
     page.getByRole("region", { name: "Install Atomic Bond" }),

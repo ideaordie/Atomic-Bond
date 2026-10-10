@@ -150,6 +150,14 @@ export async function refreshOwnerNetwork() {
     pulses: await services.pulses.visible(),
   };
 }
+/** No caller-selected root: ownership is resolved from the verified server session. */
+export async function ownerGeographicNetwork() {
+  const { services, atom } = await requireOwner();
+  return {
+    ownerId: atom!.publicId!,
+    graph: await services.bonds.graph(atom!.publicId!),
+  };
+}
 export async function confirmOwnerBond(token: string) {
   await sameOrigin();
   try {

@@ -8,6 +8,26 @@
   color: var(--text);
   overflow: hidden;
 }
+.map-caption {
+  grid-column: 1 / -1;
+  margin: 4px auto;
+  width: min(90%, 540px);
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 10px;
+  pointer-events: none;
+}
+.living-atom .scale-controls[hidden] {
+  display: none;
+}
+.living-atom .dock-navigation button.map-toggle {
+  width: auto;
+  min-width: 80px;
+  font-size: 11px;
+  padding: 10px 12px;
+  white-space: nowrap;
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -635,4 +655,45 @@
 .scale-controls button[aria-pressed="true"] {
   background: var(--surface-muted);
   border-color: var(--accent);
+}
+.living-atom .simulation-label.map-simulation-label {
+  position: static;
+  text-align: center;
+  margin: 0;
+  padding: 4px 16px;
+}
+
+.map-cluster-inspector {
+  position: absolute;
+  z-index: 3;
+  top: 20px;
+  right: 16px;
+  width: min(230px, 60%);
+  max-height: 45%;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 11px;
+}
+.map-cluster-inspector select {
+  width: 100%;
+  min-height: 32px;
+  color: var(--text);
+  background: var(--surface);
+}
+.map-cluster-inspector summary {
+  cursor: pointer;
+  margin-top: 8px;
+}
+.map-cluster-inspector button {
+  min-height: 36px;
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .map-cluster-inspector {
+    top: 65px;
+    width: 190px;
+  }
 }

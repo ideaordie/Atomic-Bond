@@ -25,7 +25,7 @@ export function BondConfirmation({
           <Link href="/explore">MY ATOM #{result.publicId}</Link>
           <div className="auth-entry">
             <Link href="/about">ABOUT</Link>
-            <Link href="/owner">Profile &amp; preferences</Link>
+            <Link href="/owner">Settings</Link>
           </div>
         </nav>
         <OwnerExperience

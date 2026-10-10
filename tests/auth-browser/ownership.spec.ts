@@ -59,7 +59,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await expect(
     receiver.getByRole("dialog", { name: "How are you right now?" }),
   ).toHaveCount(0);
-  await receiver.getByRole("link", { name: "Profile & preferences" }).click();
+  await receiver.getByRole("link", { name: "Settings" }).click();
   await expect(receiver.getByLabel("Pulse notifications")).toHaveCount(0);
   const returnLink = receiver.getByRole("link", {
     name: "RETURN TO MY ATOM",
@@ -89,9 +89,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await expect(
     mainNav.getByRole("link", { name: "MY ATOM", exact: true }),
   ).toHaveCount(0);
-  await expect(
-    mainNav.getByRole("link", { name: "Profile & preferences" }),
-  ).toBeVisible();
+  await expect(mainNav.getByRole("link", { name: "Settings" })).toBeVisible();
   expect(
     await receiver.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -101,7 +99,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
     path: info.outputPath("owner-navigation.png"),
     fullPage: true,
   });
-  await receiver.getByRole("link", { name: "Profile & preferences" }).click();
+  await receiver.getByRole("link", { name: "Settings" }).click();
   await receiver.getByLabel("Name / alias").fill("Updated owner");
   await receiver
     .getByLabel("Weekly updates", { exact: true })

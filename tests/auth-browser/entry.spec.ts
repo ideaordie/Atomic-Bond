@@ -44,7 +44,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   await expect(page.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await expect(page.getByTestId("reachable-count")).toHaveText("1");
   const aboutLink = page.getByRole("link", { name: "ABOUT", exact: true });
-  const profileLink = page.getByRole("link", { name: "Profile & preferences" });
+  const profileLink = page.getByRole("link", { name: "Settings" });
   const aboutBox = (await aboutLink.boundingBox())!;
   const profileBox = (await profileLink.boundingBox())!;
   expect(aboutBox.x + aboutBox.width).toBeLessThan(profileBox.x);
@@ -62,9 +62,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
     fullPage: true,
   });
   await aboutLink.click();
-  await expect(
-    page.getByRole("link", { name: "Profile & preferences" }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Settings" })).toHaveCount(0);
   await page.getByRole("link", { name: /RETURN TO ATOMIC BOND/ }).click();
   await expect(page.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await expect(
@@ -89,9 +87,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   await expect(
     visitor.getByRole("button", { name: "Pulse", exact: true }),
   ).toBeDisabled();
-  await expect(
-    visitor.getByRole("link", { name: "Profile & preferences" }),
-  ).toHaveCount(0);
+  await expect(visitor.getByRole("link", { name: "Settings" })).toHaveCount(0);
   expect(
     await visitor.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -118,7 +114,7 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
     path: info.outputPath("isolated-owner.png"),
     fullPage: true,
   });
-  await page.getByRole("link", { name: "Profile & preferences" }).click();
+  await page.getByRole("link", { name: "Settings" }).click();
   await page.getByRole("button", { name: "Sign out on this device" }).click();
   await expect(page).toHaveURL("http://127.0.0.1:3104/");
   await page.reload();

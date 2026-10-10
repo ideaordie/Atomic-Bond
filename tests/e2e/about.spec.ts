@@ -23,9 +23,7 @@ test("public beta About page has readable sections and keyboard return navigatio
   await expect(
     page.getByText(/Unsubscribing from growth updates does not prevent/),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /Profile & preferences/i }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Settings/i })).toHaveCount(0);
   await expect(page.getByRole("button")).toHaveCount(0);
   expect(
     await page.evaluate(

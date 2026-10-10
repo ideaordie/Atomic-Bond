@@ -13,6 +13,12 @@ import { createCanvasRenderer } from "./canvas-renderer";
 import type { EmotionPaint } from "../pulse/emotion-presentation";
 
 interface Props {
+  mapOpen?: boolean;
+  mapScene?: SpatialScene | null;
+  mapLayout?: import("../geography/layout").GeographicLayout | null;
+  mapCamera?: Camera;
+  interactionCamera?: Camera;
+  mapEmotions?: ReadonlyMap<string, EmotionPaint>;
   firstBond?: boolean;
   emotions?: ReadonlyMap<string, EmotionPaint>;
   feelNetwork?: boolean;
@@ -28,6 +34,7 @@ interface Props {
   inspectedId: string | null;
   arrivalId?: string | null;
   onSelect: (id: string) => void;
+  onCluster?: (id: string) => void;
   onCamera: (camera: Camera) => void;
   rendererFactory?: RendererFactory;
 }
@@ -72,10 +79,34 @@ export function AtomCanvas({
     let emotionTarget = current.current.emotions;
     let emotionPrevious = emotionTarget;
     let emotionStarted = -Infinity;
+    let mapProgress = 0;
+    let previousMapTarget = false;
+    let mapFrom = 0;
+    let mapStarted = performance.now();
     const draw = (time: number) => {
       frameId = 0;
       if (!alive) return;
       const state = current.current;
+      const mapTarget = Boolean(
+        state.mapOpen && state.mapLayout && state.mapScene,
+      );
+      if (mapTarget !== previousMapTarget) {
+        previousMapTarget = mapTarget;
+        mapFrom = mapProgress;
+        mapStarted = time;
+      }
+      const mapDelta = Math.min(
+        1,
+        (time - mapStarted) /
+          (750 * Math.abs(Number(mapTarget) - mapFrom) || 1),
+      );
+      const previousMapProgress = mapProgress;
+      mapProgress = state.reducedMotion
+        ? Number(mapTarget)
+        : mapFrom + (Number(mapTarget) - mapFrom) * mapDelta;
+      const mapping = mapProgress > 0 && state.mapLayout && state.mapScene;
+      const mapMoving = mapProgress !== Number(mapTarget);
+      if (!mapMoving && previousMapProgress !== mapProgress) dirty = true;
       if (invitationVisible && !state.firstBond) invitationEnded = time;
       invitationVisible = Boolean(state.firstBond);
       const invitationOpacity = state.firstBond
@@ -107,19 +138,33 @@ export function AtomCanvas({
         emotionPrevious && emotionTarget
           ? blendEmotionPaints(emotionPrevious, emotionTarget, emotionProgress)
           : emotionTarget;
-      const still = state.reducedMotion || state.paused;
+      const still =
+        state.reducedMotion || state.paused || mapTarget || mapProgress > 0;
       const pulseMoving = state.pulseDistance !== null && !state.reducedMotion;
       if (time - lastPaint >= 30 || dirty) {
         const elapsedMs = ambientClock.sample(time, !still && !document.hidden);
         renderer.draw({
           appearance: state.appearance,
-          ...(invitationOpacity > 0
+          ...(invitationOpacity > 0 && !mapping
             ? { invitation: { opacity: invitationOpacity, still } }
             : {}),
-          ...(material ? { emotions: material } : {}),
+          ...(mapping && state.mapEmotions
+            ? { emotions: state.mapEmotions }
+            : material
+              ? { emotions: material }
+              : {}),
+          ...(mapping
+            ? {
+                geographic: {
+                  layout: state.mapLayout!,
+                  camera: state.mapCamera!,
+                  progress: mapProgress,
+                },
+              }
+            : {}),
           ...(state.pulseColor ? { pulseColor: state.pulseColor } : {}),
           feelNetwork: state.feelNetwork ?? false,
-          scene: state.scene,
+          scene: mapping ? state.mapScene! : state.scene,
           camera: state.camera,
           elapsedMs,
           transition: transitionProgress(time - startedAt, still),
@@ -134,11 +179,13 @@ export function AtomCanvas({
             ? { arrival: { id: arrivalId, progress: arrivalProgress } }
             : {}),
         });
+        canvas.dataset.mapProgress = mapProgress.toFixed(3);
         lastPaint = time;
         dirty = false;
       }
       if (
         (!still ||
+          mapMoving ||
           pulseMoving ||
           emotionProgress < 1 ||
           (arrivalId && arrivalProgress < 1)) &&
@@ -166,7 +213,9 @@ export function AtomCanvas({
     const pointers = new Map<number, Point>();
     let dragStart: Point | null = null;
     let moved = false;
-    let gestureCamera = current.current.camera;
+    const interactionCamera = () =>
+      current.current.interactionCamera ?? current.current.camera;
+    let gestureCamera = interactionCamera();
     const localPoint = (event: PointerEvent | WheelEvent): Point => {
       const rect = canvas.getBoundingClientRect();
       return { x: event.clientX - rect.left, y: event.clientY - rect.top };
@@ -183,7 +232,7 @@ export function AtomCanvas({
       if (pointers.size === 0) {
         moved = false;
         dragStart = point;
-        gestureCamera = current.current.camera;
+        gestureCamera = interactionCamera();
       } else moved = true;
       pointers.set(event.pointerId, point);
     };
@@ -240,7 +289,11 @@ export function AtomCanvas({
       pointers.delete(event.pointerId);
       if (!moved && event.type === "pointerup") {
         const target = renderer.hitTest(localPoint(event));
-        if (target) current.current.onSelect(target.members[0]!);
+        if (target) {
+          if (current.current.mapOpen && target.members.length > 1)
+            current.current.onCluster?.(target.id);
+          else current.current.onSelect(target.members[0]!);
+        }
       }
       if (canvas.hasPointerCapture(event.pointerId))
         canvas.releasePointerCapture(event.pointerId);
@@ -251,7 +304,7 @@ export function AtomCanvas({
       const rect = canvas.getBoundingClientRect();
       updateCamera(
         zoomCamera(
-          current.current.camera,
+          interactionCamera(),
           Math.exp(-Math.max(-100, Math.min(100, event.deltaY)) * 0.003),
           { x: point.x - rect.width / 2, y: point.y - rect.height / 2 },
         ),
@@ -266,12 +319,12 @@ export function AtomCanvas({
       };
       if (directions[event.key]) {
         event.preventDefault();
-        updateCamera(panCamera(current.current.camera, directions[event.key]!));
+        updateCamera(panCamera(interactionCamera(), directions[event.key]!));
       }
       if (["+", "=", "-"].includes(event.key)) {
         event.preventDefault();
         updateCamera(
-          zoomCamera(current.current.camera, event.key === "-" ? 0.8 : 1.25),
+          zoomCamera(interactionCamera(), event.key === "-" ? 0.8 : 1.25),
         );
       }
     };
@@ -312,15 +365,22 @@ export function AtomCanvas({
         aria-describedby="network-instructions"
         data-testid="atom-canvas"
         data-appearance={appearance}
-        data-invitation-markers={props.firstBond ? "4 decorative" : "none"}
+        data-layout={props.mapOpen ? "geographic" : "orbital"}
+        data-invitation-markers={
+          props.firstBond && !props.mapOpen ? "4 decorative" : "none"
+        }
         data-emotional-view={props.feelNetwork ? "active" : "structural"}
         data-pulse-color={props.pulseColor ?? "none"}
-        data-motion={props.reducedMotion || props.paused ? "still" : "gentle"}
+        data-motion={
+          props.reducedMotion || props.paused || props.mapOpen
+            ? "still"
+            : "gentle"
+        }
         data-center={props.scene.selected.id}
         data-representation={props.scene.mode}
         data-inspected={props.inspectedId ?? "none"}
-        data-zoom={props.camera.zoom.toFixed(2)}
-        data-pan={`${Math.round(props.camera.x)},${Math.round(props.camera.y)}`}
+        data-zoom={(props.interactionCamera ?? props.camera).zoom.toFixed(2)}
+        data-pan={`${Math.round((props.interactionCamera ?? props.camera).x)},${Math.round((props.interactionCamera ?? props.camera).y)}`}
       >
         Use the Atom selector and network information to explore this graph
         without the canvas.
