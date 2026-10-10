@@ -33,6 +33,8 @@ it("service worker stores only fixed public assets and never caches private requ
   await work;
   expect([...stored.keys()]).toEqual([
     "/offline.html",
+    "/design-tokens.css",
+    "/appearance-init.js",
     "/icons/atom-192.png",
     "/icons/atom-512.png",
     "/icons/atom-maskable-512.png",
@@ -79,5 +81,5 @@ it("service worker stores only fixed public assets and never caches private requ
     });
     expect(await ((await work) as Response).text()).toBe("You're offline.");
   }
-  expect(stored.size).toBe(5);
+  expect(stored.size).toBe(7);
 });

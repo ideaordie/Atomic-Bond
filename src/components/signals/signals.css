@@ -34,7 +34,7 @@
 }
 .signal-details {
   z-index: 50;
-  background: #f7f7f7;
+  background: var(--surface-muted);
 }
 .signal-panel {
   flex: 1;
@@ -49,10 +49,10 @@
   min-height: 54px;
   padding: 10px 12px;
   text-align: left;
-  background: #f7f7f7;
-  border: 1px solid var(--border, #d9d9d9);
-  border-radius: 12px;
-  color: var(--text, #111111);
+  background: var(--surface-muted);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
+  color: var(--text);
   height: 100%;
 }
 .signal-panel .network-now-toggle:disabled {
@@ -77,12 +77,12 @@
   width: min(480px, calc(100vw - 32px));
   max-height: 60vh;
   overflow: auto;
-  background: var(--surface, #fff);
-  color: var(--text, #111111);
+  background: var(--surface);
+  color: var(--text);
   padding: 0;
-  border: 1px solid var(--border, #d9d9d9);
-  border-radius: 18px;
-  box-shadow: 0 6px 24px #11111112;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
   overflow-wrap: anywhere;
 }
 .signal-details-content {
@@ -91,7 +91,7 @@
 }
 .signal-details-content h3 {
   margin: 8px 0;
-  font-size: 16px;
+  font-size: var(--type-body);
   line-height: 1.5;
 }
 .signal-details-content .signal-type,
@@ -104,7 +104,7 @@
 }
 .signal-details button,
 .signal-details a {
-  min-height: 44px;
+  min-height: var(--control-height);
 }
 .signal-admin {
   max-width: 760px;
@@ -131,12 +131,12 @@
 }
 .signal-admin button {
   padding: 12px;
-  min-height: 44px;
+  min-height: var(--control-height);
   margin: 4px;
 }
 .signal-admin article {
   padding: 16px 0;
-  border-bottom: 1px solid #d9d9d9;
+  border-bottom: 1px solid var(--border);
   overflow-wrap: anywhere;
 }
 .signal-admin .signal-panel {
@@ -165,5 +165,17 @@
 
 /* Keep other information cards from showing through the expanded surface. */
 .signal-details {
-  background: #f7f7f7;
+  background: var(--surface-muted);
+}
+.signal-admin h1 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  line-height: 1.2;
+  margin-block: var(--space-6);
+}
+.signal-admin > section {
+  padding-block: var(--space-6);
+  margin-block: var(--space-4);
+}
+.signal-admin h2 {
+  font-size: var(--type-subheading);
 }

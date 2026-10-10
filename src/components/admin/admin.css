@@ -14,7 +14,7 @@
 .admin-card a {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
 }
 .admin-page a:focus-visible,
 .admin-navigation a:focus-visible {
@@ -23,7 +23,7 @@
 }
 .admin-brand {
   letter-spacing: 0.2em;
-  font-size: 14px;
+  font-size: var(--helper-size);
 }
 .admin-cards,
 .admin-metrics {
@@ -33,20 +33,20 @@
 }
 .admin-card {
   padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   background: var(--surface);
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .admin-page h1 {
-  font-size: 24px;
+  font-size: var(--type-heading);
 }
 .admin-page h2 {
-  font-size: 18px;
+  font-size: var(--type-subheading);
 }
 .admin-page h3 {
-  font-size: 16px;
+  font-size: var(--type-body);
 }
 .admin-page p {
   line-height: 1.6;
@@ -67,7 +67,7 @@
   letter-spacing: 0.04em;
 }
 .admin-metrics dd {
-  font-size: 24px;
+  font-size: var(--type-heading);
   margin: 8px 0 0;
 }
 .admin-number-list {

@@ -2,8 +2,8 @@
   width: min(430px, calc(100% - 32px));
   max-height: 85svh;
   overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: 22px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-panel);
   padding: 24px;
   color: var(--text);
   background: var(--surface);
@@ -14,9 +14,9 @@
   gap: 6px;
 }
 .pulse-categories button {
-  min-height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  min-height: var(--control-height);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--text);
   font-size: 12px;
@@ -44,7 +44,7 @@
   display: block;
 }
 .pulse-preview strong {
-  font-size: 16px;
+  font-size: var(--type-body);
 }
 .pulse-preview small {
   margin-top: 5px;
@@ -54,7 +54,7 @@
   backdrop-filter: blur(5px);
 }
 .pulse-composer h2 {
-  font-size: 24px;
+  font-size: var(--type-heading);
   margin: 8px 0 16px;
 }
 .pulse-composer p {
@@ -87,8 +87,8 @@
   gap: 9px;
   align-items: center;
   padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   cursor: pointer;
   font-size: 13px;
 }
@@ -117,15 +117,15 @@
   margin: 18px 0;
 }
 .emotion-actions button {
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 10px 20px;
-  border: 1px solid var(--border);
-  border-radius: 24px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--text);
 }
 .emotion-actions button:disabled {
-  opacity: 0.45;
+  opacity: var(--disabled-opacity);
 }
 .pulse-composer small {
   font-size: 10px;
@@ -140,8 +140,8 @@
   overflow-y: auto;
   padding: 12px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   font-size: 11px;
   line-height: 1.5;
 }
@@ -166,7 +166,7 @@
   color: var(--text);
 }
 .current-pulse strong {
-  font-size: 14px;
+  font-size: var(--helper-size);
 }
 .own-pulse-label {
   font-size: 11px;
@@ -193,11 +193,11 @@
   max-height: calc(100% - 430px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-panel);
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 6px 24px #11111112;
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 .measurement-status {
@@ -220,7 +220,7 @@
   height: 8px;
   margin: 16px 0;
   background: var(--surface);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
   overflow: hidden;
 }
 .measurement-track span {
@@ -255,7 +255,7 @@
 }
 
 .pulse-composer::backdrop {
-  background: #11111152;
+  background: var(--backdrop);
   backdrop-filter: blur(5px);
 }
 .emotion-options label:has(:checked) {
@@ -267,11 +267,11 @@
   accent-color: var(--accent);
 }
 .emotion-dot {
-  box-shadow: 0 0 0 1px #11111166;
+  box-shadow: 0 0 0 1px var(--control-border);
 }
 .emotion-actions button[type="submit"] {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .measurement-track {
   background: var(--surface-muted);
@@ -306,8 +306,8 @@
   padding: 10px 12px;
   text-align: left;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   color: var(--text);
 }
 .living-atom .network-now-toggle strong {
@@ -365,7 +365,7 @@
   line-height: 1.4;
 }
 .network-emotion-results .emotion-distribution {
-  font-size: 14px;
+  font-size: var(--helper-size);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }

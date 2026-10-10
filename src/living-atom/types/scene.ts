@@ -45,6 +45,7 @@ export interface Camera {
 }
 
 export interface RenderFrame {
+  readonly appearance?: "light" | "dark";
   readonly invitation?: { readonly opacity: number; readonly still: boolean };
   readonly emotions?: ReadonlyMap<string, EmotionPaint>;
   readonly feelNetwork?: boolean;

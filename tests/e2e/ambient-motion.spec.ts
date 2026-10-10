@@ -127,14 +127,35 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
     "data-degree",
     "1",
   );
+  // Theme change must repaint materials without resetting Pulse or frozen positions.
+  const nextAppearance =
+    (await canvas.getAttribute("data-appearance")) === "dark"
+      ? "light"
+      : "dark";
+  await page.evaluate(
+    (value) =>
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "atomic-bond-appearance",
+          newValue: value,
+        }),
+      ),
+    nextAppearance,
+  );
+  await expect(canvas).toHaveAttribute("data-appearance", nextAppearance);
+  await page.clock.runFor(16);
   const pulsePixels = await pixels();
-  // Scale this within-step sample with the accelerated propagation timing.
-  await page.clock.runFor(20);
+  // Sample beyond the renderer's 30ms paint throttle, still within this degree.
+  await page.clock.runFor(40);
   expect(
     (await pixels()) !== pulsePixels,
     "Pulse travels while ambient positions are frozen",
   ).toBe(true);
   expect((await sample()).nodes).toEqual(pausedNodes);
+  const degreeBeforeResume = Number(
+    await page.getByTestId("pulse-status").getAttribute("data-degree"),
+  );
+  expect(degreeBeforeResume).toBeGreaterThanOrEqual(1);
   await page
     .getByRole("button", { name: "Resume motion", exact: true })
     .click();
@@ -145,7 +166,7 @@ test("ambient motion advances, freezes in place, resumes smoothly and leaves Pul
   );
   await expect(page.getByTestId("pulse-status")).toHaveAttribute(
     "data-degree",
-    "2",
+    String(degreeBeforeResume + 1),
   );
   expect((await sample()).nodes).not.toEqual(pausedNodes);
   await page.clock.fastForward(ACTION_DURATION_MS);

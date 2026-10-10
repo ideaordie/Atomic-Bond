@@ -2,8 +2,8 @@
   width: min(100%, 32rem);
   margin: 3rem auto;
   padding: 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: 1.4rem;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-panel);
   background: var(--surface);
   color: var(--text);
   overflow-wrap: anywhere;
@@ -18,7 +18,7 @@
   font-weight: 700;
 }
 .home-region > p {
-  font-size: 14px;
+  font-size: var(--helper-size);
 }
 .region-select {
   position: relative;
@@ -37,8 +37,8 @@
   margin: 0;
   padding: 4px;
   list-style: none;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   overflow-y: auto;
   background: var(--surface);
 }
@@ -51,7 +51,7 @@
   background: var(--surface);
   color: var(--text);
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-input);
   margin: 0;
 }
 .auth-panel .region-options button[aria-selected="true"] {
@@ -69,7 +69,7 @@
 .auth-panel button,
 .auth-panel select,
 .auth-panel input {
-  min-height: 44px;
+  min-height: var(--control-height);
   max-width: 100%;
 }
 .auth-panel form {
@@ -83,19 +83,19 @@
   padding: 0.65rem;
   background: var(--surface);
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-input);
 }
 .auth-panel button {
   padding: 0.65rem 1rem;
   background: var(--surface);
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
 .auth-panel button:disabled {
-  opacity: 0.55;
+  opacity: var(--disabled-opacity);
   cursor: wait;
 }
 .auth-panel :focus-visible {
@@ -120,7 +120,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  min-height: 44px;
+  min-height: var(--control-height);
   cursor: pointer;
 }
 .auth-panel .profile-return {
@@ -131,8 +131,8 @@
   max-width: 100%;
   padding: var(--space-2) var(--space-4);
   margin-bottom: var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   background: var(--surface-muted);
   color: var(--text);
   font-weight: 600;
@@ -158,8 +158,8 @@
 }
 .entry-actions a {
   padding: 0.85rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   text-align: center;
   text-decoration: none;
   margin: 0;
@@ -169,7 +169,7 @@
 .auth-panel button,
 .entry-actions a {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   border-color: var(--accent);
 }
 .entry-actions a + a {
@@ -196,7 +196,7 @@
   image-rendering: pixelated;
 }
 .real-bond-invitation button {
-  min-height: 44px;
+  min-height: var(--control-height);
   margin: 0.3rem;
 }
 .real-bond-invitation p {
@@ -235,7 +235,7 @@
 .auth-panel input,
 .auth-panel select {
   min-width: 0;
-  font-size: 16px;
+  font-size: var(--type-body);
 }
 .auth-panel small,
 .auth-panel label span {
@@ -273,8 +273,8 @@
 }
 .auth-feedback {
   padding: var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   background: var(--surface-muted);
   margin-top: var(--space-3);
 }
@@ -289,7 +289,7 @@
   font-size: var(--helper-size);
 }
 .auth-panel [aria-invalid="true"] {
-  border-color: #222222;
+  border-color: var(--text);
 }
 .real-bond-invitation {
   padding: var(--space-4);
@@ -301,7 +301,7 @@
   margin-top: var(--space-2);
 }
 .real-bond-invitation .invite-instruction {
-  font-size: 16px;
+  font-size: var(--type-body);
   margin-bottom: var(--space-2);
 }
 .real-bond-invitation .invite-consent {
@@ -351,7 +351,7 @@
   }
   .real-bond-invitation h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: var(--type-heading);
     line-height: 30px;
     padding-right: 44px;
   }
@@ -375,23 +375,23 @@
 .account-danger {
   margin-top: 2.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #d9d9d9;
+  border-top: 1px solid var(--border);
 }
 .account-deactivation {
   margin-block: 1.5rem;
 }
 .account-danger .delete-account-button {
-  background: #fff;
-  border: 1px solid #222222;
-  color: #111111;
-  min-height: 44px;
+  background: var(--surface);
+  border: var(--border-width) solid var(--outline);
+  color: var(--text);
+  min-height: var(--control-height);
   white-space: normal;
 }
 .account-danger a.delete-account-button {
   display: inline-flex;
   align-items: center;
   padding: 10px 16px;
-  border-radius: 16px;
+  border-radius: var(--radius-control);
   text-decoration: none;
 }
 .account-confirm-actions {
@@ -399,4 +399,23 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-block: 1rem;
+}
+/* Nested settings are sections, not full-page landing blocks. */
+.auth-panel > section,
+.auth-panel .account-management > section {
+  padding-block: var(--space-6);
+  margin-block: var(--space-4);
+}
+.auth-panel .account-management {
+  margin-top: var(--space-8);
+}
+.auth-panel .account-danger {
+  padding-top: var(--space-8);
+}
+.auth-panel h2 {
+  font-size: var(--type-subheading);
+  line-height: var(--line-body);
+}
+.auth-panel .appearance-preference h2 {
+  font-size: var(--helper-size);
 }

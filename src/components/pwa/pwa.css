@@ -1,15 +1,15 @@
 .install-offer {
   padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--helper-size);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 .install-offer h2 {
-  font-size: 14px;
+  font-size: var(--helper-size);
   letter-spacing: 0.04em;
   margin: 0 0 8px;
 }
@@ -17,12 +17,12 @@
   margin: 8px 0 12px;
 }
 .install-offer button {
-  min-height: 44px;
+  min-height: var(--control-height);
   font: inherit;
   padding: 10px 14px;
   margin: 4px 8px 0 0;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   background: var(--surface-muted);
   color: var(--text);
   cursor: pointer;
@@ -38,7 +38,7 @@
   width: min(360px, calc(100% - 32px));
   max-height: 40svh;
   overflow: auto;
-  box-shadow: 0 8px 28px #1111111a;
+  box-shadow: var(--shadow);
 }
 body:has([role="dialog"]) .install-contextual {
   display: none;
@@ -52,7 +52,7 @@ body:has([role="dialog"]) .install-contextual {
   background: var(--page);
 }
 .pwa-offline button {
-  min-height: 44px;
+  min-height: var(--control-height);
 }
 body:has(.pwa-offline) #pwa-app {
   display: none !important;

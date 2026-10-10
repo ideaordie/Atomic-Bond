@@ -15,7 +15,7 @@
 .about-nav a {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   text-decoration: none;
 }
 .about-intro {
@@ -36,7 +36,7 @@
   border-top: 1px solid var(--border);
 }
 .about-page h2 {
-  font-size: 14px;
+  font-size: var(--helper-size);
   letter-spacing: 0.1em;
   margin: 0 0 16px;
 }
@@ -57,8 +57,8 @@
   align-items: center;
   min-height: 48px;
   padding: 10px 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   font-weight: 700;
   text-decoration: none;
   background: var(--surface);

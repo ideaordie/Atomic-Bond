@@ -2,7 +2,7 @@
   max-width: 1160px;
   margin: auto;
   padding: 24px 28px 48px;
-  color: #111;
+  color: var(--text);
 }
 .welcome-page > section {
   margin: 0;
@@ -13,7 +13,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  min-height: 44px;
+  min-height: var(--control-height);
 }
 .welcome-brand {
   letter-spacing: 0.18em;
@@ -28,7 +28,7 @@
 .welcome-page nav a,
 .welcome-brand {
   display: inline-flex;
-  min-height: 44px;
+  min-height: var(--control-height);
   align-items: center;
 }
 .welcome-page h1 {
@@ -59,21 +59,21 @@
   align-items: center;
   gap: 12px;
   font-size: 11px;
-  color: #555;
+  color: var(--muted);
   padding: 10px 0;
 }
 .welcome-playback button {
-  min-height: 44px;
+  min-height: var(--control-height);
   min-width: 88px;
-  border: 1px solid #777;
-  border-radius: 24px;
-  background: white;
-  color: #111;
+  border: var(--border-width) solid var(--control-border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
   cursor: pointer;
   font: inherit;
 }
 .welcome-playback button:disabled {
-  opacity: 0.5;
+  opacity: var(--disabled-opacity);
 }
 .welcome-playback details {
   margin-left: auto;
@@ -81,7 +81,7 @@
 }
 .welcome-playback summary {
   cursor: pointer;
-  min-height: 44px;
+  min-height: var(--control-height);
   display: flex;
   align-items: center;
   text-decoration: underline;
@@ -104,17 +104,17 @@
   justify-content: center;
   min-height: 56px;
   padding: 12px 36px;
-  background: #111;
-  color: #fff;
-  border-radius: 30px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-pill);
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--helper-size);
   font-weight: 600;
 }
 .welcome-page a:focus-visible,
 .welcome-page button:focus-visible,
 .welcome-page summary:focus-visible {
-  outline: 2px solid #111;
+  outline: var(--focus-width) solid var(--focus);
   outline-offset: 4px;
 }
 .welcome-sr {

@@ -7,7 +7,12 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.11.3 — Animated Welcome**.
+Current release: **v0.11.4 — Design System & Dark Mode**.
+Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
+admin and offline screens. The appearance choice is browser-local; no migration is required.
+See [Design System](docs/architecture/DESIGN_SYSTEM_v0.1.md).
+
+Preserved baseline: **v0.11.3 — Animated Welcome**.
 The public `/welcome` page uses the approved silent 25-second synthetic introduction,
 with accessible playback and the existing secure registration flow. See
 [Animated Welcome](docs/architecture/ANIMATED_WELCOME_v0.1.md) for playback,

@@ -1,9 +1,11 @@
 /* Deliberately no runtime data cache, request logging or background mutation. */
-// Refresh the existing public-only assets for the monochrome offline page.
-const CACHE = "atomic-bond-public-v2";
+// Refresh the existing public-only assets for the theme-aware offline page.
+const CACHE = "atomic-bond-public-v3";
 const OFFLINE = "/offline.html";
 const ASSETS = [
   OFFLINE,
+  "/design-tokens.css",
+  "/appearance-init.js",
   "/icons/atom-192.png",
   "/icons/atom-512.png",
   "/icons/atom-maskable-512.png",

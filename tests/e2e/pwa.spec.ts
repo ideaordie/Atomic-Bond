@@ -47,6 +47,8 @@ test("manifest, registration and clean offline navigation without private cachin
   expect(cached.sort()).toEqual(
     [
       "/offline.html",
+      "/design-tokens.css",
+      "/appearance-init.js",
       "/icons/atom-192.png",
       "/icons/atom-512.png",
       "/icons/atom-maskable-512.png",

@@ -1,4 +1,4 @@
-import { SCIENTIFIC_PALETTE as palette } from "./scientific-palette";
+import { SCIENTIFIC_PALETTE, type NeutralPalette } from "./scientific-palette";
 import type { Point } from "../types/scene";
 import { fraction } from "../layout/spatial";
 
@@ -65,6 +65,7 @@ export function paintCore(
   time: number,
   active: boolean,
   tone?: string,
+  palette: NeutralPalette = SCIENTIFIC_PALETTE,
 ) {
   const breath = 1 + Math.sin(time / 3400) * 0.08;
   glow(
@@ -121,6 +122,7 @@ export function createStarfield(
   width: number,
   height: number,
   ratio: number,
+  palette: NeutralPalette = SCIENTIFIC_PALETTE,
 ) {
   const background = canvas.ownerDocument.createElement("canvas");
   background.width = Math.round(width * ratio);

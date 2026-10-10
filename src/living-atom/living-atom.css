@@ -39,9 +39,9 @@
 }
 .living-atom button,
 .living-atom select {
-  min-height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 24px;
+  min-height: var(--control-height);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--text);
   font: inherit;
@@ -54,7 +54,7 @@
   background: var(--surface);
 }
 .living-atom button:disabled {
-  opacity: 0.5;
+  opacity: var(--disabled-opacity);
   cursor: default;
 }
 .reach-readout {
@@ -142,7 +142,7 @@
   gap: 16px;
   border-top: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: 0 6px 24px #11111112;
+  box-shadow: var(--shadow);
 }
 .dock-navigation {
   display: flex;
@@ -184,15 +184,15 @@
   min-width: 205px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border-radius: 38px;
+  border-radius: var(--radius-pill);
   border-color: var(--border);
   background: var(--surface);
-  box-shadow: 0 6px 24px #11111112;
+  box-shadow: var(--shadow);
   color: var(--text);
   font-size: 13px;
 }
 .pulse-symbol {
-  font-size: 24px;
+  font-size: var(--type-heading);
   font-weight: 400;
 }
 .pulse-status {
@@ -222,7 +222,7 @@
   background: transparent;
   min-width: 65px;
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-control);
   font-size: 11px;
 }
 .scale-controls button[aria-pressed="true"] {
@@ -248,11 +248,11 @@
   transform: translateX(-50%);
   bottom: 151px;
   width: 318px;
-  border: 1px solid var(--border);
-  border-radius: 17px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-panel);
   padding: 17px;
   background: var(--surface);
-  box-shadow: 0 6px 24px #11111112;
+  box-shadow: var(--shadow);
   z-index: 4;
 }
 .atom-context {
@@ -295,7 +295,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   color: var(--text);
   font-size: 23px;
   background: var(--surface);
@@ -315,7 +315,7 @@
   right: 5px;
   top: 5px;
   min-width: 44px;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0;
   border: 0;
   background: transparent;
@@ -349,7 +349,7 @@
 }
 .living-atom .view-network {
   width: 100%;
-  min-height: 44px;
+  min-height: var(--control-height);
   background: var(--surface);
   border-color: var(--border);
   font-size: 11px;
@@ -365,8 +365,8 @@
   max-height: calc(100% - 300px);
   overflow-y: auto;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   padding: 18px;
   z-index: 6;
   scrollbar-width: thin;
@@ -379,7 +379,7 @@
   gap: 10px;
 }
 .tools-heading h2 {
-  font-size: 14px;
+  font-size: var(--helper-size);
   font-weight: 500;
   margin: 0;
 }
@@ -396,7 +396,7 @@
   color: var(--text);
 }
 .explorer-tools select {
-  border-radius: 6px;
+  border-radius: var(--radius-input);
   width: 100%;
   max-width: 100%;
   font-size: 11px;
@@ -413,7 +413,7 @@
   padding: 14px 0;
   color: var(--text);
   font-size: 11px;
-  min-height: 44px;
+  min-height: var(--control-height);
 }
 .exploration-tools {
   display: grid;
@@ -507,7 +507,7 @@
   .living-atom .tools-toggle {
     right: 16px;
     top: 152px;
-    min-height: 44px;
+    min-height: var(--control-height);
     padding: 7px 12px;
     font-size: 10px;
   }
@@ -528,7 +528,7 @@
   .dock-navigation button {
     width: 44px;
     height: 44px;
-    border-radius: 14px;
+    border-radius: var(--radius-control);
     font-size: 20px;
   }
   .dock-navigation button span {
@@ -564,7 +564,7 @@
     font-size: 8px;
   }
   .scale-controls button {
-    min-height: 44px;
+    min-height: var(--control-height);
     font-size: 10px;
     padding: 6px 12px;
   }
@@ -618,19 +618,19 @@
   border-color: var(--accent);
 }
 .reach-readout {
-  background: linear-gradient(90deg, #ffffffe6, #ffffff00);
+  background: linear-gradient(90deg, var(--page), var(--page-fade));
 }
 .spatial-dock {
-  background: #fafafaee;
-  box-shadow: 0 -4px 24px #11111108;
+  background: var(--surface);
+  box-shadow: var(--dock-shadow);
 }
 .context-avatar {
   background: radial-gradient(circle at 30% 25%, #fff, #aaaaaa 55%, #555555);
-  color: #fff;
+  color: var(--on-accent);
 }
 .living-atom .view-network {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .scale-controls button[aria-pressed="true"] {
   background: var(--surface-muted);

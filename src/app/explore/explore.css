@@ -22,7 +22,7 @@ main.explore-page {
   background: var(--surface);
 }
 .explore-nav .wordmark {
-  font-size: 18px;
+  font-size: var(--type-subheading);
   letter-spacing: 0.3em;
   font-weight: 400;
   text-decoration: none;
@@ -46,7 +46,7 @@ main.explore-page {
 }
 .auth-entry a {
   color: var(--text);
-  min-height: 44px;
+  min-height: var(--control-height);
   min-width: 44px;
   display: flex;
   align-items: center;

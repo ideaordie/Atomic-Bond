@@ -6,11 +6,12 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="referrer" content="no-referrer" />
     <title>Atomic Bond — Offline</title>
+    <link rel="stylesheet" href="/design-tokens.css" />
+    <script src="/appearance-init.js"></script>
     <style>
       html {
-        color-scheme: light;
-        background: #ffffff;
-        color: #111111;
+        background: var(--page);
+        color: var(--text);
         font-family: Arial, sans-serif;
       }
       body {
@@ -33,15 +34,15 @@
       button {
         min-height: 44px;
         padding: 12px 24px;
-        border: 1px solid #111111;
+        border: 1px solid var(--text);
         border-radius: 12px;
-        background: #111111;
-        color: white;
+        background: var(--accent);
+        color: var(--on-accent);
         font: inherit;
         cursor: pointer;
       }
       button:focus-visible {
-        outline: 3px solid #222222;
+        outline: 3px solid var(--focus);
         outline-offset: 4px;
       }
     </style>

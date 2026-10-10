@@ -20,10 +20,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-control);
   color: var(--text);
   font-size: 10px;
   text-decoration: none;

@@ -171,3 +171,12 @@ and issues for each step. Never record live QR secrets, email links or private d
 References: [Next.js PWA guide](https://nextjs.org/docs/app/guides/progressive-web-apps),
 [WebKit Home Screen behavior](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/),
 [WebKit cookie behavior](https://webkit.org/blog/14787/webkit-features-in-safari-17-2/).
+
+## Appearance (v0.11.4)
+
+The shared [Design System](DESIGN_SYSTEM_v0.1.md) adds explicit browser-local
+Light/Dark appearance. The offline document uses the same public token stylesheet
+and safe initializer. The worker's fixed asset list includes these two files;
+private navigation/data caching remains prohibited. Manifest identity, install
+behavior and launch routing are unchanged. OS-controlled splash artwork may
+remain light while the application uses the saved appearance.

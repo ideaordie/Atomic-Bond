@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppearance } from "../../components/appearance/appearance";
 import { useEffect, useRef, useState } from "react";
 import type { Camera, Point, RendererFactory } from "../types/scene";
 import type { SpatialScene } from "../types/spatial";
@@ -35,12 +36,13 @@ export function AtomCanvas({
   rendererFactory = createCanvasRenderer,
   ...props
 }: Props) {
+  const appearance = useAppearance();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState<string | null>(null);
   // Events and animation use the most recently committed props without recreating the renderer.
-  const current = useRef(props);
+  const current = useRef({ ...props, appearance });
   useEffect(() => {
-    current.current = props;
+    current.current = { ...props, appearance };
   });
 
   useEffect(() => {
@@ -110,6 +112,7 @@ export function AtomCanvas({
       if (time - lastPaint >= 30 || dirty) {
         const elapsedMs = ambientClock.sample(time, !still && !document.hidden);
         renderer.draw({
+          appearance: state.appearance,
           ...(invitationOpacity > 0
             ? { invitation: { opacity: invitationOpacity, still } }
             : {}),
@@ -297,7 +300,7 @@ export function AtomCanvas({
 
   useEffect(() => {
     canvasRef.current?.dispatchEvent(new Event("scenechange"));
-  }, [props]);
+  }, [props, appearance]);
 
   return (
     <>
@@ -308,6 +311,7 @@ export function AtomCanvas({
         aria-label={`Living Atom network centered on Atom #${props.scene.selected.publicId}`}
         aria-describedby="network-instructions"
         data-testid="atom-canvas"
+        data-appearance={appearance}
         data-invitation-markers={props.firstBond ? "4 decorative" : "none"}
         data-emotional-view={props.feelNetwork ? "active" : "structural"}
         data-pulse-color={props.pulseColor ?? "none"}

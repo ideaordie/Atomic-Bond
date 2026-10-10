@@ -1,4 +1,4 @@
-import { SCIENTIFIC_PALETTE as palette } from "./scientific-palette";
+import { scientificPalette, layerTint } from "./scientific-palette";
 import { paintInvitation } from "./invitation-paint";
 import { spatialPositions } from "../animation/spatial-motion";
 import { arrivalVisibility } from "../animation/bond-arrival";
@@ -30,6 +30,7 @@ function curvePoint(
 export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas 2D is unavailable in this browser.");
+  let palette = scientificPalette();
   let width = 1;
   let height = 1;
   let ratio = 1;
@@ -52,9 +53,14 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
       ratio = Math.min(2, Math.max(1, pixelRatio));
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
-      background = createStarfield(canvas, width, height, ratio);
+      background = createStarfield(canvas, width, height, ratio, palette);
     },
     draw(frame) {
+      const nextPalette = scientificPalette(frame.appearance);
+      if (nextPalette !== palette) {
+        palette = nextPalette;
+        background = createStarfield(canvas, width, height, ratio, palette);
+      }
       const { scene, camera } = frame;
       const energyColor = frame.pulseColor ?? palette.bond;
       if (frame.arrival?.id !== arrivalKey) {
@@ -129,6 +135,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
           frame.invitation.opacity,
           frame.elapsedMs,
           frame.invitation.still,
+          palette.bond,
         );
       const commands: { z: number; id: string; draw: () => void }[] = [];
 
@@ -238,7 +245,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
         const tint =
           active && frame.pulseColor
             ? energyColor
-            : (emotion?.colors[0] ?? node.tint);
+            : (emotion?.colors[0] ?? layerTint(node.distance, palette));
         commands.push({
           z: projected.depth,
           id: node.id,
@@ -276,7 +283,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                         Math.floor(
                           (i * emotion.colors.length) / node.particles.length,
                         )
-                      ] ?? node.tint);
+                      ] ?? layerTint(node.distance, palette));
                 const particle = node.particles[i]!;
                 const drift = Math.sin(frame.elapsedMs / 6000 + i) * 3;
                 const shimmer =
@@ -324,6 +331,7 @@ export function createCanvasRenderer(canvas: HTMLCanvasElement): AtomRenderer {
                     (active && frame.pulseColor)
                     ? tint
                     : undefined,
+                  palette,
                 );
               else {
                 glow(

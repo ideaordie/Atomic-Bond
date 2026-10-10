@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.11.4 — Design System & Dark Mode
+
+- Consolidated shared monochrome appearance, typography, radius and control tokens across public, owner and admin screens.
+- Added opt-in Light/Dark appearance in Profile & Preferences, saved per browser without a migration or account-data change.
+- Theme-aware neutral Canvas materials preserve camera, graph and Pulse continuity; all 24 Pulse colors and the welcome animation remain unchanged.
+- Applied the same appearance to the offline screen using only fixed public assets. Existing PWA caching boundaries, Master Spec and production configuration remain unchanged.
+- Product review passed; publication approved. No changes to authentication, database business rules, notification scheduling or analytics privacy filtering.
+
 ## v0.11.3 — Animated Welcome
 
 - Published the approved five-scene, 25-second synthetic introduction at public `/welcome`, sharing the deterministic Canvas renderer with the development-only review and advertising export.

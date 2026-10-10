@@ -9,10 +9,11 @@ export function paintInvitation(
   opacity: number,
   elapsedMs: number,
   still: boolean,
+  color = "#777777",
 ) {
   const gesture = invitationGesture(elapsedMs, still);
   ctx.save();
-  ctx.strokeStyle = "#777777";
+  ctx.strokeStyle = color;
   ctx.lineWidth = 1;
   for (let i = 0; i < 4; i++) {
     const angle = -Math.PI / 2 + (i * Math.PI) / 2;
