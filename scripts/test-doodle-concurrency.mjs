@@ -25,7 +25,10 @@ const postgres = new EmbeddedPostgres({
   createPostgresUser: false,
   initdbFlags: ["--encoding=UTF8", "--locale=C"],
   postgresFlags: ["-h", "127.0.0.1"],
-  onLog: () => {},
+  onLog: (message) => {
+    if (message.includes("FATAL:") || message.includes("PANIC:"))
+      console.error("Isolated PostgreSQL:", message);
+  },
   onError: () => {},
 });
 let started = false,
@@ -61,7 +64,10 @@ try {
       }
     },
   };
-  const f = await createDoodleFixture(adapter),
+  const f = await createDoodleFixture(
+      adapter,
+      process.env.DOODLE_REVIEW_NEXT === "true",
+    ),
     drawing = fixtureDrawing(),
     key = randomUUID();
   const submissions = await Promise.all(
@@ -91,7 +97,7 @@ try {
       await f.rpc(voter, "appreciate_doodle", [candidate]);
     hallIds.push(candidate);
   }
-  await f.advance(60);
+  await f.advance(process.env.DOODLE_REVIEW_NEXT === "true" ? 1440 : 60);
   const q = await f.rpc(0, "doodle_admin_queue");
   await Promise.all(
     hallIds.map((id) =>
@@ -138,7 +144,7 @@ try {
     () => false,
     () => true,
   );
-  await f.advance(60);
+  await f.advance(process.env.DOODLE_REVIEW_NEXT === "true" ? 1440 : 60);
   await lock.query("commit");
   await lock.end();
   assert.equal(await waiting, true);

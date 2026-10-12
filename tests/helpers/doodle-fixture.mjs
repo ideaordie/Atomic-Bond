@@ -4,7 +4,7 @@ import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
-export async function createDoodleFixture(suppliedDb) {
+export async function createDoodleFixture(suppliedDb, next = false) {
   const db = suppliedDb ?? new PGlite({ extensions: { pgcrypto } });
   const exec = async (sql, args = []) => db.query(sql, args);
   await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
@@ -13,7 +13,9 @@ export async function createDoodleFixture(suppliedDb) {
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema public,auth to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;`);
   for (const f of (await readdir("supabase/migrations"))
-    .filter((f) => f.endsWith(".sql"))
+    .filter(
+      (f) => f.endsWith(".sql") && (next || !f.startsWith("202610120002")),
+    )
     .sort())
     await db.exec(await readFile("supabase/migrations/" + f, "utf8"));
   await db.exec(
@@ -119,7 +121,7 @@ export function fixtureDrawing(seed = 0) {
   };
 }
 
-export async function seedDoodleReview(f) {
+export async function seedDoodleReview(f, lifetime = 60) {
   const winners = [];
   for (let i = 1; i <= 10; i++) {
     const id = await f.rpc(i, "submit_doodle", [
@@ -131,7 +133,7 @@ export async function seedDoodleReview(f) {
       await f.rpc(voter, "appreciate_doodle", [id]);
     winners.push(id);
   }
-  await f.advance(60);
+  await f.advance(lifetime);
   for (const id of winners) await f.moderate(id, "PROMOTE");
   const live = await f.rpc(11, "submit_doodle", [
     randomUUID(),

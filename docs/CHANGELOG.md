@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.12.2 — Global Doodle 24-hour feed
+
+- Prepared 24-hour future Doodle publication with multiple live drawings and the unchanged hourly per-Atom cooldown; existing deadlines remain intact.
+- Added the authenticated Living Atom static feed with bounded cursor loading, visible-only refresh, appreciation/reporting and a separate Hall view.
+- Simplified the editor to SEND with safe retries, server-based cooldown and return navigation; complete administrator replay remains available.
+- Approved the surgical Section 48A amendment and version-controlled function migration for publication; existing drawings retain their deadlines.
+
 ## v0.12.1-rc.1 — Global Doodle controlled rollout candidate
 
 - Approved Master Spec v0.4 with only the reviewed Global Doodle sections and version metadata; frozen v0.3 remains unchanged.

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { DoodleFeedPanel } from "../doodle/DoodleFeedPanel";
+import { doodlePageAccess } from "../../services/doodle/server";
 import { connection } from "next/server";
 import { exploreSource } from "../../services/participation/explore-source";
 import { LivingAtom } from "../../living-atom/LivingAtom";
@@ -41,6 +43,8 @@ export async function NetworkPage({
   }
   const ownView =
     !publicView && Boolean(ownerId && (!requested || requested === ownerId));
+  const doodle =
+    ownView && owner?.atom?.status === "ACTIVE" && (await doodlePageAccess());
   return (
     <main className="explore-page">
       <nav className="explore-nav" aria-label="Main navigation">
@@ -74,12 +78,15 @@ export async function NetworkPage({
           originalAtomId={source.centerId}
         />
       ) : ownView && ownerId && owner ? (
-        <OwnerExperience
-          activeOwner={owner.atom?.status === "ACTIVE"}
-          graph={source.graph}
-          publicId={ownerId}
-          initialPulses={await owner.services.pulses.visible()}
-        />
+        <div className={doodle ? "owner-doodle-layout" : undefined}>
+          <OwnerExperience
+            activeOwner={owner.atom?.status === "ACTIVE"}
+            graph={source.graph}
+            publicId={ownerId}
+            initialPulses={await owner.services.pulses.visible()}
+          />
+          {doodle && <DoodleFeedPanel />}
+        </div>
       ) : source.centerId && source.graph.nodes.length ? (
         <LivingAtom
           graph={source.graph}

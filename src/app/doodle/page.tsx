@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { doodlePageAccess } from "../../services/doodle/server";
 import { ownerContext } from "../../services/auth/server";
-import { DoodleProductionReview } from "../../prototypes/doodle/DoodleProductionReview";
+import { DoodlePublishing } from "../../components/doodle/DoodlePublishing";
 export default async function DoodlePage() {
   await connection();
   if (
@@ -21,5 +21,5 @@ export default async function DoodlePage() {
     );
   }
   if (!(await doodlePageAccess())) notFound();
-  return <DoodleProductionReview production />;
+  return <DoodlePublishing />;
 }

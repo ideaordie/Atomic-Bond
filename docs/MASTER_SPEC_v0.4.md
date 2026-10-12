@@ -499,25 +499,42 @@ others).
 ## 48A. GLOBAL DOODLE
 
 Global Doodle lets authenticated ACTIVE Atoms share temporary 64 × 64 monochrome
-dot drawings. Drawing, erasing, undo, clear, preview, bounded replay, accessible
-controls and Light/Dark presentation are supported. The final bitmap is 512 bytes.
-No confirmed Bond is required to create, view, appreciate or report a drawing.
-Anonymous access is not part of this feature.
+dot drawings. Drawing, erasing, undo, clear, accessible controls and Light/Dark
+presentation are supported. The canvas is the preview; SEND is the final publication
+action. Complete bounded replay remains available to authorized moderators, not
+ordinary user-facing interfaces. The final bitmap is 512 bytes. No confirmed Bond
+is required to create, view, appreciate or report a drawing. Anonymous access is
+not part of this feature.
 
-An Atom may have at most one live drawing. PostgreSQL enforces a minimum of 60
+An Atom may have multiple live drawings, each with its own immutable identifier,
+publication deadline, appreciations and reports. Publishing another drawing does
+not replace earlier drawings. PostgreSQL enforces a minimum of 60
 minutes between accepted submissions, including after removal. Retries are
 idempotent. Drafts remain local. A valid submission from an authenticated ACTIVE
 owner is published immediately after server-side payload/replay validation,
 ownership/lifecycle checks, cooldown and request throttling. Ordinary publication
 has no pending-review state and requires no administrator approval.
 
-Publication lasts exactly 60 minutes from successful publication using database
+Publication lasts exactly 24 hours from successful publication using database
 time, unless removed earlier for moderation or account lifecycle reasons. Content
 is immutable. The approved editor's bounded-history fallback may submit a still
 bitmap with no replay; any submitted replay must be complete within its bounds and
 reconstruct the final bitmap. A partial or inconsistent replay is rejected.
 
-There is no fixed global daily submission quota. Per-Atom cooldown, one live slot,
+Existing published drawings retain their original deadlines.
+
+A compact global live feed appears on the authenticated owner's main Living Atom
+page, in a narrow right column on desktop and below the graph and primary controls
+on mobile. It shows static bitmaps, permitted public Atom numbers, publication age,
+APPRECIATE and REPORT. It uses bounded cursor pagination and approximately 30-second
+visibility-aware refresh, preserves scroll position, and excludes expired or removed
+content. Hall of Fame remains separate from live-feed ordering. CREATE DOODLE opens
+the existing editor. After server-confirmed publication, DOODLE PUBLISHED provides
+RETURN TO MY ATOM and DRAW ANOTHER, disabled until the authoritative 60-minute
+submission cooldown ends. Failed submissions preserve the unsent drawing; retries
+are idempotent. No additional tracking or private/offline content cache is introduced.
+
+There is no fixed global daily submission quota. Per-Atom cooldown,
 payload/replay bounds and server-enforced request throttling remain authoritative.
 Administrators may explicitly pause and resume new submissions globally. Pausing
 intake does not hide existing eligible drawings, stop voting, or affect other Atomic
@@ -532,8 +549,7 @@ remove content solely because of report volume.
 
 APPRECIATE is the sole voting interaction. Each authenticated ACTIVE Atom may
 appreciate another Atom's currently published drawing once. Self-voting is
-prohibited. No votes are accepted outside its original 60-minute publication
-window. Retries cannot add votes. There is no dislike, downvote, comment, reply,
+prohibited. No votes are accepted outside its original publication window (24 hours for newly published drawings). Retries cannot add votes. There is no dislike, downvote, comment, reply,
 repost, follower system, financial reward or transferable reward. The live drawing
 shows its appreciation count and whether the viewing owner has appreciated it.
 

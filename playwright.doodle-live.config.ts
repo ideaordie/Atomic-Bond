@@ -11,6 +11,10 @@ export default defineConfig({
       "pnpm start",
       "node node_modules/next/dist/bin/next start",
     ),
-    env: { ...s.env, GLOBAL_DOODLE_ENABLED: "true" },
+    env: {
+      ...s.env,
+      GLOBAL_DOODLE_ENABLED: "true",
+      DOODLE_REVIEW_NEXT: "true",
+    },
   })),
 });

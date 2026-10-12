@@ -4,9 +4,22 @@ import { randomUUID } from "node:crypto";
 import {
   createDoodleFixture,
   seedDoodleReview,
+  fixtureDrawing,
 } from "../tests/helpers/doodle-fixture.mjs";
-let fixture = await createDoodleFixture();
-await seedDoodleReview(fixture);
+const next = process.env.DOODLE_REVIEW_NEXT === "true";
+const port = next ? 3143 : 3141;
+let fixture = await createDoodleFixture(undefined, next);
+await seedDoodleReview(fixture, next ? 1440 : 60);
+if (next) {
+  for (let round = 0; round < 5; round++) {
+    await fixture.advance(60);
+    for (let actor = 2; actor < 26; actor++)
+      await fixture.rpc(actor, "submit_doodle", [
+        randomUUID(),
+        fixtureDrawing(actor + round),
+      ]);
+  }
+}
 let serial = Promise.resolve();
 // Local analogue of the proposed bounded database cleanup job; never hosted Cron.
 setInterval(() => {
@@ -24,7 +37,7 @@ const server = createServer((req, res) => {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json");
   if (
-    req.headers.host !== "127.0.0.1:3141" ||
+    req.headers.host !== `127.0.0.1:${port}` ||
     req.method !== "POST" ||
     req.headers["x-doodle-review"] !== "local-synthetic"
   ) {
@@ -54,6 +67,7 @@ const server = createServer((req, res) => {
         const names = {
           read: "read_doodles",
           submit: "submit_doodle",
+          publish: "publish_doodle",
           vote: "appreciate_doodle",
           report: "report_doodle",
           replay: "doodle_replay",
@@ -80,8 +94,8 @@ const server = createServer((req, res) => {
           ).rows[0];
         else if (action === "reset") {
           await fixture.db.close();
-          fixture = await createDoodleFixture();
-          await seedDoodleReview(fixture);
+          fixture = await createDoodleFixture(undefined, next);
+          await seedDoodleReview(fixture, next ? 1440 : 60);
           data = true;
         } else if (action === "reactivate") {
           if (actor < 0) throw new Error("Synthetic owner required");
@@ -121,8 +135,8 @@ const server = createServer((req, res) => {
     });
   });
 });
-server.listen(3141, "127.0.0.1", () =>
+server.listen(port, "127.0.0.1", () =>
   console.log(
-    "Synthetic Doodle review database ready on loopback 3141. No production connection.",
+    `Synthetic Doodle review database ready on loopback ${port}. No production connection.`,
   ),
 );

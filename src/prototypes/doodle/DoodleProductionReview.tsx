@@ -144,7 +144,7 @@ export function DoodleProductionReview({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(
     production
-      ? "Drawings are public to active participants for one hour. Do not include private information."
+      ? "New drawings are public to active participants for 24 hours. Do not include private information."
       : "Synthetic local database. No production participants or publication.",
   );
   const [replay, setReplay] = useState<{ id: string; drawing: Drawing } | null>(

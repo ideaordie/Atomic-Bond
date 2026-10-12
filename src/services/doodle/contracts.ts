@@ -2,6 +2,7 @@ export const DOODLE_ACTIONS = {
   read: "read_doodles",
   replay: "doodle_replay",
   submit: "submit_doodle",
+  publish: "publish_doodle",
   vote: "appreciate_doodle",
   report: "report_doodle",
   queue: "doodle_admin_queue",

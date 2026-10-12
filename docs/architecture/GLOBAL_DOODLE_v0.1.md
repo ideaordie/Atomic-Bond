@@ -60,9 +60,9 @@ Production adapters must check the returned error envelope even on HTTP 200.
 DRAFT is local editor state. Authoritative states are PUBLISHED, EXPIRED, CANDIDATE,
 HALL, REJECTED and REMOVED. There is no normal pending-review path or ordinary approval
 operation. A valid submission publishes immediately with publication time and a deadline
-exactly 60 minutes later, both based on database time after locking and validation.
+exactly 24 hours later, both based on database time after locking and validation.
 
-One unexpired live drawing and one accepted submission every 60 minutes per Atom are
+Multiple live drawings are permitted; one accepted submission every 60 minutes per Atom is
 enforced. Removal does not reset cooldown. An identical request ID/payload returns its
 prior result without a new drawing/deadline; altered content under that key is rejected.
 Latest retry metadata survives payload cleanup; older retained drawings deduplicate too.
@@ -172,7 +172,7 @@ own completed run records older than seven days, never another job's records. Av
 alone does not prove execution: the first scheduled run was verified successful at
 12:45 UTC on October 12. The Tuesday growth schedule remains unchanged.
 
-Visibility expires at exactly 60 minutes; physical deletion waits for bounded cleanup.
+Visibility expires at exactly 24 hours for new publications; physical deletion waits for bounded cleanup.
 At five-minute intervals the nominal delete capacity is 6,000 payloads/hour and finalize
 capacity 12,000/hour, before lock contention/timeouts. These are batch ceilings, not an
 SLA. Monitor oldest backlog/run failures and tune batch/cadence under review if needed.
@@ -273,3 +273,7 @@ and recovery. The earlier verification record above is historical; final follow-
 results are recorded in that rollout document. The owner subsequently approved
 the staged disabled rollout and Master Spec v0.4. Public activation still requires
 separate approval.
+
+## Task #12.2 publication
+
+v0.12.2 supersedes the original one-live-drawing/one-hour lifetime design for new submissions. Existing deadlines remain unchanged. See `GLOBAL_DOODLE_TASK_12_2.md` for main-page feed, editor, pagination, static ordinary display, retained moderator replay, migration and verification details. Earlier verification records remain historical.

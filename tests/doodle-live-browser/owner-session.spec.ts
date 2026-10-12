@@ -28,23 +28,24 @@ test("production owner-session route publishes, reports and removes without fixt
   await expect(
     page.getByRole("heading", { name: "ACCESS DENIED" }),
   ).toBeVisible();
-  await page.goto("/owner");
-  await page.getByRole("link", { name: "GLOBAL DOODLE →" }).click();
+  await page.goto("/explore");
+  await page.getByRole("link", { name: "CREATE DOODLE" }).click();
   await expect(page.getByText("LOCAL TEST CONTROLS")).toHaveCount(0);
   await expect(page.getByText("LOCAL SYNTHETIC", { exact: false })).toHaveCount(
     0,
   );
   await expect(
-    page.getByRole("heading", { name: "YOUR SUBMISSIONS", exact: true }),
+    page.getByRole("heading", { name: "MAKE YOUR MARK", exact: true }),
   ).toBeVisible();
   await page.getByTestId("doodle-editor").focus();
   await page.keyboard.press("Space");
-  await page.getByRole("button", { name: "PREVIEW", exact: true }).click();
   await page.getByRole("button", { name: "SEND", exact: true }).click();
-  await expect(page.locator(".doodle-live-grid article")).toHaveCount(1);
-  await expect(page.locator(".doodle-message")).toContainText(
-    "Published immediately. Your drawing is visible for one hour.",
-  );
+  await expect(
+    page.getByRole("heading", { name: "DOODLE PUBLISHED" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "DRAW ANOTHER" }),
+  ).toBeDisabled();
   await page.screenshot({
     path: `artifacts/doodle-owner-${info.project.name}.png`,
     fullPage: true,
@@ -69,13 +70,14 @@ test("production owner-session route publishes, reports and removes without fixt
   await expect(
     page.getByRole("heading", { name: "WELCOME BACK" }),
   ).toBeVisible();
-  await page.goto("/doodle");
-  await page.getByRole("button", { name: "APPRECIATE", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "APPRECIATED", exact: true }),
-  ).toBeDisabled();
-  await page.getByText("REPORT DRAWING", { exact: true }).click();
-  await page.getByRole("button", { name: "ABUSE", exact: true }).click();
+  await page.goto("/explore");
+  const feed = page.getByRole("complementary", { name: "Global Doodle" });
+  await feed.scrollIntoViewIfNeeded();
+  await feed.getByRole("button", { name: /APPRECIATE/ }).click();
+  await expect(feed.getByRole("button", { name: /APPRECIATE/ })).toBeDisabled();
+  await feed.getByText("REPORT", { exact: true }).click();
+  await feed.getByRole("combobox").selectOption("ABUSE");
+  await feed.getByRole("button", { name: "SEND REPORT" }).click();
   await page.goto("/admin");
   await page.getByRole("link", { name: "MODERATE DOODLES →" }).click();
   await expect(
@@ -96,8 +98,11 @@ test("production owner-session route publishes, reports and removes without fixt
     page.getByRole("button", { name: "RESUME SUBMISSIONS" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "RESUME SUBMISSIONS" }).click();
-  await page.goto("/doodle");
-  await expect(page.locator(".doodle-live-grid article")).toHaveCount(0);
+  await page.goto("/explore");
+  await page
+    .getByRole("complementary", { name: "Global Doodle" })
+    .scrollIntoViewIfNeeded();
+  await expect(page.locator(".doodle-feed-scroll article")).toHaveCount(0);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

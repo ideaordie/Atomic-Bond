@@ -7,10 +7,14 @@ export function DoodleComposer({
   onSubmit,
   busy,
   paused = false,
+  simplified = false,
+  editingLocked = false,
 }: {
   onSubmit: (drawing: Drawing) => Promise<boolean>;
   busy: boolean;
   paused?: boolean;
+  simplified?: boolean;
+  editingLocked?: boolean;
 }) {
   const [editor] = useState(() => new DoodleEditor());
   const [revision, setRevision] = useState(0);
@@ -34,7 +38,7 @@ export function DoodleComposer({
           description="Preview of your dot drawing"
         />
       ) : (
-        <>
+        <div inert={editingLocked || busy}>
           <div className="doodle-tools" role="group" aria-label="Drawing tools">
             <button
               aria-pressed={tool === "draw"}
@@ -67,7 +71,7 @@ export function DoodleComposer({
             revision={revision}
             onChange={changed}
           />
-        </>
+        </div>
       )}
       <div className="doodle-count">
         <span>{count} dots</span>
@@ -88,12 +92,14 @@ export function DoodleComposer({
         </div>
       )}
       <div className="doodle-actions">
-        <button
-          disabled={!count || busy}
-          onClick={() => setPreview(preview ? null : editor.export())}
-        >
-          {preview ? "BACK TO DRAWING" : "PREVIEW"}
-        </button>
+        {!simplified && (
+          <button
+            disabled={!count || busy}
+            onClick={() => setPreview(preview ? null : editor.export())}
+          >
+            {preview ? "BACK TO DRAWING" : "PREVIEW"}
+          </button>
+        )}
         <button
           className="doodle-primary"
           disabled={!count || busy || paused}
@@ -111,8 +117,8 @@ export function DoodleComposer({
       </div>
       <p className="doodle-help" id="doodle-input-help">
         Draw or erase with a finger, mouse or pen. Keyboard: arrows move; Space
-        marks a dot. One submission per hour. SEND publishes immediately for one
-        hour.
+        marks a dot. One submission per hour. SEND publishes immediately for{" "}
+        {simplified ? "24 hours" : "one hour"}.
       </p>
       {editor.strokes === null && (
         <p className="doodle-help">

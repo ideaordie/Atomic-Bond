@@ -9,6 +9,16 @@ test("Global Doodle prototype is unavailable in production builds", async ({
   expect(html).not.toContain("MAKE YOUR MARK");
   const candidate = await request.get("/review/doodle/production");
   expect(await candidate.text()).toContain("This page could not be found");
+  expect(await (await request.get("/review/doodle/network")).text()).toContain(
+    "This page could not be found",
+  );
+  expect(
+    (
+      await request.post("/api/review/doodle-network", {
+        data: { actor: 1, action: "read" },
+      })
+    ).status(),
+  ).toBe(404);
   const api = await request.post("/api/review/doodle", {
     data: { actor: 0, action: "queue" },
   });
