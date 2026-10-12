@@ -13,7 +13,8 @@
 - Revised ordinary submission to publish immediately after validation. Added active/reported review filters, private paginated moderation decisions, posting restrictions and global submission pause/resume. Hall promotion remains explicitly administrator-approved with a minimum of five appreciations.
 - Read-only hosted audit confirmed pg_cron is available but not installed. Added a review-only five-minute cleanup schedule proposal; no hosted job or extension was installed.
 - Added default-off production owner-session routes and official Vercel Firewall ingress protection alongside database throttling. Intake starts paused; seven-day candidate review and retention cleanup are documented with rollout/recovery procedures.
-- Applied the approved additive migration with database public access closed and intake paused; all existing-data comparison hashes matched. Installed the isolated five-minute cleanup job. Public activation and controlled acceptance remain pending; this is not a completed public release.
+- Applied the approved additive migration with database public access initially closed and intake paused; all existing-data comparison hashes matched. Installed and verified the isolated five-minute cleanup job.
+- October 12: the owner explicitly approved immediate public activation before completing controlled live acceptance. Opened access for verified ACTIVE owners and resumed submissions without changing limits or administrator authorization. Remaining live acceptance is documented; v0.12.1-rc.1 is not declared fully accepted.
 
 ## Unreleased — Task #12.0 Global Doodle local prototype
 

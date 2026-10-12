@@ -1,11 +1,39 @@
 # Global Doodle — controlled production readiness
 
-Status: CONTROLLED ROLLOUT, 2026-10-12. The approved migration and cleanup job
-are installed; application deployment and live acceptance remain pending.
+Status: PUBLIC ACTIVATION APPROVED, 2026-10-12. The migration and cleanup job
+are installed. The product owner explicitly requested public deployment before
+the remaining controlled live acceptance checks. Those checks are not represented
+as passed; the implementation remains v0.12.1-rc.1.
 Master Spec v0.4 is approved and frozen. Frozen v0.3 is unchanged.
 The exact reviewed delta is `../proposals/MASTER_SPEC_v0.4_GLOBAL_DOODLE.md`.
 
 ## Migration preview
+
+### Public activation record — October 12, 2026
+
+Controlled commit `13066d2` deployed Ready on the custom domain. Real Atom #4
+owner access and feed refresh succeeded; administrator access was denied as expected.
+The owner then requested: "Just deploy everything publicly now."
+The guarded operator transaction in `supabase/candidates/global_doodle_public_activation.sql`
+opened database public access and resumed submissions after verifying the closed/paused
+starting state, a recent successful cleanup run, and the existing verified ACTIVE
+Atom #1 administrator. Hall threshold remains five; no permissions or account data changed.
+Production application flags are `GLOBAL_DOODLE_ENABLED=true` and
+`GLOBAL_DOODLE_CONTROLLED_ACCESS=false`. Expiring rollout memberships grant no
+additional privileges when public access is enabled and are left to normal cleanup.
+
+Remaining live acceptance: administrator UI pause/resume, actual submission and
+one-hour expiry/cleanup, reporting/removal/restriction, and Atom #4 lifecycle erasure.
+Hall qualification/replacement is covered by approved isolated PostgreSQL evidence,
+not manufactured production votes. Moderator coverage has not been independently
+verified. Public activation does not establish full Task #12.1 acceptance.
+
+Emergency response: Atom #1 uses `/admin/doodle` to pause submissions, remove
+drawings, or restrict authors. A trusted operator can set `submissions_paused=true`
+under `private.doodle_lock()` if UI access fails. To close all Doodle access, set
+database `public_access=false`, expire controlled memberships, and turn both
+application flags off before redeploying. Keep the five-minute cleanup running.
+No Tuesday growth schedule or other product feature is changed.
 
 `supabase/migrations/202610120001_global_doodle.sql` is one additive transaction.
 Do not run a general hosted `db push` before approval: this migration is now staged
