@@ -1,3 +1,4 @@
+import { ApplicationHeader } from "../../components/navigation/ApplicationHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./about.css";
@@ -11,12 +12,7 @@ export const metadata: Metadata = {
 export default function About() {
   return (
     <main className="about-page">
-      <nav aria-label="Main navigation" className="about-nav">
-        <Link href="/" className="wordmark">
-          ATOMIC BOND
-        </Link>
-        <span aria-current="page">ABOUT</span>
-      </nav>
+      <ApplicationHeader />
       <header className="about-intro">
         <p className="eyebrow">ATOMIC BOND</p>
         <h1>See how connected we already are.</h1>

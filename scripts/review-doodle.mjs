@@ -10,6 +10,12 @@ const next = process.env.DOODLE_REVIEW_NEXT === "true";
 const port = next ? 3143 : 3141;
 let fixture = await createDoodleFixture(undefined, next);
 await seedDoodleReview(fixture, next ? 1440 : 60);
+if (process.env.DOODLE_NETWORK_REVIEW === "true")
+  for (let i = 1; i < 12; i++)
+    await fixture.exec(
+      "insert into public.bonds(atom_a_id,atom_b_id,status,confirmed_at) values(least($1::uuid,$2::uuid),greatest($1::uuid,$2::uuid),'CONFIRMED',now())",
+      [fixture.people[i].atom, fixture.people[i + 1].atom],
+    );
 if (next) {
   for (let round = 0; round < 5; round++) {
     await fixture.advance(60);
@@ -66,6 +72,7 @@ const server = createServer((req, res) => {
         let data;
         const names = {
           read: "read_doodles",
+          readNetwork: "read_network_doodles",
           submit: "submit_doodle",
           publish: "publish_doodle",
           vote: "appreciate_doodle",
@@ -96,6 +103,12 @@ const server = createServer((req, res) => {
           await fixture.db.close();
           fixture = await createDoodleFixture(undefined, next);
           await seedDoodleReview(fixture, next ? 1440 : 60);
+          if (process.env.DOODLE_NETWORK_REVIEW === "true")
+            for (let i = 1; i < 12; i++)
+              await fixture.exec(
+                "insert into public.bonds(atom_a_id,atom_b_id,status,confirmed_at) values(least($1::uuid,$2::uuid),greatest($1::uuid,$2::uuid),'CONFIRMED',now())",
+                [fixture.people[i].atom, fixture.people[i + 1].atom],
+              );
           data = true;
         } else if (action === "reactivate") {
           if (actor < 0) throw new Error("Synthetic owner required");

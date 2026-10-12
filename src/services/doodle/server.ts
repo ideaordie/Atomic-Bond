@@ -31,3 +31,13 @@ export async function executeDoodle(body: unknown) {
     throw new Error("Doodle unavailable");
   return data as { data?: unknown; error?: string; retryAfterSeconds?: number };
 }
+
+// Public-rollout navigation avoids a feed request. Controlled cohorts reuse the
+// existing database gate; destinations always recheck ACTIVE ownership/access.
+export async function doodleNavigationAccess() {
+  if (process.env.GLOBAL_DOODLE_ENABLED === "true") return true;
+  return (
+    process.env.GLOBAL_DOODLE_CONTROLLED_ACCESS === "true" &&
+    (await doodlePageAccess())
+  );
+}

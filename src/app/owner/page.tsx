@@ -1,3 +1,4 @@
+import { ApplicationHeader } from "../../components/navigation/ApplicationHeader";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { ownerContext, ownedPublicId } from "../../services/auth/server";
@@ -16,6 +17,7 @@ export default async function OwnerPage() {
   }
   return (
     <main>
+      <ApplicationHeader />
       <OwnerSettings
         publicId={atom!.publicId!}
         alias={atom!.alias}

@@ -23,7 +23,7 @@ test("Global Doodle prototype is unavailable in production builds", async ({
     data: { actor: 0, action: "queue" },
   });
   expect(api.status()).toBe(404);
-  for (const path of ["/doodle", "/admin/doodle"]) {
+  for (const path of ["/doodle", "/global-doodle", "/admin/doodle"]) {
     expect(await (await request.get(path)).text()).toContain(
       "This page could not be found",
     );

@@ -5,13 +5,14 @@ export const dynamic = "force-dynamic";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ draw?: string }>;
+  searchParams: Promise<{ draw?: string; feed?: string }>;
 }) {
   if (process.env.NODE_ENV !== "development") notFound();
   return (
     <DoodleNetworkReview
       graph={generateMockGraph()}
       draw={Boolean((await searchParams).draw)}
+      feed={Boolean((await searchParams).feed)}
     />
   );
 }

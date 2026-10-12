@@ -15,6 +15,7 @@ export default defineConfig({
       ...s.env,
       GLOBAL_DOODLE_ENABLED: "true",
       DOODLE_REVIEW_NEXT: "true",
+      DOODLE_NETWORK_REVIEW: "true",
     },
   })),
 });

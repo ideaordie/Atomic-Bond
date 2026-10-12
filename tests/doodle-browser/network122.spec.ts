@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 for (const theme of ["light", "dark"])
   test(`Task12.2 bounded feed ${theme}`, async ({ page }, info) => {
-    await page.goto("/review/doodle/network");
+    await page.goto("/review/doodle/network?feed=1");
     if (theme === "dark")
       await page.getByRole("button", { name: "SWITCH THEME" }).click();
     const feed = page.getByRole("complementary", { name: "Global Doodle" });
@@ -10,7 +10,7 @@ for (const theme of ["light", "dark"])
     await expect(feed.locator("article")).toHaveCount(20);
     await expect(
       page.getByRole("button", { name: "CREATE BOND", exact: true }),
-    ).toBeAttached();
+    ).toHaveCount(0);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
@@ -58,7 +58,11 @@ test("Task12.2 editor publishes once and exposes return/cooldown", async ({
   await page.getByRole("link", { name: "RETURN TO MY ATOM" }).last().click();
   await expect(
     page.getByRole("complementary", { name: "Global Doodle" }),
-  ).toBeAttached();
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "GLOBAL DOODLE", exact: true }).click();
+  await expect(
+    page.getByRole("complementary", { name: "Global Doodle" }),
+  ).toBeVisible();
 });
 test("Task12.2 failure preserves draft, retries same payload, then cooldown releases new editor", async ({
   page,
@@ -182,7 +186,7 @@ test("Task12.2 refresh preserves reading position, replaces removed content and 
       },
     });
   });
-  await page.goto("/review/doodle/network");
+  await page.goto("/review/doodle/network?feed=1");
   const feed = page.getByRole("complementary", { name: "Global Doodle" });
   await feed.scrollIntoViewIfNeeded();
   await expect(feed.locator("article")).toHaveCount(20);

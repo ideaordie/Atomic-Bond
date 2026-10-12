@@ -223,6 +223,6 @@ distinguishes automated verification from the physical-device evidence record.
 
 See [Auth and email architecture](docs/architecture/AUTH_EMAIL_v0.1.md) for signup, cookie sessions, invitation continuation, the signed Supabase email hook, Resend delivery and required hosted configuration. Run `pnpm test:e2e:auth` for the isolated Auth browser tests; `pnpm check` includes them. Real ownership requires Supabase mode and the new `202609270001_owner_access.sql` migration. The existing mock flows remain available. Live email acceptance must be verified separately from deterministic tests.
 
-## Global Doodle candidate (not published)
+## Global Doodle
 
-Task 12.1 is in controlled rollout as v0.12.1-rc.1, not publicly activated. See [rollout and recovery](docs/architecture/GLOBAL_DOODLE_ROLLOUT_v0.1.md) and the [approved v0.4 delta](docs/proposals/MASTER_SPEC_v0.4_GLOBAL_DOODLE.md). The approved migration and cleanup schedule are installed. Production routes default off through `GLOBAL_DOODLE_ENABLED`; temporary `GLOBAL_DOODLE_CONTROLLED_ACCESS` still requires expiring database membership. Database public access remains closed until separate activation approval. Frozen v0.3 remains unchanged.
+Task #12.3 release v0.12.3 separates the Global Doodle feed from the Living Atom and adds owner-authorized WORLD / MY NETWORK navigation. See [architecture and rollout](docs/architecture/GLOBAL_DOODLE_NAVIGATION_v0.1.md) and the [approved Section 48A amendment](docs/proposals/TASK_12_3_SPEC_AMENDMENT.md). Frozen v0.3 remains unchanged. The earlier [controlled-rollout record](docs/architecture/GLOBAL_DOODLE_ROLLOUT_v0.1.md) is retained for history.

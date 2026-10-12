@@ -85,10 +85,12 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await returnLink.press("Enter");
   await expect(receiver).toHaveURL("/explore");
   await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);
-  const mainNav = receiver.getByRole("navigation", { name: "Main navigation" });
+  const mainNav = receiver.getByRole("navigation", {
+    name: "Application navigation",
+  });
   await expect(
     mainNav.getByRole("link", { name: "MY ATOM", exact: true }),
-  ).toHaveCount(0);
+  ).toHaveAttribute("aria-current", "page");
   await expect(mainNav.getByRole("link", { name: "Settings" })).toBeVisible();
   expect(
     await receiver.evaluate(

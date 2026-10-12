@@ -1,5 +1,6 @@
 export const DOODLE_ACTIONS = {
   read: "read_doodles",
+  readNetwork: "read_network_doodles",
   replay: "doodle_replay",
   submit: "submit_doodle",
   publish: "publish_doodle",

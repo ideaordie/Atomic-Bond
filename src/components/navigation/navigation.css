@@ -1,0 +1,71 @@
+.application-navigation {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  scrollbar-width: thin;
+  touch-action: pan-x pan-y;
+  padding: 4px;
+}
+.application-navigation a {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control, 8px);
+}
+.application-navigation a[aria-current="page"] {
+  border-color: var(--text);
+  background: var(--surface-raised, var(--surface));
+}
+.application-navigation a:hover {
+  border-color: var(--border);
+}
+.application-navigation a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+.shared-application-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.shared-application-header .application-navigation {
+  margin-left: auto;
+}
+.shared-application-header > a {
+  flex-shrink: 0;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+.explore-nav > .application-navigation {
+  flex: 1;
+  max-width: max-content;
+}
+@media (max-width: 600px) {
+  .shared-application-header {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .shared-application-header > a {
+    max-width: 86px;
+  }
+  .application-navigation a {
+    padding: 0 10px;
+  }
+}

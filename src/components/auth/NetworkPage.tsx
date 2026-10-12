@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { DoodleFeedPanel } from "../doodle/DoodleFeedPanel";
-import { doodlePageAccess } from "../../services/doodle/server";
+import { ApplicationNavigation } from "../navigation/ApplicationNavigation";
+import { doodleNavigationAccess } from "../../services/doodle/server";
 import { connection } from "next/server";
 import { exploreSource } from "../../services/participation/explore-source";
 import { LivingAtom } from "../../living-atom/LivingAtom";
@@ -44,10 +44,10 @@ export async function NetworkPage({
   const ownView =
     !publicView && Boolean(ownerId && (!requested || requested === ownerId));
   const doodle =
-    ownView && owner?.atom?.status === "ACTIVE" && (await doodlePageAccess());
+    owner?.atom?.status === "ACTIVE" && (await doodleNavigationAccess());
   return (
     <main className="explore-page">
-      <nav className="explore-nav" aria-label="Main navigation">
+      <header className="explore-nav" aria-label="Main navigation">
         <div>
           <Link href="/" className="wordmark">
             ATOMIC BOND
@@ -61,9 +61,11 @@ export async function NetworkPage({
           )}
         </div>
         <span>See how connected we already are.</span>
+        <ApplicationNavigation
+          owner={Boolean(ownerId)}
+          doodle={Boolean(doodle)}
+        />
         <div className="auth-entry">
-          <Link href="/about">ABOUT</Link>
-          {ownerId && <Link href="/owner">Settings</Link>}
           {source.mode === "supabase" && !ownerId && (
             <Link href="/auth">CREATE MY ATOM</Link>
           )}
@@ -71,22 +73,21 @@ export async function NetworkPage({
             <Link href="/auth?mode=access">ACCESS MY ATOM</Link>
           )}
         </div>
-      </nav>
+      </header>
       {source.mode === "mock" ? (
         <ParticipationExperience
           graph={source.graph}
           originalAtomId={source.centerId}
         />
       ) : ownView && ownerId && owner ? (
-        <div className={doodle ? "owner-doodle-layout" : undefined}>
+        <>
           <OwnerExperience
             activeOwner={owner.atom?.status === "ACTIVE"}
             graph={source.graph}
             publicId={ownerId}
             initialPulses={await owner.services.pulses.visible()}
           />
-          {doodle && <DoodleFeedPanel />}
-        </div>
+        </>
       ) : source.centerId && source.graph.nodes.length ? (
         <LivingAtom
           graph={source.graph}

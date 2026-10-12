@@ -8,6 +8,10 @@ test("production owner-session route publishes, reports and removes without fixt
   await expect(
     page.getByRole("heading", { name: "ACTIVE ATOM ACCESS REQUIRED" }),
   ).toBeVisible();
+  await page.goto("/global-doodle");
+  await expect(
+    page.getByRole("heading", { name: "ACTIVE ATOM ACCESS REQUIRED" }),
+  ).toBeVisible();
   const email = `doodle-${info.project.name}@example.invalid`;
   await page.goto("/auth?mode=register");
   await page.getByLabel("Email").fill(email);
@@ -29,6 +33,23 @@ test("production owner-session route publishes, reports and removes without fixt
     page.getByRole("heading", { name: "ACCESS DENIED" }),
   ).toBeVisible();
   await page.goto("/explore");
+  await page
+    .getByRole("navigation", { name: "Application navigation" })
+    .getByRole("link", { name: "SETTINGS", exact: true })
+    .focus();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: `artifacts/task123-owner-main-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await expect(
+    page.getByRole("complementary", { name: "Global Doodle" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "GLOBAL DOODLE", exact: true }).click();
   await page.getByRole("link", { name: "CREATE DOODLE" }).click();
   await expect(page.getByText("LOCAL TEST CONTROLS")).toHaveCount(0);
   await expect(page.getByText("LOCAL SYNTHETIC", { exact: false })).toHaveCount(
@@ -71,6 +92,10 @@ test("production owner-session route publishes, reports and removes without fixt
     page.getByRole("heading", { name: "WELCOME BACK" }),
   ).toBeVisible();
   await page.goto("/explore");
+  await expect(
+    page.getByRole("complementary", { name: "Global Doodle" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "GLOBAL DOODLE", exact: true }).click();
   const feed = page.getByRole("complementary", { name: "Global Doodle" });
   await feed.scrollIntoViewIfNeeded();
   await feed.getByRole("button", { name: /APPRECIATE/ }).click();
@@ -99,6 +124,10 @@ test("production owner-session route publishes, reports and removes without fixt
   ).toBeVisible();
   await page.getByRole("button", { name: "RESUME SUBMISSIONS" }).click();
   await page.goto("/explore");
+  await expect(
+    page.getByRole("complementary", { name: "Global Doodle" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "GLOBAL DOODLE", exact: true }).click();
   await page
     .getByRole("complementary", { name: "Global Doodle" })
     .scrollIntoViewIfNeeded();

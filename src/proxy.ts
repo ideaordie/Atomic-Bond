@@ -46,6 +46,8 @@ export const config = {
     "/account/:path*",
     "/return",
     "/doodle",
+    "/global-doodle",
+    "/about",
     "/admin/doodle",
   ],
 };

@@ -1,6 +1,7 @@
 "use client";
 import { DoodleFeedPanel } from "../../components/doodle/DoodleFeedPanel";
 import { DoodlePublishing } from "../../components/doodle/DoodlePublishing";
+import { ApplicationNavigation } from "../../components/navigation/ApplicationNavigation";
 import { ParticipationExperience } from "../../components/participation/ParticipationExperience";
 import {
   selectAppearance,
@@ -24,9 +25,11 @@ const request: DoodleRequest = async (action, args = [], signal) => {
 export function DoodleNetworkReview({
   graph,
   draw,
+  feed,
 }: {
   graph: GraphData;
   draw: boolean;
+  feed: boolean;
 }) {
   const theme = useAppearance();
   return (
@@ -38,6 +41,7 @@ export function DoodleNetworkReview({
           display: "flex",
           gap: 12,
           padding: 8,
+          flexWrap: "wrap",
         }}
       >
         <span>LOCAL SYNTHETIC REVIEW · NO PRODUCTION DATA</span>
@@ -55,23 +59,33 @@ export function DoodleNetworkReview({
           ADVANCE 60 MINUTES
         </button>
       </div>
+      <ApplicationNavigation
+        owner
+        doodle
+        current={feed || draw ? "/global-doodle" : "/explore"}
+        hrefs={{
+          "/explore": "/review/doodle/network",
+          "/global-doodle": "/review/doodle/network?feed=1",
+        }}
+      />
       {draw ? (
         <DoodlePublishing
           request={request}
           returnHref="/review/doodle/network"
         />
+      ) : feed ? (
+        <main className="standalone-doodle">
+          <DoodleFeedPanel
+            request={request}
+            createHref="/review/doodle/network?draw=1"
+          />
+        </main>
       ) : (
         <main className="explore-page">
-          <div className="owner-doodle-layout">
-            <ParticipationExperience
-              graph={graph}
-              originalAtomId={graph.nodes[0]!.id}
-            />
-            <DoodleFeedPanel
-              request={request}
-              createHref="/review/doodle/network?draw=1"
-            />
-          </div>
+          <ParticipationExperience
+            graph={graph}
+            originalAtomId={graph.nodes[0]!.id}
+          />
         </main>
       )}
     </>

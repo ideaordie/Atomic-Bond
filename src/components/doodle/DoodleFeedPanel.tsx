@@ -21,9 +21,45 @@ export function DoodleFeedPanel({
   request?: DoodleRequest;
   createHref?: string;
 }) {
+  const [{ scope, focusScope }, setSelection] = useState<{
+    scope: "world" | "network";
+    focusScope: boolean;
+  }>({ scope: "world", focusScope: false });
+  return (
+    <DoodleFeedWindow
+      key={scope}
+      scope={scope}
+      setScope={(scope) => setSelection({ scope, focusScope: true })}
+      focusScope={focusScope}
+      request={request}
+      createHref={createHref}
+    />
+  );
+}
+function DoodleFeedWindow({
+  scope,
+  setScope,
+  request,
+  createHref,
+  focusScope,
+}: {
+  scope: "world" | "network";
+  setScope: (scope: "world" | "network") => void;
+  request: DoodleRequest;
+  createHref: string;
+  focusScope: boolean;
+}) {
   const root = useRef<HTMLElement>(null),
     viewport = useRef<HTMLDivElement>(null),
     sentinel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (focusScope)
+      root.current
+        ?.querySelector<HTMLButtonElement>(
+          '[data-feed-scope][aria-pressed="true"]',
+        )
+        ?.focus({ preventScroll: true });
+  }, [focusScope]);
   const rows = useRef<DoodleItem[]>([]),
     cursor = useRef<[string, string] | null>(null),
     controller = useRef<AbortController | null>(null),
@@ -86,13 +122,14 @@ export function DoodleFeedPanel({
             top: first.getBoundingClientRect().top,
           };
         const data = await request<DoodleFeed>(
-          "read",
+          scope === "network" ? "readNetwork" : "read",
           [
             ...(older ? cursor.current! : [null, null]),
             rows.current.map((x) => x.id),
           ],
           controller.current.signal,
         );
+        if (controller.current.signal.aborted || stopped.current) return;
         anchor.current = {
           server: Date.parse(data.serverTime),
           local: performance.now(),
@@ -154,7 +191,7 @@ export function DoodleFeedPanel({
         setBusy(false);
       }
     },
-    [request, replace],
+    [request, replace, scope],
   );
   useEffect(() => {
     stopped.current = false;
@@ -241,18 +278,42 @@ export function DoodleFeedPanel({
   return (
     <aside ref={root} className="global-doodle-feed" aria-label="Global Doodle">
       <header>
-        <h2>GLOBAL DOODLE</h2>
+        <h1>GLOBAL DOODLE</h1>
         <a className="doodle-create" href={createHref}>
           CREATE DOODLE
         </a>
       </header>
-      <div className="doodle-feed-tabs">
-        <button aria-pressed={!showHall} onClick={() => setShowHall(false)}>
-          LIVE
-        </button>
-        <button aria-pressed={showHall} onClick={() => setShowHall(true)}>
-          HALL OF FAME
-        </button>
+      <div className="doodle-feed-controls">
+        <div className="doodle-feed-tabs">
+          <button aria-pressed={!showHall} onClick={() => setShowHall(false)}>
+            LIVE
+          </button>
+          <button aria-pressed={showHall} onClick={() => setShowHall(true)}>
+            HALL OF FAME
+          </button>
+        </div>
+        {!showHall && (
+          <div
+            className="doodle-feed-tabs"
+            role="group"
+            aria-label="Live feed scope"
+          >
+            <button
+              data-feed-scope
+              aria-pressed={scope === "world"}
+              onClick={() => setScope("world")}
+            >
+              WORLD
+            </button>
+            <button
+              data-feed-scope
+              aria-pressed={scope === "network"}
+              onClick={() => setScope("network")}
+            >
+              MY NETWORK
+            </button>
+          </div>
+        )}
       </div>
       {!!newItems.length && !showHall && (
         <button
@@ -334,7 +395,13 @@ export function DoodleFeedPanel({
             </div>
           </article>
         ))}
-        {!items.length && !showHall && !busy && <p>No live drawings.</p>}
+        {!items.length && !showHall && !busy && (
+          <p>
+            {scope === "network"
+              ? "NO DOODLES FROM YOUR NETWORK YET"
+              : "No live drawings."}
+          </p>
+        )}
         {!hall.length && showHall && <p>No Hall of Fame entries.</p>}
         {!showHall && (
           <div ref={sentinel}>

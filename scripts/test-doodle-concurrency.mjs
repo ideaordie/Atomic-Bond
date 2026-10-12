@@ -171,14 +171,27 @@ try {
     [f.people[21].atom],
   );
   const reads = await Promise.allSettled(
-    Array.from({ length: 8 }, () => f.rpc(21, "read_doodles")),
+    Array.from({ length: 8 }, () =>
+      f.rpc(
+        21,
+        process.env.DOODLE_NETWORK_REVIEW === "true"
+          ? "read_network_doodles"
+          : "read_doodles",
+      ),
+    ),
   );
   assert.equal(reads.filter((r) => r.status === "fulfilled").length, 1);
+  if (process.env.DOODLE_NETWORK_REVIEW === "true")
+    assert.equal((await f.rpc(1, "read_network_doodles")).hall.length, 10);
   await admin.end();
   admin = null;
   stage = "restart";
   await postgres.stop();
   started = false;
+  // embedded-postgres uses taskkill on Windows and resolves on the parent exit;
+  // allow its child processes to release shared-memory handles before restart.
+  if (process.platform === "win32")
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   await postgres.start();
   started = true;
   admin = postgres.getPgClient();

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.12.3 — Standalone Global Doodle & navigation
+
+- Separate Global Doodle from the Living Atom into `/global-doodle`; retain `/doodle` as the editor.
+- Centralize scrollable MY ATOM / GLOBAL DOODLE / ABOUT / SETTINGS navigation.
+- Add WORLD / owner-authorized MY NETWORK live scopes with reset pagination; Hall of Fame remains global.
+- Apply the approved private network-feed function migration and surgical Section 48A amendment; frozen v0.3 remains unchanged.
+- Keep LIVE / HALL OF FAME / WORLD / MY NETWORK on one row at mobile, tablet and desktop sizes.
+
 ## v0.12.2 — Global Doodle 24-hour feed
 
 - Prepared 24-hour future Doodle publication with multiple live drawings and the unchanged hourly per-Atom cooldown; existing deadlines remain intact.

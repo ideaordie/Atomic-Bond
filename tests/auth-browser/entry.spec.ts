@@ -62,7 +62,10 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
     fullPage: true,
   });
   await aboutLink.click();
-  await expect(page.getByRole("link", { name: "Settings" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Settings" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "ABOUT", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
   await page.getByRole("link", { name: /RETURN TO ATOMIC BOND/ }).click();
   await expect(page.getByTestId("selected-atom")).toHaveText(`#${number}`);
   await expect(

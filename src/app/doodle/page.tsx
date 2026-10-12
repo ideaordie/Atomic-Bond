@@ -1,3 +1,4 @@
+import { ApplicationHeader } from "../../components/navigation/ApplicationHeader";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { doodlePageAccess } from "../../services/doodle/server";
@@ -21,5 +22,10 @@ export default async function DoodlePage() {
     );
   }
   if (!(await doodlePageAccess())) notFound();
-  return <DoodlePublishing />;
+  return (
+    <>
+      <ApplicationHeader />
+      <DoodlePublishing />
+    </>
+  );
 }

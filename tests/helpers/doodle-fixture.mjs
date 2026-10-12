@@ -13,9 +13,7 @@ export async function createDoodleFixture(suppliedDb, next = false) {
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema public,auth to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;`);
   for (const f of (await readdir("supabase/migrations"))
-    .filter(
-      (f) => f.endsWith(".sql") && (next || !f.startsWith("202610120002")),
-    )
+    .filter((f) => f.endsWith(".sql") && (next || !/^20261012000[23]/.test(f)))
     .sort())
     await db.exec(await readFile("supabase/migrations/" + f, "utf8"));
   await db.exec(
