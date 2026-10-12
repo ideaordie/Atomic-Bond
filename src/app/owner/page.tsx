@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { ownerContext, ownedPublicId } from "../../services/auth/server";
 import { OwnerSettings } from "../../components/auth/OwnerSettings";
+import { doodlePageAccess } from "../../services/doodle/server";
 export default async function OwnerPage() {
   await connection();
   const context = await ownerContext();
@@ -22,6 +23,11 @@ export default async function OwnerPage() {
         xHandle={atom!.xHandle}
         preferences={await services.preferences.get()}
       />
+      {(await doodlePageAccess()) && atom?.status === "ACTIVE" && (
+        <p className="signal-admin">
+          <a href="/doodle">GLOBAL DOODLE →</a>
+        </p>
+      )}
     </main>
   );
 }

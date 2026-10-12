@@ -1,0 +1,235 @@
+.doodle-page {
+  max-width: 1100px;
+  padding: 32px 24px 24px;
+  gap: 28px;
+}
+.doodle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.doodle-page button {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: var(--helper-size);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  min-height: 44px;
+}
+.doodle-page button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.doodle-page button[aria-pressed="true"],
+.doodle-page .doodle-primary {
+  background: var(--text);
+  color: var(--surface);
+  border-color: var(--text);
+}
+.doodle-appearance {
+  display: flex;
+  gap: 6px;
+}
+.doodle-intro h1 {
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  letter-spacing: -0.03em;
+  margin: 10px 0 12px;
+}
+.doodle-intro p {
+  margin: 6px 0;
+  line-height: 1.55;
+}
+.doodle-kicker,
+.doodle-panel-heading,
+.doodle-time h2 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.doodle-muted,
+.doodle-help {
+  color: var(--muted);
+}
+.doodle-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.doodle-page section {
+  margin: 0;
+  padding: 20px;
+}
+.doodle-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  min-width: 0;
+}
+.doodle-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.doodle-panel-heading h2 {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+  letter-spacing: 0.07em;
+}
+.doodle-panel-heading span {
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 10px;
+}
+.doodle-tools {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.doodle-page .doodle-tools button {
+  padding: 10px 3px;
+}
+.doodle-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+}
+.doodle-editor {
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+}
+.doodle-count,
+.doodle-attribution,
+.doodle-lifetime {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 12px 0;
+}
+.doodle-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.doodle-help {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 14px 0 0;
+}
+.doodle-playback {
+  position: relative;
+}
+.doodle-playback > button {
+  display: block;
+  margin: 10px 0 0 auto;
+}
+.doodle-feed-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+.doodle-browse {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+}
+.doodle-browse button {
+  min-width: 44px;
+}
+.doodle-page .doodle-time {
+  padding: 4px 2px;
+}
+.doodle-time h2 {
+  line-height: 1.6;
+  margin: 0;
+}
+.doodle-time p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.doodle-time-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.doodle-page .doodle-time-actions button {
+  font-size: 11px;
+  padding: 10px;
+}
+.doodle-confirm {
+  padding: 14px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-input);
+}
+.doodle-confirm p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+.doodle-confirm > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.doodle-empty {
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.doodle-message {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  min-height: 2em;
+}
+.doodle-page footer {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 650px) {
+  .doodle-page {
+    padding: 22px 16px;
+    gap: 24px;
+  }
+  .doodle-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .doodle-page section {
+    padding: 16px;
+  }
+  .doodle-header .wordmark {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+  .doodle-appearance button {
+    font-size: 10px;
+    padding: 9px 11px;
+  }
+  .doodle-intro h1 {
+    font-size: 30px;
+  }
+}

@@ -24,6 +24,8 @@ describe("deployment publication boundaries", () => {
       "GROWTH_TEST_ATOM=",
       "GROWTH_BATCH_SIZE=",
       "GROWTH_SEND_CAP=",
+      "GLOBAL_DOODLE_ENABLED=",
+      "GLOBAL_DOODLE_CONTROLLED_ACCESS=",
     ]);
   });
 

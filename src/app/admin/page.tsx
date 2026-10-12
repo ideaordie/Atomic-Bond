@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { signalHistory } from "../../services/signals/actions";
+import { doodlePageAccess } from "../../services/doodle/server";
 import {
   AdminDenied,
   AdminNavigation,
@@ -21,6 +22,16 @@ export default async function AdminPage() {
       <h1>ADMIN</h1>
       <p>Administrative tools and network operations.</p>
       <div className="admin-cards">
+        {(await doodlePageAccess()) && (
+          <article className="admin-card">
+            <h2>GLOBAL DOODLE</h2>
+            <p>
+              Review reports and artwork, manage Hall promotion and pause
+              submissions.
+            </p>
+            <Link href="/admin/doodle">MODERATE DOODLES →</Link>
+          </article>
+        )}
         <article className="admin-card">
           <h2>NETWORK ANALYTICS</h2>
           <p>

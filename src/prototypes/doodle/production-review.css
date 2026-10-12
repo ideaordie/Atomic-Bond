@@ -1,0 +1,120 @@
+.doodle-production label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--helper-size);
+  margin: 12px 0;
+}
+.doodle-production select,
+.doodle-production input[type="text"],
+.doodle-production input[type="number"] {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+}
+.doodle-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.doodle-hall-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.doodle-live-grid {
+  display: grid;
+  gap: 16px;
+}
+.doodle-card {
+  padding: 16px;
+}
+.doodle-card h3 {
+  font-size: 12px;
+}
+.doodle-card .doodle-panel-heading {
+  flex-wrap: wrap;
+}
+.doodle-card details {
+  margin-top: 12px;
+  font-size: 12px;
+}
+.doodle-card summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.doodle-report-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.doodle-production section[aria-label="Moderation history"] {
+  margin-top: 24px;
+  overflow-wrap: anywhere;
+}
+.doodle-production section[aria-label="Moderation history"] button {
+  margin: 4px 8px 4px 0;
+}
+.doodle-moderation-list {
+  display: grid;
+  gap: 12px;
+}
+.doodle-moderation-list article {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding: 12px 0;
+}
+.doodle-moderation-list canvas {
+  width: 96px;
+  flex: none;
+}
+.doodle-production .doodle-review-sequence {
+  max-width: 440px;
+}
+.doodle-production section[aria-label="Drawing replay"] {
+  max-width: 480px;
+}
+.doodle-production .doodle-review-check {
+  flex-direction: row;
+  align-items: center;
+  min-height: 44px;
+}
+.doodle-review-check input {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.doodle-review-sequence input {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--text);
+}
+@media (max-width: 800px) {
+  .doodle-hall-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .doodle-hall-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .doodle-tabs button {
+    flex: 1;
+    padding: 10px 6px;
+  }
+  .doodle-moderation-list article {
+    align-items: flex-start;
+  }
+  .doodle-moderation-list canvas {
+    width: 72px;
+  }
+}

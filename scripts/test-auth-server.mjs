@@ -15,6 +15,9 @@ for (const f of (await readdir("supabase/migrations"))
   .filter((f) => f.endsWith(".sql"))
   .sort())
   await db.exec(await readFile(`supabase/migrations/${f}`, "utf8"));
+await db.exec(
+  "update private.doodle_settings set submissions_paused=false, public_access=true",
+); // Isolated test intake only.
 const users = new Map(),
   tokens = new Map(),
   links = new Map(),
@@ -104,6 +107,7 @@ async function session(user) {
   };
 }
 const methods = {
+  doodle_request: ["p_operation", "p_args"],
   deactivate_my_account: [],
   reactivate_my_account: [],
   account_deletion_status: [],
@@ -279,7 +283,9 @@ const server = createServer(async (req, res) => {
         200,
         await rpc(
           name,
-          methods[name].map((k) => body[k] ?? null),
+          methods[name].map((k) =>
+            k === "p_args" ? JSON.stringify(body[k] ?? []) : (body[k] ?? null),
+          ),
           current?.id,
           admin,
         ),

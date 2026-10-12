@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.12.1-rc.1 — Global Doodle controlled rollout candidate
+
+- Approved Master Spec v0.4 with only the reviewed Global Doodle sections and version metadata; frozen v0.3 remains unchanged.
+- Added approved expiring, operator-managed controlled membership for staged acceptance, enforced by the database without granting administrator access or bypassing emergency pause. Public database access defaults closed.
+- Configured Doodle-only Vercel SDK and endpoint rate limits at 120/IP/minute; verified allowed requests followed by 429 responses. Existing public routes remain healthy.
+
+- Added a separate development-only database-backed review for immediate publication, reactive moderation, appreciation, expiry and a maximum-ten Hall of Fame. The approved editor remains unchanged.
+- Prepared the unapplied version-controlled Supabase migration, with session-derived ownership, private tables, cooldowns, immutable payloads/scores, atomic Hall replacement, bounded cleanup, reports and administrator controls.
+- Added the approved removal of artwork on deactivation/deletion, isolated database/concurrency tests, responsive review coverage and an exact proposed Master Spec v0.4 delta. Frozen v0.3 remains unchanged.
+- Replaced the fixed moderation queue with stable 25-record cursor pages. Added a single session-authorized, rate-accounted Doodle RPC boundary and failed-attempt accounting without any global daily admission quota.
+- Revised ordinary submission to publish immediately after validation. Added active/reported review filters, private paginated moderation decisions, posting restrictions and global submission pause/resume. Hall promotion remains explicitly administrator-approved with a minimum of five appreciations.
+- Read-only hosted audit confirmed pg_cron is available but not installed. Added a review-only five-minute cleanup schedule proposal; no hosted job or extension was installed.
+- Added default-off production owner-session routes and official Vercel Firewall ingress protection alongside database throttling. Intake starts paused; seven-day candidate review and retention cleanup are documented with rollout/recovery procedures.
+- Applied the approved additive migration with database public access closed and intake paused; all existing-data comparison hashes matched. Installed the isolated five-minute cleanup job. Public activation and controlled acceptance remain pending; this is not a completed public release.
+
+## Unreleased — Task #12.0 Global Doodle local prototype
+
+- Added a development-only `/review/doodle` drawing and simulated one-hour feed review, isolated from production services and navigation.
+- Includes a 64 × 64 packed dot bitmap, interpolated pointer strokes, draw/erase, stroke undo, confirmed clear, preview, bounded deterministic replay and local-only send.
+- Uses existing monochrome Light/Dark tokens, keyboard controls and reduced-motion behavior. Production publication, moderation and storage remain proposals only; no schema, credentials, production feature or Master Spec changes.
+
 ## v0.11.5 — Geographic Network Map
 
 - Corrected geographic placement: one counted marker per canonical anchor, summarized inter-anchor Bonds and expandable member inspection; removed map separation rings without changing fixtures or topology.

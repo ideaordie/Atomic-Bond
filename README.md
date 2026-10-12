@@ -1,6 +1,6 @@
 # Atomic Bond
 
-Expanded Pulse uses the approved [Master Spec v0.3](docs/MASTER_SPEC_v0.3.md). Frozen v0.2 is preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
+Product authority is the approved [Master Spec v0.4](docs/MASTER_SPEC_v0.4.md), adding the narrowly scoped Global Doodle exception. Frozen v0.3 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
 
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
 adds `/admin` navigation and read-only `/admin/network` structural analytics using
@@ -85,7 +85,7 @@ Registration uses bundled country/subdivision data with no location API key.
 ## Authority
 
 Read [AGENTS.md](AGENTS.md), the frozen
-[Master Product Specification v0.3](docs/MASTER_SPEC_v0.3.md), and the
+[Master Product Specification v0.4](docs/MASTER_SPEC_v0.4.md), and the
 [Build Blueprint](docs/BUILD_BLUEPRINT_v0.1.md) before substantial changes.
 Specification revisions require explicit approval. Material blueprint changes
 must be proposed before implementation.
@@ -222,3 +222,7 @@ APP_ORIGIN and the existing migrations. The owner-approved v0.8.0 baseline repor
 distinguishes automated verification from the physical-device evidence record.
 
 See [Auth and email architecture](docs/architecture/AUTH_EMAIL_v0.1.md) for signup, cookie sessions, invitation continuation, the signed Supabase email hook, Resend delivery and required hosted configuration. Run `pnpm test:e2e:auth` for the isolated Auth browser tests; `pnpm check` includes them. Real ownership requires Supabase mode and the new `202609270001_owner_access.sql` migration. The existing mock flows remain available. Live email acceptance must be verified separately from deterministic tests.
+
+## Global Doodle candidate (not published)
+
+Task 12.1 is in controlled rollout as v0.12.1-rc.1, not publicly activated. See [rollout and recovery](docs/architecture/GLOBAL_DOODLE_ROLLOUT_v0.1.md) and the [approved v0.4 delta](docs/proposals/MASTER_SPEC_v0.4_GLOBAL_DOODLE.md). The approved migration and cleanup schedule are installed. Production routes default off through `GLOBAL_DOODLE_ENABLED`; temporary `GLOBAL_DOODLE_CONTROLLED_ACCESS` still requires expiring database membership. Database public access remains closed until separate activation approval. Frozen v0.3 remains unchanged.
