@@ -24,7 +24,9 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
     [selected, setSelected] = useState(""),
     [probeName, setProbeName] = useState(""),
     [probeBucket, setProbeBucket] = useState("puzzle-tiles"),
-    [position, setPosition] = useState(0);
+    [position, setPosition] = useState(0),
+    [tilePuzzle, setTilePuzzle] = useState(""),
+    [tilePiece, setTilePiece] = useState("");
   async function request(operation: string) {
     setBusy(true);
     try {
@@ -241,6 +243,53 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
           </button>
           <button disabled={busy || !selected} onClick={() => request("move")}>
             MOVE SELECTED PIECE / SWAP
+          </button>
+        </section>
+      )}
+      {!admin && (
+        <section aria-label="Controlled database tile HTTP check">
+          <h2>Database tile HTTP check</h2>
+          <label>
+            Puzzle ID
+            <input
+              value={tilePuzzle}
+              onChange={(e) => setTilePuzzle(e.target.value)}
+            />
+          </label>
+          <label>
+            Piece ID
+            <input
+              value={tilePiece}
+              onChange={(e) => setTilePiece(e.target.value)}
+            />
+          </label>
+          <button
+            disabled={busy}
+            onClick={async () => {
+              const uuid = /^[0-9a-f-]{36}$/i;
+              if (!uuid.test(tilePuzzle) || !uuid.test(tilePiece)) {
+                setMessage("Invalid test identifiers.");
+                return;
+              }
+              setBusy(true);
+              try {
+                const start = performance.now();
+                const response = await fetch(
+                  `/api/puzzle?puzzle=${tilePuzzle}&piece=${tilePiece}`,
+                  { cache: "no-store" },
+                );
+                const content = await response.arrayBuffer();
+                setMessage(
+                  `Tile HTTP ${response.status}; image bytes: ${response.ok ? content.byteLength : 0}; elapsed: ${Math.round(performance.now() - start)} ms; cache: ${response.headers.get("x-vercel-cache") || "unreported"}; control: ${response.headers.get("cache-control") || "unreported"}.`,
+                );
+              } catch {
+                setMessage("Tile HTTP unavailable.");
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            CHECK TILE HTTP RESPONSE
           </button>
         </section>
       )}
