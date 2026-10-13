@@ -10,7 +10,7 @@ it("additive Pulse migration preserves all legacy rows, timestamps, constraints 
     );
     await db.exec(readFileSync("tests/helpers/storage-fixture.sql", "utf8"));
     const files = readdirSync("supabase/migrations")
-      .filter((f) => f.endsWith(".sql"))
+      .filter((f) => f.endsWith(".sql") && !/^20261017000[23]_/.test(f))
       .sort();
     for (const f of files.filter((f) => !f.includes("expanded_pulse")))
       await db.exec(readFileSync("supabase/migrations/" + f, "utf8"));

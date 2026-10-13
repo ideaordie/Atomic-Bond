@@ -17,6 +17,8 @@ beforeAll(async () => {
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
   await db.exec(readFileSync("tests/helpers/storage-fixture.sql", "utf8"));
   for (const file of readdirSync("supabase/migrations").sort()) {
+    // Audited production data corrections have dedicated fixture/abort tests.
+    if (/^20261017000[23]_/.test(file)) continue;
     if (file.includes("growth_preference_provenance")) {
       await db.exec(`insert into public.atoms(id,location_id)
         select ('00000000-0000-0000-0000-00000000000'||n)::uuid,id from

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.13.1 — Global Doodle legacy expiration correction
+
+- Audit hosted publication, both feed scopes, appreciation, Hall finalization and actual Cron cleanup: new drawings already receive 168 hours. Identify one intact legacy 24-hour drawing preserved by Task #12.4.
+- With explicit approval, extend only that eligible unfinalized drawing to its original publication time plus 168 hours; preserve all artwork, publication data and appreciations. Do not recover deleted content or reopen finalized scores.
+- Use the exact LIVE FOR 7 DAYS publication label and strengthen 72-hour/both-scope and guarded historical-correction tests.
+- Preserve moderation, lifecycle, Hall rules, submission limits, pagination, all schedules, PARTICI-PUZZLE and frozen Master Spec v0.5.
+
 ## v0.13.0 — PARTICI-PUZZLE public launch
 
 - Immediate-launch approval supersedes the original October 27 window: existing Connected Landscape puzzle starts October 13, 2026, 17:16:50.300673 UTC and ends October 20 at the same time. Retire only the two audited disposable test windows; retain all IDs, pieces, artwork and cooldowns. No application release/version change is required for the schedule-only operation.

@@ -18,7 +18,9 @@ it("exact maintenance preserves dependencies and aborts changed starting states"
       create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
       grant usage on schema public,auth to anon,authenticated;`);
     await db.exec(readFileSync("tests/helpers/storage-fixture.sql", "utf8"));
-    for (const f of readdirSync("supabase/migrations").sort())
+    for (const f of readdirSync("supabase/migrations")
+      .filter((f) => !/^20261017000[23]_/.test(f))
+      .sort())
       await db.exec(readFileSync(`supabase/migrations/${f}`, "utf8"));
     await db.exec(`
       insert into public.locations(canonical_key,city,region,country,country_code,display_name)

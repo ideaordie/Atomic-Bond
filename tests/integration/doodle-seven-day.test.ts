@@ -99,7 +99,17 @@ it("enforces the exact seven-day boundary in both scopes and voting without wait
   await f.rpc(2, "appreciate_doodle", [live.id]);
   expect(await f.rpc(2, "appreciate_doodle", [live.id])).toBe(false);
   await expect(f.rpc(1, "appreciate_doodle", [live.id])).rejects.toThrow();
-  await f.advance(week - 1440 - 1 / 60);
+  await f.advance(2880);
+  await cleanup();
+  expect((await row(live.id)).state).toBe("PUBLISHED");
+  expect((await f.rpc(2, "read_doodles")).items).toHaveLength(2);
+  expect(
+    (await f.rpc(2, "read_network_doodles")).items.map(
+      (d: { id: string }) => d.id,
+    ),
+  ).toEqual([live.id]);
+  await f.rpc(5, "appreciate_doodle", [live.id]);
+  await f.advance(week - 4320 - 1 / 60);
   expect((await f.rpc(2, "read_doodles")).items).toHaveLength(2);
   expect(
     (await f.rpc(2, "read_network_doodles")).items.map(

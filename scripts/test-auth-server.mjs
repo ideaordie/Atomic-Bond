@@ -13,7 +13,7 @@ await db.exec(
 );
 await db.exec(await readFile("tests/helpers/storage-fixture.sql", "utf8"));
 for (const f of (await readdir("supabase/migrations"))
-  .filter((f) => f.endsWith(".sql"))
+  .filter((f) => f.endsWith(".sql") && !/^20261017000[23]_/.test(f))
   .sort())
   await db.exec(await readFile(`supabase/migrations/${f}`, "utf8"));
 await db.exec(

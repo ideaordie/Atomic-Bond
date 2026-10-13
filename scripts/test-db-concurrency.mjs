@@ -43,7 +43,7 @@ try {
     await readFile("tests/helpers/storage-fixture.sql", "utf8"),
   );
   for (const file of (await readdir("supabase/migrations"))
-    .filter((f) => f.endsWith(".sql"))
+    .filter((f) => f.endsWith(".sql") && !/^20261017000[23]_/.test(f))
     .sort())
     await admin.query(await readFile(`supabase/migrations/${file}`, "utf8"));
   const location = randomUUID();

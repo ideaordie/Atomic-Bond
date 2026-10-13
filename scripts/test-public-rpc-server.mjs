@@ -11,7 +11,7 @@ create table auth.sessions(id uuid primary key,user_id uuid references auth.user
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;`);
 await db.exec(await readFile("tests/helpers/storage-fixture.sql", "utf8"));
 for (const f of (await readdir("supabase/migrations"))
-  .filter((f) => f.endsWith(".sql"))
+  .filter((f) => f.endsWith(".sql") && !/^20261017000[23]_/.test(f))
   .sort())
   await db.exec(await readFile(`supabase/migrations/${f}`, "utf8"));
 await db.exec(`insert into public.locations(id,canonical_key,city,region,country,country_code,display_name) values('00000000-0000-0000-0000-000000000001','browser-test','Test City','Test Region','Test Country','US','Test Place');

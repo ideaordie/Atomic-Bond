@@ -110,7 +110,7 @@ export function DoodlePublishing({
       {published ? (
         <section className="doodle-panel" aria-label="Publication complete">
           <h2>DOODLE PUBLISHED</h2>
-          <p>Your drawing is now live for 7 days.</p>
+          <p>LIVE FOR 7 DAYS</p>
           <a className="doodle-create" href={returnHref}>
             RETURN TO MY ATOM
           </a>
