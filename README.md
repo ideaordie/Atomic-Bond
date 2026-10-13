@@ -1,6 +1,7 @@
 # Atomic Bond
 
-PARTICI-PUZZLE is a disabled controlled-infrastructure candidate, not a general beta feature.
+PARTICI-PUZZLE v0.13.0-rc.2 is a disabled security checkpoint, not a general beta feature.
+Public and controlled database access are OFF pending resolution of hosted expired-tile delivery.
 See [hosted acceptance and recovery](docs/architecture/PARTICI_PUZZLE_HOSTED_ACCEPTANCE_v0.1.md)
 for its access gates, approved test cohort and outstanding launch requirements.
 

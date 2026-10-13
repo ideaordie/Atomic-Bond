@@ -1,6 +1,6 @@
 # PARTICI-PUZZLE — controlled hosted acceptance
 
-Task #13.1, in progress. General participation is not approved. Frozen Master
+Task #13.1, blocked at v0.13.0-rc.2. General participation is not approved. Frozen Master
 Spec v0.4 remains unchanged; the proposed addition remains in
 `docs/proposals/TASK_13_0_PARTICI_PUZZLE.md`.
 
@@ -177,3 +177,40 @@ same-origin/controlled flag, the existing fail-closed Vercel puzzle rate limiter
 then direct SDK Storage download with no gameplay RPC. Storage itself retains
 the ACTIVE owner, cohort, puzzle and reservation-deadline checks. No schema,
 policy, gameplay, cooldown or feature-gate change is included.
+
+## Final disabled checkpoint — October 13, 2026
+
+The approved probe correction (`df6982c`) reached Vercel Ready. Actual direct SDK
+Storage requests as verified ACTIVE Atom #5 denied Atom #4's live reserved tile
+(zero bytes). After fresh Atom #4 sign-in, the same object was allowed (2,362 bytes).
+The deadline was 00:30:08.876 Eastern. At 00:30:38 the database still contained
+that reservation with `expired=true`; after another direct Storage request the
+probe still reported ALLOWED, 2,362 bytes. At 00:30:57 the expired row remained.
+No gameplay read or cleanup ran between the positive and expired reads.
+
+**Security blocker:** hosted SQL under the owner's authenticated claims returned
+`puzzle_asset_allowed=false` and zero visible Storage objects, while HTTP delivery
+had reported success. The HTTP/database discrepancy is unresolved; caching is
+not established as the cause. Do not claim expiry acceptance passed. Cancelled
+reservation HTTP acceptance remains incomplete because the sequence stopped on
+this failure. Existing isolated cancellation/expiry tests are supporting evidence,
+not substitutes for hosted HTTP acceptance.
+
+The operator shutdown script `supabase/maintenance/puzzle-disable-access.sql` was
+applied: public and controlled database gates are both false. It touches only the
+gate row under the existing lifecycle/puzzle lock. Buckets, policies, participants,
+piece records and cooldown timestamps are preserved. The expired disposable
+reservation remains for diagnosis; no clock adjustment or cleanup was performed.
+The application public flag remains false. The controlled application flag alone
+cannot override the closed database gate.
+
+Verification reused the passing production build, TypeScript, lint and secret
+checks for the probe code. Final regression: 406 tests across 61 files; native
+owner-media cancellation/deactivation races passed; 12 puzzle browser cases passed
+at 390×844, 768×1024 and 1440×900. The subsequent release changes are version,
+documentation and the operator shutdown script only.
+
+Before public launch: resolve and repeat actual hosted expiry/cancellation reads;
+verify the bounded cleanup execution/operating procedure and separate Storage-byte
+recovery arrangements; obtain exact specification approval and explicit public
+activation approval. Neither this checkpoint nor its deployment authorizes launch.

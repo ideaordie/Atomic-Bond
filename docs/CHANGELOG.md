@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.13.0-rc.2 — PARTICI-PUZZLE disabled security checkpoint
+
+- Verify foreign-reservation denial and legitimate own/placed tile access through actual owner-session Storage downloads.
+- Isolate the controlled Storage probe from gameplay cleanup, retaining verified sessions, independent Storage RLS, same-origin checks and the existing fail-closed Vercel rate limiter.
+- Block launch: an expired reservation's tile remained downloadable through Storage HTTP despite the hosted SQL predicate denying it. The expired row was retained before and after the check. Cancellation HTTP acceptance remains incomplete.
+- Close both public and controlled database access gates without changing participants, board pieces, cooldowns or private buckets. Add the repeatable operator shutdown script.
+- Preserve frozen Master Spec v0.4 and all unrelated production features/schedules. This is a disabled candidate, not a completed public release.
+
 ## v0.13.0-rc.1 — PARTICI-PUZZLE controlled infrastructure candidate
 
 - Correct hosted tile downloads by authorizing Supabase's prerequisite authenticated object-info operation under the existing per-tile RLS predicate. Remove the unsuccessful URL rewrite; retain the normal owner-session SDK path and disabled public gate.
