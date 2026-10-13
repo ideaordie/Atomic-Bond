@@ -27,9 +27,14 @@ correctness, locks, deadlines, board revision and allowances. Clients cannot ass
 these properties. Participants may see their reserved piece and placed pieces,
 but cannot request arbitrary source regions. Full-image delivery is permitted
 after authoritative completion or scheduled expiration. Before then, unrevealed
-source regions remain inaccessible. Pre-generated private tiles use existing
-verified-owner sessions and Storage authorization; equivalent direct reads are
-permitted only for independently authorized content.
+source regions remain inaccessible. Pre-generated private tile bytes are selected by a narrowly authorized PostgreSQL
+operation using the existing verified-owner session and database time. Authorization
+and byte selection are serialized with reservation and lifecycle changes. The
+application returns private, non-cacheable binary responses; ordinary participants
+have no direct Storage access to puzzle media. New retrieval after cancellation or
+expiry is denied unless another current rule authorizes that content (for example,
+a placed board piece). An already-authorized in-flight response may complete;
+previously delivered content cannot be revoked.
 
 Deactivation cancels reservations and prevents participation while preserving
 applicable cooldowns and shared progress. Deletion removes participant-linked

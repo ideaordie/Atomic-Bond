@@ -81,3 +81,18 @@ export async function scheduleControlledPuzzle(batch: string, start: string) {
     return { ok: false };
   }
 }
+
+export async function copyControlledMedia() {
+  try {
+    if (
+      process.env.PARTICI_PUZZLE_CONTROLLED_ACCESS !== "true" ||
+      (await headers()).get("origin") !== appOrigin(process.env)
+    )
+      throw Error();
+    const { copyPuzzleMedia } =
+      await import("../../../../services/puzzle/copy-media");
+    return { ok: true, ...(await copyPuzzleMedia(await authClient())) };
+  } catch {
+    return { ok: false, copied: 0, verified: 0, bytes: 0, total: 0 };
+  }
+}

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import {
   scheduleControlledPuzzle,
+  copyControlledMedia,
   checkControlledStorage,
   checkControlledCleanup,
 } from "./actions";
@@ -59,6 +60,24 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
       {admin ? (
         <section>
           <h2>Administrator preparation</h2>
+          <button
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              try {
+                const result = await copyControlledMedia();
+                setMessage(
+                  result.ok
+                    ? `Media copy verified: ${result.verified}; newly copied: ${result.copied}; bytes: ${result.bytes}; inventory: ${result.total}.`
+                    : "Media copy unavailable.",
+                );
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            COPY AND VERIFY DATABASE MEDIA
+          </button>
           <p>Use only a disposable, authorized JPEG or PNG, at most 3 MB.</p>
           <label>
             Test image{" "}

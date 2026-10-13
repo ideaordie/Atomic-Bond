@@ -32,6 +32,8 @@ export async function verifiedPuzzleClient(client: PuzzleOwnerClient) {
 }
 export const puzzlePrivateHeaders = {
   "Cache-Control": "private, no-store, max-age=0",
+  "CDN-Cache-Control": "no-store",
+  "Vercel-CDN-Cache-Control": "no-store",
   Vary: "Cookie, Authorization",
   "Referrer-Policy": "no-referrer",
   "X-Content-Type-Options": "nosniff",
@@ -41,45 +43,32 @@ export async function ownerPuzzleTile(
   puzzle: string,
   piece: string | null,
 ) {
-  let stage = "owner";
-  let storageStatus: number | null = null;
   try {
     await verifiedPuzzleClient(client);
-    stage = "resolver";
-    const { data, error } = await client.rpc("puzzle_asset", {
+    const { data, error } = await client.rpc("puzzle_media_get", {
       p_puzzle: puzzle,
       p_piece: piece,
     });
-    const name = (data as { name?: unknown } | null)?.name;
+    const media = data as { content?: unknown; bytes?: unknown } | null;
     if (
       error ||
-      typeof name !== "string" ||
-      !/^[0-9a-f-]{36}\.png$/i.test(name)
+      typeof media?.content !== "string" ||
+      media.content.length > 2702000 ||
+      typeof media.bytes !== "number" ||
+      media.bytes < 8 ||
+      media.bytes > 2_000_000
     )
       throw Error();
-    stage = "storage";
-    const asset = await client.storage.from("puzzle-tiles").download(
-      name,
-      {},
-      {
-        cache: "no-store",
-        signal: AbortSignal.timeout(5000),
-      },
-    );
-    const status = Number(
-      (asset.error as { statusCode?: unknown } | null)?.statusCode,
-    );
-    if (Number.isInteger(status) && status >= 400 && status <= 599)
-      storageStatus = status;
-    if (asset.error || !asset.data || asset.data.size > 2_000_000)
+    const bytes = Buffer.from(media.content, "base64");
+    if (
+      bytes.length !== media.bytes ||
+      bytes.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a"
+    )
       throw Error();
-    return new Response(asset.data, {
+    return new Response(bytes, {
       headers: { ...puzzlePrivateHeaders, "Content-Type": "image/png" },
     });
   } catch {
-    // Fixed stage names only: never log identities, object names, tokens or
-    // provider error text. Useful for controlled hosted acceptance failures.
-    console.warn("Puzzle tile unavailable", { stage, storageStatus });
     return Response.json(
       { error: "Tile unavailable" },
       { status: 403, headers: puzzlePrivateHeaders },

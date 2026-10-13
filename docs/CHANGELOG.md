@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.13.0-rc.3 — PostgreSQL puzzle media (controlled acceptance)
+
+Replaces runtime tile Storage downloads with atomic owner-authorized PostgreSQL byte delivery. Public gameplay remains disabled. Adds immutable private media preparation and bounded hash-verified migration; old Storage containment and hosted acceptance remain release blockers. Frozen Master Spec v0.4 is unchanged.
+
 ## v0.13.0-rc.2 — PARTICI-PUZZLE disabled security checkpoint
 
 - Verify foreign-reservation denial and legitimate own/placed tile access through actual owner-session Storage downloads.

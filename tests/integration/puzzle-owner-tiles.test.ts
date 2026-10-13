@@ -279,11 +279,28 @@ it("integrates admin preparation, immutable owner-session uploads, readiness and
   expect(await read(0, a.name)).toHaveLength(0);
 });
 it("serves stored tile bytes through the integrated HTTP handler; unknown parameters and cross-origin writes fail", async () => {
+  await f.db.exec(
+    await readFile(
+      "supabase/candidates/202610140004_puzzle_controlled_access.sql",
+      "utf8",
+    ),
+  );
+  await f.exec("update private.puzzle_access_settings set public_enabled=true");
+  await f.db.exec(
+    await readFile(
+      "supabase/migrations/202610150001_puzzle_database_media.sql",
+      "utf8",
+    ),
+  );
   const bytes = await sharp({
     create: { width: 100, height: 100, channels: 4, background: "red" },
   })
     .png()
     .toBuffer();
+  await f.exec(
+    "insert into private.puzzle_media(asset_id,content) select id,$1 from private.puzzle_assets where kind<>'source'",
+    [bytes],
+  );
   const client: PuzzleOwnerClient = {
     auth: {
       getUser: async () => ({
@@ -384,7 +401,20 @@ it("serves stored tile bytes through the integrated HTTP handler; unknown parame
   ).toBe(404);
 });
 
-it("integrates preparation with all 27 immutable uploads before READY", async () => {
+it("integrates preparation with 26 database assets and a private source before READY", async () => {
+  await f.db.exec(
+    await readFile(
+      "supabase/candidates/202610140004_puzzle_controlled_access.sql",
+      "utf8",
+    ),
+  );
+  await f.exec("update private.puzzle_access_settings set public_enabled=true");
+  await f.db.exec(
+    await readFile(
+      "supabase/migrations/202610150001_puzzle_database_media.sql",
+      "utf8",
+    ),
+  );
   let uploads = 0;
   const client: PuzzleOwnerClient = {
     auth: {
@@ -394,7 +424,13 @@ it("integrates preparation with all 27 immutable uploads before READY", async ()
       }),
     },
     rpc: async (name, args) => ({
-      data: await f.rpc(0, name, [args!.p_batch]),
+      data: await f.rpc(
+        0,
+        name,
+        name === "puzzle_media_put"
+          ? [args!.p_asset, args!.p_content]
+          : [args!.p_batch],
+      ),
       error: null,
     }),
     storage: {
@@ -432,7 +468,11 @@ it("integrates preparation with all 27 immutable uploads before READY", async ()
     .toBuffer();
   const result = await uploadPuzzle(client, input);
   expect(result.ready).toBe(true);
-  expect(uploads).toBe(27);
+  expect(uploads).toBe(1);
+  expect(
+    (await f.exec("select count(*)::int n from private.puzzle_media")).rows[0]
+      .n,
+  ).toBe(26);
   expect(
     (
       await f.exec("select ready from private.puzzle_batches where id=$1", [

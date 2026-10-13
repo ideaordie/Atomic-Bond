@@ -20,13 +20,17 @@ export async function uploadPuzzle(client: PuzzleOwnerClient, input: Buffer) {
           : prepared.tiles[a.solution ?? -1];
     if (!bytes || !/^[0-9a-f-]{36}\.png$/i.test(a.name))
       throw new Error("Invalid manifest");
-    const uploaded = await client.storage
-      .from(a.kind === "source" ? "puzzle-originals" : "puzzle-tiles")
-      .upload(a.name, bytes, {
-        contentType: "image/png",
-        cacheControl: "0",
-        upsert: false,
-      });
+    const uploaded =
+      a.kind === "source"
+        ? await client.storage.from("puzzle-originals").upload(a.name, bytes, {
+            contentType: "image/png",
+            cacheControl: "0",
+            upsert: false,
+          })
+        : await client.rpc("puzzle_media_put", {
+            p_asset: a.name.slice(0, -4),
+            p_content: bytes.toString("base64"),
+          });
     if (uploaded.error)
       throw new Error("Upload incomplete; batch remains unpublished");
   }
