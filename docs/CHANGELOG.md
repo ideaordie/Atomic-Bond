@@ -2,6 +2,8 @@
 
 ## v0.13.0 — PARTICI-PUZZLE public launch
 
+- Immediate-launch approval supersedes the original October 27 window: existing Connected Landscape puzzle starts October 13, 2026, 17:16:50.300673 UTC and ends October 20 at the same time. Retire only the two audited disposable test windows; retain all IDs, pieces, artwork and cooldowns. No application release/version change is required for the schedule-only operation.
+
 - Activate the authenticated ACTIVE-owner player and navigation, with controlled access OFF.
 - Anchor participant gameplay/media to the approved first official puzzle. Earlier disposable windows remain intact but inaccessible; before launch, return only database timing for the October 27 countdown.
 - Preserve Connected Landscape's October 27, 2026, 04:00 UTC through November 3, 04:00 UTC window. Gameplay opens automatically using database time; no artwork or gameplay is exposed early.

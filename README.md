@@ -1,8 +1,8 @@
 # Atomic Bond
 
 PARTICI-PUZZLE **v0.13.0** is available to authenticated ACTIVE participants.
-The first community puzzle begins October 27, 2026, at 04:00 UTC; the waiting page
-shows a server-timed countdown without exposing artwork early. Public participation
+The first community puzzle is ACTIVE from October 13, 2026, 17:16:50.300673 UTC
+through October 20, 2026, 17:16:50.300673 UTC. Public participation
 is enabled and controlled access remains OFF. See the
 [public launch boundary](docs/architecture/PARTICI_PUZZLE_PUBLIC_LAUNCH_v0.1.md).
 Runtime media uses private

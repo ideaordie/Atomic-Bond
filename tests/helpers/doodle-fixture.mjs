@@ -28,6 +28,7 @@ export async function createDoodleFixture(
         !f.startsWith("202610150004") &&
         !f.startsWith("202610160001") &&
         !f.startsWith("202610170001") &&
+        !f.startsWith("202610170002") &&
         (next || !/^20261012000[23]/.test(f)) &&
         (sevenDays || !f.startsWith("202610130001")),
     )

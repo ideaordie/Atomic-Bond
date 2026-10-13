@@ -25,7 +25,8 @@ authorizes gameplay. The database admits the official puzzle at the exact start.
 
 ## Activation and recovery
 
-- Official window: October 27, 2026, 04:00 UTC–November 3, 2026, 04:00 UTC.
+- Official window (superseding the original October 27 schedule): October 13, 2026,
+  17:16:50.300673 UTC–October 20, 2026, 17:16:50.300673 UTC.
 - Database: public participation ON, controlled participation OFF.
 - Vercel Production: `PARTICI_PUZZLE_ENABLED=true`,
   `PARTICI_PUZZLE_CONTROLLED_ACCESS=false`.
@@ -49,3 +50,29 @@ observed before that time; the database boundary is exercised with isolated cloc
 Physical installed-PWA acceptance was not repeated. Historical disposable Storage
 CDN cache limitations remain as previously documented; official artwork uses only
 authorized PostgreSQL delivery. No new credential, external service or Cron job.
+
+## Immediate launch supersession — October 13, 2026
+
+The owner explicitly replaced the future launch with immediate participation.
+Migration `202610170002_puzzle_immediate_launch.sql` used one lifecycle/game-locked
+transaction, verified the official board was untouched, checked READY media and
+cleanup health, and retained the exact official puzzle, batch, tiles and bytes.
+The start is the database timestamp 2026-10-13T17:16:50.300673Z; the end is exactly
+168 hours later. Official media remains retained through **November 19, 2026,
+17:16:50.300673 UTC**, then becomes eligible for bounded cleanup.
+
+The two explicitly disposable test windows conflicted. Their scheduling fields
+alone were moved to adjacent completed seven-day periods ending October 6 and
+October 13 at the activation time. They remain behind the launch boundary. Their
+original windows are preserved in the migration's guards and pre-change evidence.
+No pieces, locked progress, media, contributors or participant cooldowns were reset.
+Their normal 30-day post-window cleanup now follows these retired fixture windows.
+An unexpected owner, active reservation, touched official board or other overlap
+would abort the transaction. No scheduler, authorization or application code changed.
+
+The live authenticated player displayed ACTIVE gameplay, 0/25 locked, available
+REVEAL and independent PLACE/MOVE controls. Acceptance was non-destructive: no
+official piece was revealed/placed and no genuine gameplay allowance consumed.
+The existing gameplay/concurrency proof is retained; 24 targeted security/gameplay/
+cleanup regressions and five launch/migration tests passed again. The prior build
+and native concurrency checks remain applicable to unchanged application code.
