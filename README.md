@@ -1,7 +1,11 @@
 # Atomic Bond
 
-PARTICI-PUZZLE **v0.13.0-rc.5** is a disabled Puzzle Studio release candidate, not a general beta feature.
-Public and controlled database participation remain OFF. Runtime media uses private
+PARTICI-PUZZLE **v0.13.0** is available to authenticated ACTIVE participants.
+The first community puzzle begins October 27, 2026, at 04:00 UTC; the waiting page
+shows a server-timed countdown without exposing artwork early. Public participation
+is enabled and controlled access remains OFF. See the
+[public launch boundary](docs/architecture/PARTICI_PUZZLE_PUBLIC_LAUNCH_v0.1.md).
+Runtime media uses private
 PostgreSQL authorization; cleanup reuses Supabase Cron without a new credential.
 See [cleanup operations](docs/architecture/PARTICI_PUZZLE_CLEANUP_v0.1.md) and
 [launch readiness](docs/architecture/PARTICI_PUZZLE_LAUNCH_READINESS_v0.1.md).

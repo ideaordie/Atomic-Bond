@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.13.0 — PARTICI-PUZZLE public launch
+
+- Activate the authenticated ACTIVE-owner player and navigation, with controlled access OFF.
+- Anchor participant gameplay/media to the approved first official puzzle. Earlier disposable windows remain intact but inaccessible; before launch, return only database timing for the October 27 countdown.
+- Preserve Connected Landscape's October 27, 2026, 04:00 UTC through November 3, 04:00 UTC window. Gameplay opens automatically using database time; no artwork or gameplay is exposed early.
+- Preserve existing gameplay, private PostgreSQL media, lifecycle authorization, throttling, cooldowns, cleanup and frozen Master Spec v0.5.
+- Verification: 434 unit/integration tests, 30 responsive browser tests, native PostgreSQL concurrency/restart tests, production build, formatting, lint, TypeScript and secret/client-boundary checks passed. Hosted rollback-only checks proved the waiting response and early/historical gameplay/media denial for both approved test owners.
+
 ## v0.13.0-rc.6 — First official puzzle preparation (gameplay disabled)
 
 - Add the standalone, activation-gated `/partici-puzzle` player and navigation entry using existing owner-session gameplay/media operations; no database or gameplay changes.

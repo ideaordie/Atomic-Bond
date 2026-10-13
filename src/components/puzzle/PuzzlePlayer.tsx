@@ -16,6 +16,8 @@ export type PuzzleRead = {
   status?: string;
   error?: string;
   serverTime?: string;
+  nextStart?: string | null;
+  firstCommunity?: boolean;
   placeAfter?: string | null;
   moveAfter?: string | null;
   revealAfter?: string | null;
@@ -184,19 +186,40 @@ export function PuzzlePlayer({
         <h1>PARTICI-PUZZLE</h1>
         <p>Many people. One big picture.</p>
       </header>
-      <p role="status">{message}</p>
+      <p role="status">{puzzle ? message : ""}</p>
       {!puzzle ? (
         <section>
           <h2>
-            {data.status === "WAITING"
-              ? "THE NEXT PICTURE IS ON ITS WAY"
-              : "YOUR SHARED PUZZLE"}
+            {data.firstCommunity && data.nextStart
+              ? `OUR FIRST COMMUNITY PUZZLE BEGINS ${new Date(data.nextStart).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" }).toUpperCase()}`
+              : data.status === "WAITING"
+                ? "THE NEXT PICTURE IS ON ITS WAY"
+                : "YOUR SHARED PUZZLE"}
           </h2>
           <p>
             {data.status === "WAITING"
               ? "Return when the next weekly puzzle begins."
               : "Use refresh to check availability."}
           </p>
+          {data.nextStart && (
+            <p aria-label="Time until scheduled puzzle">
+              {remaining(data.nextStart, now) > 0
+                ? `BEGINS IN ${duration(remaining(data.nextStart, now))}`
+                : "Checking scheduled availability…"}
+              <br />
+              <time dateTime={data.nextStart}>
+                {new Date(data.nextStart).toLocaleString("en-US", {
+                  timeZone: "UTC",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}{" "}
+                UTC
+              </time>
+            </p>
+          )}
         </section>
       ) : (
         <>
