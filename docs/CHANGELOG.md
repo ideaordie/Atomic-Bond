@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.13.2 — PARTICIPUZZLE simplified player
+
+- Rename the game heading, navigation label and browser title to PARTICIPUZZLE; preserve existing routes.
+- Automatically resume/reserve an eligible piece; replace reveal/mode controls with direct board selection, preview and one PLACE HERE or MOVE HERE confirmation.
+- Preserve reservations when cancelling a selection; refresh visible boards every 60 seconds with backoff, conflict detection and same-request recovery.
+- Preserve all authoritative gameplay/media rules and frozen specifications; no database or production configuration changes.
+
 ## v0.13.1 — Global Doodle legacy expiration correction
 
 - Audit hosted publication, both feed scopes, appreciation, Hall finalization and actual Cron cleanup: new drawings already receive 168 hours. Identify one intact legacy 24-hour drawing preserved by Task #12.4.

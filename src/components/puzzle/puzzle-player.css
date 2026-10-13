@@ -94,3 +94,24 @@
 .puzzle-help {
   font-size: 12px;
 }
+.puzzle-selection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 112px;
+}
+.puzzle-selection > img {
+  width: clamp(72px, 20vw, 100px);
+  height: auto;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.puzzle-selection p {
+  margin: 4px 0;
+}
+.puzzle-selection button {
+  margin: 8px 8px 0 0;
+}
+.puzzle-preview {
+  border: 2px dashed var(--text) !important;
+}

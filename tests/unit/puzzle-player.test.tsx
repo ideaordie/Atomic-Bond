@@ -9,9 +9,9 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/partici-puzzle" }));
 it("hides puzzle navigation by default and from non-owners", () => {
   expect(
     renderToStaticMarkup(<ApplicationNavigation owner doodle />),
-  ).not.toContain("PARTICI-PUZZLE");
+  ).not.toContain("PARTICIPUZZLE");
   expect(renderToStaticMarkup(<ApplicationNavigation puzzle />)).not.toContain(
-    "PARTICI-PUZZLE",
+    "PARTICIPUZZLE",
   );
   expect(
     renderToStaticMarkup(<ApplicationNavigation owner doodle puzzle />),
@@ -32,5 +32,6 @@ it("does not request full art, unrevealed tiles or an expired reservation", () =
   const html = renderToStaticMarkup(<PuzzlePlayer initial={data} />);
   expect(html).not.toContain("<img");
   expect(html).not.toContain("piece=expired");
-  expect(html).toContain("REVEAL MY PIECE");
+  expect(html).not.toContain("REVEAL MY PIECE");
+  expect(html).toContain("Next piece available");
 });

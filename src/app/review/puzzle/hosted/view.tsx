@@ -50,7 +50,7 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
   }
   return (
     <main style={{ maxWidth: 700, margin: "2rem auto", padding: "1rem" }}>
-      <h1>PARTICI-PUZZLE — CONTROLLED ACCEPTANCE</h1>
+      <h1>PARTICIPUZZLE — CONTROLLED ACCEPTANCE</h1>
       <p role="status">{message}</p>
       {admin ? (
         <section>

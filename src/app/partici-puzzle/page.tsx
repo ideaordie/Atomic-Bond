@@ -7,7 +7,7 @@ import {
 import { authClient, ownerContext } from "../../services/auth/server";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "PARTICI-PUZZLE | Atomic Bond",
+  title: "PARTICIPUZZLE | Atomic Bond",
   robots: { index: false, follow: false },
 };
 export default async function PuzzlePage() {

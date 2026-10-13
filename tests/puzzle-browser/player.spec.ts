@@ -28,7 +28,7 @@ for (const theme of ["light", "dark"])
       .focus();
     await page.keyboard.press("Enter");
     await expect(
-      page.getByRole("button", { name: "CONFIRM PLACEMENT" }),
+      page.getByRole("button", { name: "PLACE HERE" }),
     ).toBeEnabled();
     await page.getByRole("button", { name: "Placements", exact: true }).click();
     await expect(
@@ -36,21 +36,18 @@ for (const theme of ["light", "dark"])
         name: "Position 1, correct and locked",
         exact: true,
       }),
-    ).toBeDisabled();
-    await page
-      .getByRole("button", { name: "MOVE A PIECE", exact: true })
-      .click();
+    ).toBeEnabled();
     await page
       .getByRole("button", { name: "Position 8, movable piece", exact: true })
       .click();
     await page
-      .getByRole("button", { name: "Position 2, empty", exact: true })
+      .getByRole("button", { name: "Position 3, empty", exact: true })
       .click();
     await expect(
-      page.getByRole("button", { name: "CONFIRM MOVE", exact: true }),
+      page.getByRole("button", { name: "MOVE HERE", exact: true }),
     ).toBeEnabled();
     await page.screenshot({
-      path: `artifacts/task134-player-${theme}-${info.project.name}.png`,
+      path: `artifacts/task137-player-${theme}-${info.project.name}.png`,
       fullPage: true,
     });
     await page.getByRole("button", { name: "Completed", exact: true }).click();
@@ -74,7 +71,7 @@ for (const theme of ["light", "dark"])
     await expect(page.getByRole("navigation").getByRole("link")).toHaveText([
       "MY ATOM",
       "GLOBAL DOODLE",
-      "PARTICI-PUZZLE",
+      "PARTICIPUZZLE",
       "ABOUT",
       "SETTINGS",
     ]);

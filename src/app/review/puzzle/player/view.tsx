@@ -33,6 +33,7 @@ export function PlayerReview({ images }: { images: string[] }) {
             ? [
                 { id: piece(0), position: 0, locked: true },
                 { id: piece(1), position: 7, locked: false },
+                { id: piece(7), position: 1, locked: false },
               ]
             : [],
       reservation:
@@ -52,8 +53,8 @@ export function PlayerReview({ images }: { images: string[] }) {
       <aside className="puzzle-player">
         <h2>PRIVATE LOCAL ARTWORK REVIEW</h2>
         <p>
-          Presentation fixtures only. No production requests, game changes or
-          schedule.
+          Interactive local fixtures only. No production requests, game changes
+          or schedule.
         </p>
         {["Hidden board", "Revealed piece", "Placements", "Completed"].map(
           (s) => (
@@ -92,15 +93,91 @@ export function PlayerReview({ images }: { images: string[] }) {
           </div>
         </details>
       </aside>
-      <PuzzlePlayer
+      <InteractiveReview
         key={`${scene}-${version}`}
         initial={initial}
         imageUrl={imageUrl}
-        transport={async (command: PuzzleCommand) => {
-          if (command.operation !== "read") return { error: "REVIEW_ONLY" };
-          return initial;
-        }}
       />
     </>
+  );
+}
+
+function InteractiveReview({
+  initial,
+  imageUrl,
+}: {
+  initial: PuzzleRead;
+  imageUrl: (id: string, piece?: string) => string;
+}) {
+  const [transport] = useState(() => {
+    let state = structuredClone(initial);
+    return async (command: PuzzleCommand): Promise<PuzzleRead> => {
+      const p = state.puzzle!;
+      const now = Date.now();
+      if (p.reservation && Date.parse(p.reservation.expiresAt) <= now) {
+        state.revealAfter = new Date(
+          Date.parse(p.reservation.expiresAt) + 300000,
+        ).toISOString();
+        p.reservation = null;
+      }
+      if (command.operation !== "read") {
+        if (command.revision !== p.revision) return { error: "STALE_BOARD" };
+        if (command.operation === "reveal") {
+          if (p.reservation) return { error: "ALREADY_RESERVED" };
+          if (
+            Date.parse(state.placeAfter || "") > now ||
+            Date.parse(state.revealAfter || "") > now
+          )
+            return { error: "COOLDOWN" };
+          const available = [
+            12,
+            ...Array.from({ length: 25 }, (_, n) => n),
+          ].find((n) => !p.board.some((b) => b.id === piece(n)));
+          if (available === undefined) return { error: "NO_AVAILABLE_PIECE" };
+          p.reservation = {
+            piece: piece(available),
+            expiresAt: new Date(now + 300000).toISOString(),
+          };
+        } else if (command.operation === "place") {
+          if (
+            !p.reservation ||
+            p.reservation.piece !== command.piece ||
+            command.to === undefined ||
+            p.board.some((b) => b.position === command.to)
+          )
+            return { error: "INVALID_DESTINATION" };
+          p.board.push({
+            id: command.piece,
+            position: command.to,
+            locked: Number(command.piece.slice(-12)) === command.to,
+          });
+          p.reservation = null;
+          state.placeAfter = new Date(now + 3600000).toISOString();
+        } else if (command.operation === "move") {
+          const source = p.board.find((b) => b.id === command.piece),
+            dest = p.board.find((b) => b.position === command.to);
+          if (
+            !source ||
+            source.locked ||
+            dest?.locked ||
+            command.to === undefined
+          )
+            return { error: "INVALID_MOVE" };
+          if (dest) {
+            dest.position = source.position;
+            dest.locked = Number(dest.id.slice(-12)) === dest.position;
+          }
+          source.position = command.to;
+          source.locked = Number(source.id.slice(-12)) === source.position;
+          state.moveAfter = new Date(now + 3600000).toISOString();
+        }
+        p.revision++;
+      }
+      state = { ...state, serverTime: new Date(now).toISOString() };
+      return structuredClone(state);
+    };
+  });
+  return (
+    <PuzzlePlayer initial={initial} transport={transport} imageUrl={imageUrl} />
   );
 }

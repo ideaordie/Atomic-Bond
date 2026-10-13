@@ -61,31 +61,27 @@ test("player uses authorized API, refreshes revisions and preserves independent 
     });
   });
   await page.goto("/review/puzzle/player/api");
-  await page.getByRole("button", { name: "REVEAL MY PIECE" }).click();
   await expect(
     page.getByRole("img", { name: "Your reserved piece" }),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Position 2, empty", exact: true })
     .click();
-  await page.getByRole("button", { name: "CONFIRM PLACEMENT" }).click();
-  await expect(
-    page.getByRole("button", { name: "REVEAL MY PIECE" }),
-  ).toBeDisabled();
-  await page.getByRole("button", { name: "MOVE A PIECE", exact: true }).click();
+  await page.getByRole("button", { name: "PLACE HERE" }).click();
+  await expect(page.getByText(/Next piece available in/)).toBeVisible();
   await page
     .getByRole("button", { name: "Position 2, movable piece", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Position 1, empty", exact: true })
     .click();
-  await page.getByRole("button", { name: "CONFIRM MOVE", exact: true }).click();
+  await page.getByRole("button", { name: "MOVE HERE", exact: true }).click();
   await expect(
     page.getByRole("button", {
       name: "Position 1, correct and locked",
       exact: true,
     }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   expect(operations.filter((x) => x !== "read")).toEqual([
     "reveal",
     "place",

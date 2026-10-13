@@ -97,7 +97,7 @@ export function PuzzleReview() {
       </header>
       <header className="puzzle-title">
         <p className="eyebrow">ONE SHARED WEEKLY PICTURE</p>
-        <h1>PARTICI-PUZZLE</h1>
+        <h1>PARTICIPUZZLE</h1>
         <p className="puzzle-tagline">Many people. One big picture.</p>
         <p>
           Reveal a piece. Find its place. Help the world complete the picture.
