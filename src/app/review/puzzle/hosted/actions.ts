@@ -4,6 +4,10 @@ import { authClient } from "../../../../services/auth/server";
 import { appOrigin } from "../../../../services/auth/policy";
 import { probePuzzleStorage } from "../../../../services/puzzle/storage-probe";
 import { checkRateLimit } from "@vercel/firewall";
+import {
+  observeStorageFetch,
+  type StorageObservation,
+} from "../../../../services/puzzle/storage-observation";
 export async function checkControlledCleanup() {
   try {
     if (
@@ -37,7 +41,25 @@ export async function checkControlledStorage(bucket: string, name: string) {
     if (limit.error || limit.rateLimited)
       return { result: "UNAVAILABLE", bytes: 0 };
   }
-  return probePuzzleStorage(await authClient(), bucket, name);
+  const observations: StorageObservation[] = [];
+  const original = await probePuzzleStorage(
+    await authClient(observeStorageFetch(observations, false)),
+    bucket,
+    name,
+  );
+  const freshObservations: StorageObservation[] = [];
+  const fresh = await probePuzzleStorage(
+    await authClient(observeStorageFetch(freshObservations, true)),
+    bucket,
+    name,
+  );
+  return {
+    ...original,
+    diagnostics: {
+      original: observations,
+      fresh: { ...fresh, responses: freshObservations },
+    },
+  };
 }
 export async function scheduleControlledPuzzle(batch: string, start: string) {
   try {

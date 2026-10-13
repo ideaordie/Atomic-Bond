@@ -252,7 +252,9 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
               setBusy(true);
               try {
                 const r = await checkControlledStorage(probeBucket, probeName);
-                setMessage(`Storage ${r.result}; ${r.bytes} bytes.`);
+                setMessage(
+                  `Storage ${r.result}; ${r.bytes} bytes.${"diagnostics" in r ? " " + JSON.stringify(r.diagnostics) : ""}`,
+                );
               } catch {
                 setMessage("Storage UNAVAILABLE; 0 bytes.");
               } finally {
