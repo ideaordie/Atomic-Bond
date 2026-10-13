@@ -82,7 +82,38 @@ The attempted authenticated-path URL rewrite was ineffective and is removed.
 Local regression verifies own and board tile info/download, and rejects foreign,
 unrevealed, expired, inactive and source access; listing/signing remain denied.
 The policy correction was applied after a clean single-migration preview.
-Actual post-fix hosted delivery remains to be recorded.
+Commit `ffd0b40` reached Vercel Ready on the production custom domain. Atom #4
+revealed a 100 x 100 tile successfully and placed it incorrectly, leaving it
+unlocked. After a separate real passwordless sign-in, the UI confirmed MY ATOM #5.
+Atom #5 read the shared placed tile and revealed a different private tile. A fresh
+request for that private tile after its natural five-minute expiry returned
+`Tile unavailable`. Atom #5 moved the shared tile to its correct position and the
+hosted board marked it locked. No clocks, allowances or puzzle deadlines were edited.
+
+Atom #5 subsequently revealed and correctly placed its own tile despite having
+used MOVE, verifying independent allowances in production. The board contains two
+locked pieces. Anonymous media HTTP returned 403 with private/no-store headers.
+A rollback-only two-owner SQL probe omitted the lifecycle AMR claims required by
+previously reactivated Atom #5 and denied its positive control; it is not counted
+as foreign-reservation acceptance evidence. No production mutation resulted.
+
+The approved Atom #5 deactivation check completed through Settings. Preflight
+found no retained Doodles or active Pulse. Afterwards Atom #5 was DEACTIVATED,
+its reservation count was zero, and both placed/locked shared pieces remained.
+The browser showed ATOM DEACTIVATED and ended the owner session. After the owner
+completed fresh passwordless authentication, the UI still identified Atom #5 as
+deactivated and a placed-tile HTTP request returned `Tile unavailable`. Explicit
+REACTIVATE MY ATOM restored ACTIVE; reloading the identical tile request returned
+the 100 x 100 artwork. Hosted checks confirmed both hourly PLACE/MOVE cooldowns
+remained in force, two locked pieces remained, public access stayed OFF and both
+buckets remained private. Deleted Atom #8 remained DELETED. Atom #5 is left ACTIVE.
+
+Post-fix regression passed all 400 tests, the production build, targeted lint,
+TypeScript and the repository/browser secret scan. Native PostgreSQL concurrency,
+lifecycle-race, completion and restart-idempotency checks also passed. Hosted
+aggregate checks confirmed both buckets private, no direct client puzzle-table
+access, the object authorization predicate on both read policies, and public
+database access OFF. Remaining HTTP denial/lifecycle cases are not claimed passed.
 
 The approved cohort script subsequently enabled controlled database access for
 Atoms #4/#5 with a 24-hour expiry; public access remains OFF. Vercel Production

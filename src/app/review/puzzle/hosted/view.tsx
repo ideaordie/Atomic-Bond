@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { scheduleControlledPuzzle } from "./actions";
+import { scheduleControlledPuzzle, checkControlledStorage } from "./actions";
 type Board = {
   id: string;
   revision: number;
@@ -16,6 +16,8 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
     [busy, setBusy] = useState(false),
     [batch, setBatch] = useState(""),
     [selected, setSelected] = useState(""),
+    [probeName, setProbeName] = useState(""),
+    [probeBucket, setProbeBucket] = useState("puzzle-tiles"),
     [position, setPosition] = useState(0);
   async function request(operation: string) {
     setBusy(true);
@@ -189,6 +191,45 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
           </button>
           <button disabled={busy || !selected} onClick={() => request("move")}>
             MOVE SELECTED PIECE / SWAP
+          </button>
+        </section>
+      )}
+      {!admin && (
+        <section aria-label="Controlled Storage authorization check">
+          <h2>Storage authorization check</h2>
+          <label>
+            Test bucket
+            <select
+              value={probeBucket}
+              onChange={(e) => setProbeBucket(e.target.value)}
+            >
+              <option value="puzzle-tiles">puzzle-tiles</option>
+              <option value="puzzle-originals">puzzle-originals</option>
+            </select>
+          </label>
+          <label>
+            Opaque test object
+            <input
+              value={probeName}
+              onChange={(e) => setProbeName(e.target.value)}
+              autoComplete="off"
+            />
+          </label>
+          <button
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              try {
+                const r = await checkControlledStorage(probeBucket, probeName);
+                setMessage(`Storage ${r.result}; ${r.bytes} bytes.`);
+              } catch {
+                setMessage("Storage UNAVAILABLE; 0 bytes.");
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            CHECK STORAGE READ
           </button>
         </section>
       )}
