@@ -1,0 +1,96 @@
+.puzzle-player {
+  display: block;
+  min-height: 0;
+  max-width: 620px;
+  margin: 24px auto;
+  padding: 0 16px 40px;
+  color: var(--text);
+}
+.puzzle-player h1 {
+  font-size: clamp(24px, 5vw, 34px);
+  letter-spacing: 0.04em;
+}
+.puzzle-player h2 {
+  font-size: 16px;
+}
+.puzzle-player p {
+  line-height: 1.6;
+}
+.puzzle-player button {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px;
+  cursor: pointer;
+}
+.puzzle-player button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.puzzle-player button:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+.puzzle-player button[aria-pressed="true"] {
+  outline: 2px solid var(--text);
+  outline-offset: -3px;
+}
+.puzzle-player section {
+  margin: 16px 0;
+  padding: 0;
+}
+.puzzle-player section > button {
+  margin: 4px;
+}
+.puzzle-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+}
+.puzzle-board button {
+  position: relative;
+  padding: 0;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.puzzle-board img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.puzzle-board button:disabled {
+  opacity: 1;
+}
+.puzzle-lock {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 4px;
+  border-radius: 3px;
+}
+.puzzle-metrics,
+.puzzle-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.puzzle-metrics p {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.puzzle-metrics strong {
+  display: block;
+  font-size: 15px;
+}
+.puzzle-complete {
+  width: 100%;
+  height: auto;
+}
+.puzzle-help {
+  font-size: 12px;
+}

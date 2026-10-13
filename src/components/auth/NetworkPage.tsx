@@ -63,6 +63,10 @@ export async function NetworkPage({
         <span>See how connected we already are.</span>
         <ApplicationNavigation
           owner={Boolean(ownerId)}
+          puzzle={
+            owner?.atom?.status === "ACTIVE" &&
+            process.env.PARTICI_PUZZLE_ENABLED === "true"
+          }
           doodle={Boolean(doodle)}
         />
         <div className="auth-entry">

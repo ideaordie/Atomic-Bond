@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.13.0-rc.6 — First official puzzle preparation (gameplay disabled)
+
+- Add the standalone, activation-gated `/partici-puzzle` player and navigation entry using existing owner-session gameplay/media operations; no database or gameplay changes.
+- Include shared progress, weekly time, independent PLACE/MOVE allowances, reservation feedback, deliberate placement/move/swap controls and completed artwork.
+- Prepare Connected Landscape privately through production Puzzle Studio: READY, 27 PostgreSQL assets, unscheduled. Add development-only artwork/player review with all 25 tiles and representative states; artwork remains outside Git and public assets.
+- Artwork and player passed product review. Re-prepare the identical approved artwork through Studio with normal 24-hour retention (through October 14, 2026, 16:27:16 UTC); preserve the private local original for later preparation.
+- Keep Master Spec v0.5 unchanged, both database participation gates OFF and the proposed October 27–November 3 window unscheduled. Scheduling and public activation require separate approval.
+
 ## v0.13.0-rc.5 — Puzzle Studio (gameplay disabled)
 
 - Add protected `/admin/puzzles` through Admin Hub, reusing verified preparation, scheduling and cleanup services. Include private 25-piece preview, READY status, paginated windows, progress and cleanup health.

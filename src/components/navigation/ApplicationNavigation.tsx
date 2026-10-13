@@ -6,11 +6,13 @@ import "./navigation.css";
 export function ApplicationNavigation({
   owner = false,
   doodle = false,
+  puzzle = false,
   current,
   hrefs = {},
 }: {
   owner?: boolean;
   doodle?: boolean;
+  puzzle?: boolean;
   current?: string;
   hrefs?: Record<string, string>;
 }) {
@@ -22,7 +24,8 @@ export function ApplicationNavigation({
         .filter(
           (item) =>
             (!item.owner || owner) &&
-            (item.href !== "/global-doodle" || doodle),
+            (item.href !== "/global-doodle" || doodle) &&
+            (item.href !== "/partici-puzzle" || puzzle),
         )
         .map((item) => {
           const selected =

@@ -18,6 +18,9 @@ export async function ApplicationHeader() {
       <Link href="/">ATOMIC BOND</Link>
       <ApplicationNavigation
         owner={Boolean(active)}
+        puzzle={
+          Boolean(active) && process.env.PARTICI_PUZZLE_ENABLED === "true"
+        }
         doodle={Boolean(active) && (await doodleNavigationAccess())}
       />
     </header>
