@@ -28,7 +28,9 @@ these properties. Participants may see their reserved piece and placed pieces,
 but cannot request arbitrary source regions. Full-image delivery is permitted
 after authoritative completion or scheduled expiration. Before then, unrevealed
 source regions remain inaccessible. Pre-generated private tile bytes are selected by a narrowly authorized PostgreSQL
-operation using the existing verified-owner session and database time. Authorization
+operation using the existing verified-owner session and database time. Normalized source
+artwork is retained privately in PostgreSQL for the same bounded retention period;
+source records are not participant-readable. Authorization
 and byte selection are serialized with reservation and lifecycle changes. The
 application returns private, non-cacheable binary responses; ordinary participants
 have no direct Storage access to puzzle media. New retrieval after cancellation or

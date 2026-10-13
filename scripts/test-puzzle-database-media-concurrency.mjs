@@ -68,6 +68,12 @@ try {
       "utf8",
     ),
   );
+  await f.db.exec(
+    await readFile(
+      "supabase/migrations/202610150003_puzzle_scheduled_cleanup.sql",
+      "utf8",
+    ),
+  );
   await f.exec("update private.puzzle_access_settings set public_enabled=true");
   await f.exec(
     "insert into private.puzzle_media(asset_id,content) select id,decode('89504e470d0a1a0a00000000','hex') from private.puzzle_assets where kind<>'source'",
@@ -116,6 +122,27 @@ try {
     Array.from({ length: 20 }, () => direct(2, piece)),
   );
   assert.ok(parallel.every((x) => x === 1));
+  const [cleanup, reads] = await Promise.all([
+    adapter.transaction(
+      async (tx) =>
+        (await tx.query("select private.puzzle_run_cleanup() r")).rows[0].r,
+    ),
+    Promise.all(Array.from({ length: 20 }, () => direct(2, piece))),
+  ]);
+  assert.equal(cleanup.ok, true);
+  assert.ok(reads.every((x) => x === 1));
+  assert.equal(
+    (
+      await f.exec("select locked from private.puzzle_pieces where id=$1", [
+        piece,
+      ])
+    ).rows[0].locked,
+    true,
+  );
+  console.log(
+    "PASS: concurrent cleanup preserves active locked pieces and all authorized media reads.",
+  );
+
   console.log(
     JSON.stringify({
       sampleBytes: 12,

@@ -122,7 +122,7 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
                 const r = await checkControlledCleanup();
                 setMessage(
                   r.ok
-                    ? `Cleanup plan: ${r.eligibleObjects} eligible objects. No Storage objects deleted.`
+                    ? `Cleanup complete: ${r.eligibleObjects} eligible legacy asset manifests retired.`
                     : "Cleanup unavailable.",
                 );
               } finally {
@@ -130,7 +130,7 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
               }
             }}
           >
-            CHECK BOUNDED CLEANUP
+            RUN BOUNDED CLEANUP
           </button>
         </section>
       ) : (

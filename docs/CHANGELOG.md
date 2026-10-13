@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.13.0-rc.4 — Bounded puzzle cleanup (gameplay disabled)
+
+- Reuse hosted pg_cron for bounded five-minute reservation, receipt and retained-media cleanup, with private health counts and SQLSTATE-only failure monitoring. Active/future media and rolling allowances remain protected.
+- Store new normalized source artwork privately in PostgreSQL alongside tiles; participants still cannot retrieve source records. No new credential or external scheduler.
+- Add bounded administrator-session Storage deletion/acknowledgment for eligible legacy manifests, with safe retries. Existing Storage-backed batches remain supported during rollout.
+- Preserve frozen Master Spec v0.4, Global Doodle cleanup and Tuesday growth scheduling. Both puzzle database participation gates and public gameplay remain OFF; specification and launch approval remain pending.
+
 ## v0.13.0-rc.3 — PostgreSQL puzzle media (controlled acceptance)
 
 Replaces runtime tile Storage downloads with atomic owner-authorized PostgreSQL byte delivery. Public gameplay remains disabled. Adds immutable private media preparation and a verified 52-asset migration. Hosted valid/cancelled/expired HTTP checks and foreign-owner RPC checks pass. Retires participant Storage reads and temporary copy/probe actions; sampled legacy URLs deny. Both database gates are closed. Worldwide historical cache containment, final operational acceptance and public launch approval remain separate gates. Frozen Master Spec v0.4 is unchanged.

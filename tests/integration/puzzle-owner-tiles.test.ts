@@ -401,7 +401,7 @@ it("serves stored tile bytes through the integrated HTTP handler; unknown parame
   ).toBe(404);
 });
 
-it("integrates preparation with 26 database assets and a private source before READY", async () => {
+it("integrates preparation with 27 private database assets before READY", async () => {
   await f.db.exec(
     await readFile(
       "supabase/candidates/202610140004_puzzle_controlled_access.sql",
@@ -412,6 +412,12 @@ it("integrates preparation with 26 database assets and a private source before R
   await f.db.exec(
     await readFile(
       "supabase/migrations/202610150001_puzzle_database_media.sql",
+      "utf8",
+    ),
+  );
+  await f.db.exec(
+    await readFile(
+      "supabase/migrations/202610150003_puzzle_scheduled_cleanup.sql",
       "utf8",
     ),
   );
@@ -468,11 +474,11 @@ it("integrates preparation with 26 database assets and a private source before R
     .toBuffer();
   const result = await uploadPuzzle(client, input);
   expect(result.ready).toBe(true);
-  expect(uploads).toBe(1);
+  expect(uploads).toBe(0);
   expect(
     (await f.exec("select count(*)::int n from private.puzzle_media")).rows[0]
       .n,
-  ).toBe(26);
+  ).toBe(27);
   expect(
     (
       await f.exec("select ready from private.puzzle_batches where id=$1", [

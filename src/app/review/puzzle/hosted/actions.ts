@@ -1,4 +1,5 @@
 "use server";
+import { cleanupLegacyPuzzleBatch } from "../../../../services/puzzle/owner-cleanup";
 import { headers } from "next/headers";
 import { authClient } from "../../../../services/auth/server";
 import { appOrigin } from "../../../../services/auth/policy";
@@ -10,9 +11,8 @@ export async function checkControlledCleanup() {
     )
       throw Error();
     const c = await authClient();
-    const { data, error } = await c.rpc("puzzle_cleanup_batch");
-    if (error || !Array.isArray(data?.assets)) throw Error();
-    return { ok: true, eligibleObjects: data.assets.length };
+    const result = await cleanupLegacyPuzzleBatch(c);
+    return { ok: true, eligibleObjects: result.removed };
   } catch {
     return { ok: false, eligibleObjects: 0 };
   }

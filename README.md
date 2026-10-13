@@ -1,9 +1,10 @@
 # Atomic Bond
 
-PARTICI-PUZZLE v0.13.0-rc.2 is a disabled security checkpoint, not a general beta feature.
-Public and controlled database access are OFF pending resolution of hosted expired-tile delivery.
-See [hosted acceptance and recovery](docs/architecture/PARTICI_PUZZLE_HOSTED_ACCEPTANCE_v0.1.md)
-for its access gates, approved test cohort and outstanding launch requirements.
+PARTICI-PUZZLE **v0.13.0-rc.4** is a disabled cleanup release candidate, not a general beta feature.
+Public and controlled database participation remain OFF. Runtime media uses private
+PostgreSQL authorization; cleanup reuses Supabase Cron without a new credential.
+See [cleanup operations](docs/architecture/PARTICI_PUZZLE_CLEANUP_v0.1.md) and
+[launch readiness](docs/architecture/PARTICI_PUZZLE_LAUNCH_READINESS_v0.1.md).
 
 Product authority is the approved [Master Spec v0.4](docs/MASTER_SPEC_v0.4.md), adding the narrowly scoped Global Doodle exception. Frozen v0.3 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
 
@@ -12,7 +13,7 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.11.4 — Design System & Dark Mode**.
+Current release candidate: **v0.13.0-rc.4 — Bounded puzzle cleanup (gameplay disabled)**.
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.
 See [Design System](docs/architecture/DESIGN_SYSTEM_v0.1.md).
