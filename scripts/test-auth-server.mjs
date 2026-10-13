@@ -11,6 +11,7 @@ await db.exec(
 await db.exec(
   "create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp())",
 );
+await db.exec(await readFile("tests/helpers/storage-fixture.sql", "utf8"));
 for (const f of (await readdir("supabase/migrations"))
   .filter((f) => f.endsWith(".sql"))
   .sort())

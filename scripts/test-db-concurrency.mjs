@@ -39,6 +39,9 @@ try {
  create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp());
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
+  await admin.query(
+    await readFile("tests/helpers/storage-fixture.sql", "utf8"),
+  );
   for (const file of (await readdir("supabase/migrations"))
     .filter((f) => f.endsWith(".sql"))
     .sort())

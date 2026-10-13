@@ -20,6 +20,7 @@ export async function createDoodleFixture(
     .filter(
       (f) =>
         f.endsWith(".sql") &&
+        !f.startsWith("202610140001") &&
         (next || !/^20261012000[23]/.test(f)) &&
         (sevenDays || !f.startsWith("202610130001")),
     )

@@ -8,6 +8,7 @@ it("additive Pulse migration preserves all legacy rows, timestamps, constraints 
     await db.exec(
       `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp());create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;`,
     );
+    await db.exec(readFileSync("tests/helpers/storage-fixture.sql", "utf8"));
     const files = readdirSync("supabase/migrations")
       .filter((f) => f.endsWith(".sql"))
       .sort();

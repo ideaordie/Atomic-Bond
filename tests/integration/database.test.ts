@@ -15,6 +15,7 @@ beforeAll(async () => {
  create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz not null default clock_timestamp());
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
+  await db.exec(readFileSync("tests/helpers/storage-fixture.sql", "utf8"));
   for (const file of readdirSync("supabase/migrations").sort()) {
     if (file.includes("growth_preference_provenance")) {
       await db.exec(`insert into public.atoms(id,location_id)

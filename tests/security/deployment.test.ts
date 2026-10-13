@@ -26,6 +26,8 @@ describe("deployment publication boundaries", () => {
       "GROWTH_SEND_CAP=",
       "GLOBAL_DOODLE_ENABLED=",
       "GLOBAL_DOODLE_CONTROLLED_ACCESS=",
+      "PARTICI_PUZZLE_ENABLED=",
+      "PARTICI_PUZZLE_CONTROLLED_ACCESS=",
     ]);
   });
 

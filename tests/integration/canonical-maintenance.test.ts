@@ -17,6 +17,7 @@ it("exact maintenance preserves dependencies and aborts changed starting states"
       create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade,created_at timestamptz default now());
       create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
       grant usage on schema public,auth to anon,authenticated;`);
+    await db.exec(readFileSync("tests/helpers/storage-fixture.sql", "utf8"));
     for (const f of readdirSync("supabase/migrations").sort())
       await db.exec(readFileSync(`supabase/migrations/${f}`, "utf8"));
     await db.exec(`

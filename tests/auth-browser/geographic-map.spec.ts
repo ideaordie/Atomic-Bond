@@ -55,7 +55,11 @@ test("owner map, motion preference, anonymous isolation and sign-out", async ({
   await settings
     .getByRole("button", { name: "Sign out on this device" })
     .click();
+  // Wait for sign-out to finish before reloading the other tab. Its server
+  // redirect must settle before starting the anonymous public navigation.
+  await expect(settings).toHaveURL("/");
   await page.reload();
+  await expect(page).toHaveURL("/");
   await expect(
     page.getByRole("button", { name: "SHOW MAP", exact: true }),
   ).toHaveCount(0);

@@ -1,5 +1,9 @@
 # Atomic Bond
 
+PARTICI-PUZZLE is a disabled controlled-infrastructure candidate, not a general beta feature.
+See [hosted acceptance and recovery](docs/architecture/PARTICI_PUZZLE_HOSTED_ACCEPTANCE_v0.1.md)
+for its access gates, approved test cohort and outstanding launch requirements.
+
 Product authority is the approved [Master Spec v0.4](docs/MASTER_SPEC_v0.4.md), adding the narrowly scoped Global Doodle exception. Frozen v0.3 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
 
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)

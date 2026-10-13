@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.13.0-rc.1 — PARTICI-PUZZLE controlled infrastructure candidate
+
+- Apply the approved additive hosted migration with private gameplay tables, existing-session Storage RLS, private pre-generated tiles, and default-OFF public/controlled database gates. No new privileged credential.
+- Add expiring operator-provisioned test membership and a separate controlled acceptance page; general beta participation remains disabled. Preserve the existing prototype and all gameplay rules.
+- Add puzzle-specific ingress protection and retain database throttling. Limit encoded preparation uploads to 3 MB for hosted request limits.
+- Frozen Master Spec v0.4 remains unchanged. Hosted media/gameplay acceptance and general launch are separate gates; this candidate is not a completed public puzzle release.
+
+### Earlier local checkpoint
+
+- Integrate the approved existing-session private-tile architecture locally: Sharp administrator preparation, immutable 27-object batches, independent Storage RLS, default-disabled Next.js gameplay/media route and bounded administrator cleanup. Authorized direct reads are intentional; no custom media credential or runtime cropping is used. Hosted Storage acceptance remains pending and frozen v0.4 is unchanged.
+
+- Add a development-only 5 × 5 collaborative puzzle review with synthetic participants, expiring reservations, independent hourly placement/move allowances, swaps, permanent correct-piece locks, and weekly-cycle simulation.
+- Add keyboard/touch and Light/Dark review, deterministic state tests, and a proposed production image-security/storage architecture. No hosted changes, production navigation, release bump or frozen specification changes.
+- Add local-only PostgreSQL gameplay and restricted media-role SQL candidates, cross-week cooldowns, reveal throttling, lifecycle cleanup, bounded retention/worker contracts, isolated security/concurrency/restart tests and tile benchmarks. Image-token issuance and production cleanup wiring remain approval gates; no credential or hosted change was introduced.
+
 ## v0.12.4 — Seven-Day Global Doodle
 
 - Use seven-day (168-hour) lifetime for newly published Doodles; preserve existing deadlines, hourly cooldown, multiple live drawings and all Hall rules.
