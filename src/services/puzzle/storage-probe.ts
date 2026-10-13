@@ -16,9 +16,8 @@ export async function probePuzzleStorage(
     )
       throw Error();
     await verifiedPuzzleClient(client);
-    const gate = await client.rpc("puzzle_request", { p_operation: "read" });
-    if (gate.error || (gate.data as { error?: string } | null)?.error)
-      throw Error();
+    // Do not run gameplay RPCs here: even read expires reservations. Storage
+    // independently checks the owner, controlled cohort and reservation deadline.
     const result = await client.storage.from(bucket).download(
       name,
       {},

@@ -133,8 +133,47 @@ suite passed 74 of 75 cases initially; the remaining sign-out test had a navigat
 race. After waiting for the sign-out redirect, that test passed on all three
 viewports. No authentication implementation was changed.
 
-Real owner-session upload/download, direct Storage denial/allow cases, gameplay,
-cleanup and disabled deployment remain uncompleted until
-separately recorded. Isolated database tests are not hosted Storage evidence.
+### Continued hosted acceptance — October 13
+
+The controlled Storage probe uses the existing verified owner session and SDK
+download without the application asset resolver, testing Storage RLS independently.
+Actual hosted reads allowed a placed tile (2,112 bytes) and denied an unrevealed
+tile, original source, and incomplete full image (zero bytes). After fresh sign-in,
+MY ATOM #4 was verified and its read of a separate future puzzle tile was denied.
+
+Administrator Atom #1 prepared the disposable synthetic image through the real
+upload pipeline and scheduled the second puzzle for October 20. Two READY batches
+contain 54 private objects totaling 251,174 bytes. The two placed pieces in the
+current puzzle remain unchanged. The bounded cleanup check returned zero eligible
+objects; no Storage deletion was performed. Actual age-based asset deletion has
+not yet been exercised in production.
+
+A rollback-only hosted check using Atom #4's current session claims replayed its
+recorded PLACE request. Identical retry returned the recorded result, changed
+arguments returned IDEMPOTENCY_CONFLICT, and the board checksum was unchanged.
+The obsolete media ticket resolver is absent. This is SQL idempotency evidence,
+not a claim of a successful HTTP stale-ticket redemption test.
+
+Commit `efb5cf0` is Vercel Production Ready on the custom domain; local main and
+origin/main agree. Public database access remains false, controlled access true,
+and both buckets private. Regression passed 403 tests across 60 files, build,
+lint, TypeScript and secret checks. Native owner-media cancellation/deactivation
+race tests passed, with subsequent direct reads denied.
+
+Live foreign-reservation and cancelled-reservation Storage reads remain pending:
+Atom #4's existing hourly PLACE cooldown was preserved. Atom #5 remains ACTIVE;
+its lifecycle test is not repeated. Expired-reservation application HTTP denial
+was observed earlier, but independent expired-reservation Storage verification
+is still outstanding. Isolated database tests are not hosted Storage evidence.
 The owner approved isolated PostgreSQL evidence for completion, weekly rollover
 and retention deadlines. No hosted clock or cooldown manipulation is authorized.
+
+### Expiration probe correction
+
+The previous probe called gameplay `read` for throttling before downloading.
+That RPC also cleans expired reservations, so it cannot establish denial before
+cleanup. The owner approved a probe-only deployment correction: verified session,
+same-origin/controlled flag, the existing fail-closed Vercel puzzle rate limiter,
+then direct SDK Storage download with no gameplay RPC. Storage itself retains
+the ACTIVE owner, cohort, puzzle and reservation-deadline checks. No schema,
+policy, gameplay, cooldown or feature-gate change is included.

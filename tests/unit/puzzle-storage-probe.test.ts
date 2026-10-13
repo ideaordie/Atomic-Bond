@@ -6,12 +6,10 @@ function fixture() {
     .fn()
     .mockResolvedValue({ data: new Blob(["tile"]), error: null });
   const rpc = vi.fn().mockResolvedValue({ data: { puzzle: {} }, error: null });
-  const getUser = vi
-    .fn()
-    .mockResolvedValue({
-      data: { user: { email_confirmed_at: "verified" } },
-      error: null,
-    });
+  const getUser = vi.fn().mockResolvedValue({
+    data: { user: { email_confirmed_at: "verified" } },
+    error: null,
+  });
   return {
     download,
     rpc,
@@ -29,26 +27,21 @@ it("probes Storage independently with an authorized session and returns no conte
     result: "ALLOWED",
     bytes: 4,
   });
-  expect(f.rpc).toHaveBeenCalledExactlyOnceWith("puzzle_request", {
-    p_operation: "read",
-  });
+  expect(f.rpc).not.toHaveBeenCalled();
   expect(f.download).toHaveBeenCalledWith(
     name,
     {},
     expect.objectContaining({ cache: "no-store" }),
   );
 });
-it("does not reach Storage when owner or controlled gate rejects access", async () => {
+it("does not reach Storage without a verified session", async () => {
   const f = fixture();
-  f.rpc.mockResolvedValue({ data: null, error: {} });
+  f.getUser.mockResolvedValue({ data: { user: null }, error: null });
   expect(
     (await probePuzzleStorage(f.client, "puzzle-tiles", name)).result,
   ).toBe("UNAVAILABLE");
   expect(f.download).not.toHaveBeenCalled();
-  f.rpc.mockResolvedValue({ data: { error: "RATE_LIMITED" }, error: null });
-  await probePuzzleStorage(f.client, "puzzle-tiles", name);
-  expect(f.download).not.toHaveBeenCalled();
-  f.getUser.mockResolvedValue({ data: { user: null }, error: null });
+  f.getUser.mockResolvedValue({ data: { user: {} }, error: null });
   await probePuzzleStorage(f.client, "puzzle-tiles", name);
   expect(f.download).not.toHaveBeenCalled();
 });
