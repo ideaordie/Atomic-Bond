@@ -110,3 +110,31 @@ window and zero-gameplay guards. All 16 protected table fingerprints, genuine
 puzzle/piece fingerprints, #4/#5 cooldowns and Atom #5 matched the before snapshot.
 Doodle's Cron configuration hash was identical and Tuesday growth configuration
 was unchanged. Ordinary users cannot execute cleanup or read its health table.
+
+### Completed hosted cleanup acceptance
+
+The disposable legacy source was physically removed through the Storage API
+using the real administrator session. Its empty manifest was also retired.
+The first UI response exposed an acknowledgment race: the cleanup step had
+already removed the now-empty batch before acknowledgment selected it.
+Migration 202610150004 corrects this idempotent case without changing authority
+or retention. Six targeted integration tests pass; hosted rollback-only calls
+under the existing administrator identity confirm repeated acknowledgment.
+The real browser then reported a successful zero-work repeat.
+
+A separate hosted rollback-only fault injection confirmed failure rollback,
+successful retry and repeated-run idempotency; the trigger and fixtures were
+rolled back. No production fault injector remains. The scheduled worker has
+also completed subsequent healthy runs. Operator monitoring is documented in
+`supabase/maintenance/puzzle-cleanup-status.sql`.
+
+The deployed PostgreSQL-only pipeline prepared another disposable unscheduled
+READY batch: 27 database images, 125,587 bytes, zero source or tile Storage
+objects. It will age out normally after 24 hours if not scheduled. The original
+accepted test puzzles and their two locked pieces remain unchanged.
+
+The disabled rc.4 application deployment was Vercel Ready. Both database gates
+remain OFF. Cleanup is no longer a launch blocker. Historical CDN containment,
+exact Section 48B specification approval, official artwork/window selection and
+explicit public activation remain separate decisions. No worldwide cache purge
+or revocation of already downloaded artwork is claimed.

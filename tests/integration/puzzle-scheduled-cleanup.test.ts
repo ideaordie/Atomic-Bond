@@ -10,6 +10,7 @@ beforeEach(async () => {
     "supabase/candidates/202610140004_puzzle_controlled_access.sql",
     "supabase/migrations/202610150001_puzzle_database_media.sql",
     "supabase/migrations/202610150003_puzzle_scheduled_cleanup.sql",
+    "supabase/migrations/202610150004_puzzle_cleanup_ack.sql",
   ])
     await f.db.exec(await readFile(file, "utf8"));
   await f.exec("update private.puzzle_access_settings set public_enabled=true");
@@ -160,4 +161,29 @@ it("bounds batches and removes closed media only after the complete 30 day reten
   expect((await run()).removed.batches).toBe(0);
   await f.advance(1);
   expect((await run()).removed.batches).toBe(1);
+});
+
+it("acknowledges a batch removed by cleanup and repeated acknowledgment without touching active media", async () => {
+  const id = await batch("2 days");
+  expect(await f.rpc(0, "puzzle_cleanup_batch", [id])).toEqual({
+    removed: true,
+  });
+  expect(await f.rpc(0, "puzzle_cleanup_batch", [id])).toEqual({
+    removed: true,
+  });
+  const active = (
+    await f.exec("select source_key from private.puzzles where id=$1", [
+      f.puzzle,
+    ])
+  ).rows[0].source_key;
+  expect(await f.rpc(0, "puzzle_cleanup_batch", [active])).toEqual({
+    assets: [],
+  });
+  expect(
+    (
+      await f.exec("select id from private.puzzle_batches where id=$1", [
+        active,
+      ])
+    ).rows,
+  ).toHaveLength(1);
 });

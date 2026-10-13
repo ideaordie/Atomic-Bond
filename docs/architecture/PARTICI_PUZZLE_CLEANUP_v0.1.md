@@ -79,3 +79,10 @@ checks race cleanup with authorized tile reads while preserving a locked piece.
 Hosted acceptance uses newly created disposable expired/future fixtures, never
 backdates existing participant content or changes the database clock. Run results
 and production-integrity comparison are recorded in the launch-readiness report.
+
+Hosted legacy API acceptance found and fixed the acknowledgment-after-removal
+case in migration 202610150004. An absent batch now acknowledges success only
+after the existing administrator check; an active retained batch is never
+acknowledged as removed. This also covers Cron finishing between API removal
+and acknowledgment. Six integration tests and a rollback-only hosted repeat
+verify the correction.
