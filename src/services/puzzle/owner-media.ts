@@ -42,6 +42,7 @@ export async function ownerPuzzleTile(
   piece: string | null,
 ) {
   let stage = "owner";
+  let storageStatus: number | null = null;
   try {
     await verifiedPuzzleClient(client);
     stage = "resolver";
@@ -65,6 +66,11 @@ export async function ownerPuzzleTile(
         signal: AbortSignal.timeout(5000),
       },
     );
+    const status = Number(
+      (asset.error as { statusCode?: unknown } | null)?.statusCode,
+    );
+    if (Number.isInteger(status) && status >= 400 && status <= 599)
+      storageStatus = status;
     if (asset.error || !asset.data || asset.data.size > 2_000_000)
       throw Error();
     return new Response(asset.data, {
@@ -73,7 +79,7 @@ export async function ownerPuzzleTile(
   } catch {
     // Fixed stage names only: never log identities, object names, tokens or
     // provider error text. Useful for controlled hosted acceptance failures.
-    console.warn("Puzzle tile unavailable", { stage });
+    console.warn("Puzzle tile unavailable", { stage, storageStatus });
     return Response.json(
       { error: "Tile unavailable" },
       { status: 403, headers: puzzlePrivateHeaders },
