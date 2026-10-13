@@ -60,7 +60,19 @@ test("production owner-session route publishes, reports and removes without fixt
   ).toBeVisible();
   await page.getByTestId("doodle-editor").focus();
   await page.keyboard.press("Space");
+  const publication = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/doodle") &&
+      response.request().postDataJSON()?.action === "publish",
+  );
   await page.getByRole("button", { name: "SEND", exact: true }).click();
+  const { data: published } = await (await publication).json();
+  expect(
+    Date.parse(published.expiresAt) - Date.parse(published.publishedAt),
+  ).toBe(168 * 3600000);
+  expect(
+    Date.parse(published.nextEligibleAt) - Date.parse(published.publishedAt),
+  ).toBe(3600000);
   await expect(
     page.getByRole("heading", { name: "DOODLE PUBLISHED" }),
   ).toBeVisible();

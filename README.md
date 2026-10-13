@@ -226,3 +226,5 @@ See [Auth and email architecture](docs/architecture/AUTH_EMAIL_v0.1.md) for sign
 ## Global Doodle
 
 Task #12.3 release v0.12.3 separates the Global Doodle feed from the Living Atom and adds owner-authorized WORLD / MY NETWORK navigation. See [architecture and rollout](docs/architecture/GLOBAL_DOODLE_NAVIGATION_v0.1.md) and the [approved Section 48A amendment](docs/proposals/TASK_12_3_SPEC_AMENDMENT.md). Frozen v0.3 remains unchanged. The earlier [controlled-rollout record](docs/architecture/GLOBAL_DOODLE_ROLLOUT_v0.1.md) is retained for history.
+
+Task #12.4 / v0.12.4 extends newly published Doodles to seven days while preserving existing deadlines and the hourly cooldown. See [seven-day lifetime and retention](docs/architecture/GLOBAL_DOODLE_SEVEN_DAY_v0.1.md).

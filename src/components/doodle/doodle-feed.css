@@ -117,3 +117,11 @@
     padding-inline: 6px;
   }
 }
+
+.global-doodle-feed .doodle-tagline {
+  margin: -4px 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  letter-spacing: normal;
+}

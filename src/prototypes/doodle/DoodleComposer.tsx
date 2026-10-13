@@ -118,7 +118,7 @@ export function DoodleComposer({
       <p className="doodle-help" id="doodle-input-help">
         Draw or erase with a finger, mouse or pen. Keyboard: arrows move; Space
         marks a dot. One submission per hour. SEND publishes immediately for{" "}
-        {simplified ? "24 hours" : "one hour"}.
+        {simplified ? "7 days" : "one hour"}.
       </p>
       {editor.strokes === null && (
         <p className="doodle-help">

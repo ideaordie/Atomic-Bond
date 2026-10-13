@@ -67,6 +67,7 @@ try {
   const f = await createDoodleFixture(
       adapter,
       process.env.DOODLE_REVIEW_NEXT === "true",
+      process.env.DOODLE_SEVEN_DAY_REVIEW === "true",
     ),
     drawing = fixtureDrawing(),
     key = randomUUID();
@@ -97,7 +98,13 @@ try {
       await f.rpc(voter, "appreciate_doodle", [candidate]);
     hallIds.push(candidate);
   }
-  await f.advance(process.env.DOODLE_REVIEW_NEXT === "true" ? 1440 : 60);
+  await f.advance(
+    process.env.DOODLE_SEVEN_DAY_REVIEW === "true"
+      ? 10080
+      : process.env.DOODLE_REVIEW_NEXT === "true"
+        ? 1440
+        : 60,
+  );
   const q = await f.rpc(0, "doodle_admin_queue");
   await Promise.all(
     hallIds.map((id) =>
@@ -144,7 +151,13 @@ try {
     () => false,
     () => true,
   );
-  await f.advance(process.env.DOODLE_REVIEW_NEXT === "true" ? 1440 : 60);
+  await f.advance(
+    process.env.DOODLE_SEVEN_DAY_REVIEW === "true"
+      ? 10080
+      : process.env.DOODLE_REVIEW_NEXT === "true"
+        ? 1440
+        : 60,
+  );
   await lock.query("commit");
   await lock.end();
   assert.equal(await waiting, true);

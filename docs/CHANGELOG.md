@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.12.4 — Seven-Day Global Doodle
+
+- Use seven-day (168-hour) lifetime for newly published Doodles; preserve existing deadlines, hourly cooldown, multiple live drawings and all Hall rules.
+- Add “Draw something. Make someone's day.” below the Global Doodle feed heading and update editor lifetime guidance.
+- Add isolated expiration, voting, cleanup, migration-preservation and responsive checks. Approved the function-only migration and surgical Section 48A amendment for publication.
+
 ## v0.12.3 — Standalone Global Doodle & navigation
 
 - Separate Global Doodle from the Living Atom into `/global-doodle`; retain `/doodle` as the editor.

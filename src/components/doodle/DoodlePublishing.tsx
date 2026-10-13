@@ -110,7 +110,7 @@ export function DoodlePublishing({
       {published ? (
         <section className="doodle-panel" aria-label="Publication complete">
           <h2>DOODLE PUBLISHED</h2>
-          <p>Your drawing is now live for 24 hours.</p>
+          <p>Your drawing is now live for 7 days.</p>
           <a className="doodle-create" href={returnHref}>
             RETURN TO MY ATOM
           </a>
@@ -128,7 +128,7 @@ export function DoodlePublishing({
       ) : (
         <>
           <p>
-            Monochrome drawings remain live for 24 hours. Do not include private
+            Monochrome drawings remain live for 7 days. Do not include private
             information.
           </p>
           {paused && <p role="status">NEW SUBMISSIONS PAUSED</p>}

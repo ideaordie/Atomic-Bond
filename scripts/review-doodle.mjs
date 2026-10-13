@@ -8,8 +8,8 @@ import {
 } from "../tests/helpers/doodle-fixture.mjs";
 const next = process.env.DOODLE_REVIEW_NEXT === "true";
 const port = next ? 3143 : 3141;
-let fixture = await createDoodleFixture(undefined, next);
-await seedDoodleReview(fixture, next ? 1440 : 60);
+let fixture = await createDoodleFixture(undefined, next, next);
+await seedDoodleReview(fixture, next ? 10080 : 60);
 if (process.env.DOODLE_NETWORK_REVIEW === "true")
   for (let i = 1; i < 12; i++)
     await fixture.exec(
@@ -101,8 +101,8 @@ const server = createServer((req, res) => {
           ).rows[0];
         else if (action === "reset") {
           await fixture.db.close();
-          fixture = await createDoodleFixture(undefined, next);
-          await seedDoodleReview(fixture, next ? 1440 : 60);
+          fixture = await createDoodleFixture(undefined, next, next);
+          await seedDoodleReview(fixture, next ? 10080 : 60);
           if (process.env.DOODLE_NETWORK_REVIEW === "true")
             for (let i = 1; i < 12; i++)
               await fixture.exec(

@@ -279,6 +279,9 @@ function DoodleFeedWindow({
     <aside ref={root} className="global-doodle-feed" aria-label="Global Doodle">
       <header>
         <h1>GLOBAL DOODLE</h1>
+        <p className="doodle-tagline">
+          Draw something. Make someone&apos;s day.
+        </p>
         <a className="doodle-create" href={createHref}>
           CREATE DOODLE
         </a>

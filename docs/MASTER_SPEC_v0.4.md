@@ -515,13 +515,17 @@ owner is published immediately after server-side payload/replay validation,
 ownership/lifecycle checks, cooldown and request throttling. Ordinary publication
 has no pending-review state and requires no administrator approval.
 
-Publication lasts exactly 24 hours from successful publication using database
-time, unless removed earlier for moderation or account lifecycle reasons. Content
+Newly published drawings remain public for exactly 7 days (168 hours) from
+successful publication using database time, unless removed earlier for
+moderation or account lifecycle reasons. Content
 is immutable. The approved editor's bounded-history fallback may submit a still
 bitmap with no replay; any submitted replay must be complete within its bounds and
 reconstruct the final bitmap. A partial or inconsistent replay is rejected.
 
 Existing published drawings retain their original deadlines.
+
+The Global Doodle page displays “Draw something. Make someone's day.” directly
+below its GLOBAL DOODLE heading, using the existing monochrome typography.
 
 Global Doodle has a standalone authenticated ACTIVE-owner page, separate from
 the Living Atom and drawing editor. Shared application navigation presents
@@ -558,7 +562,7 @@ remove content solely because of report volume.
 
 APPRECIATE is the sole voting interaction. Each authenticated ACTIVE Atom may
 appreciate another Atom's currently published drawing once. Self-voting is
-prohibited. No votes are accepted outside its original publication window (24 hours for newly published drawings). Retries cannot add votes. There is no dislike, downvote, comment, reply,
+prohibited. No votes are accepted outside its original publication window (7 days / 168 hours for newly published drawings). Retries cannot add votes. There is no dislike, downvote, comment, reply,
 repost, follower system, financial reward or transferable reward. The live drawing
 shows its appreciation count and whether the viewing owner has appreciated it.
 

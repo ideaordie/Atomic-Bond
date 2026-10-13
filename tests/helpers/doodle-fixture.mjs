@@ -4,7 +4,11 @@ import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
-export async function createDoodleFixture(suppliedDb, next = false) {
+export async function createDoodleFixture(
+  suppliedDb,
+  next = false,
+  sevenDays = false,
+) {
   const db = suppliedDb ?? new PGlite({ extensions: { pgcrypto } });
   const exec = async (sql, args = []) => db.query(sql, args);
   await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
@@ -13,7 +17,12 @@ export async function createDoodleFixture(suppliedDb, next = false) {
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema public,auth to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;`);
   for (const f of (await readdir("supabase/migrations"))
-    .filter((f) => f.endsWith(".sql") && (next || !/^20261012000[23]/.test(f)))
+    .filter(
+      (f) =>
+        f.endsWith(".sql") &&
+        (next || !/^20261012000[23]/.test(f)) &&
+        (sevenDays || !f.startsWith("202610130001")),
+    )
     .sort())
     await db.exec(await readFile("supabase/migrations/" + f, "utf8"));
   await db.exec(
