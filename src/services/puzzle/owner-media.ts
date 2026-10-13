@@ -41,8 +41,10 @@ export async function ownerPuzzleTile(
   puzzle: string,
   piece: string | null,
 ) {
+  let stage = "owner";
   try {
     await verifiedPuzzleClient(client);
+    stage = "resolver";
     const { data, error } = await client.rpc("puzzle_asset", {
       p_puzzle: puzzle,
       p_piece: piece,
@@ -54,6 +56,7 @@ export async function ownerPuzzleTile(
       !/^[0-9a-f-]{36}\.png$/i.test(name)
     )
       throw Error();
+    stage = "storage";
     const asset = await client.storage.from("puzzle-tiles").download(
       name,
       {},
@@ -68,6 +71,9 @@ export async function ownerPuzzleTile(
       headers: { ...puzzlePrivateHeaders, "Content-Type": "image/png" },
     });
   } catch {
+    // Fixed stage names only: never log identities, object names, tokens or
+    // provider error text. Useful for controlled hosted acceptance failures.
+    console.warn("Puzzle tile unavailable", { stage });
     return Response.json(
       { error: "Tile unavailable" },
       { status: 403, headers: puzzlePrivateHeaders },
