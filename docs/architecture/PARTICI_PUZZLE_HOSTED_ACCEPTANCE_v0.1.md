@@ -72,6 +72,18 @@ recovery process before general launch.
 
 ## Outstanding acceptance
 
+### Authorized tile 404 investigation
+
+Hosted Storage logs identified `object.get_authenticated_info` as the prerequisite
+operation denied before downloads. Migration `202610140002_puzzle_storage_download_info.sql`
+adds that operation to the two read policies under the unchanged
+`private.puzzle_asset_allowed` predicate. There are no table grants or data writes.
+The attempted authenticated-path URL rewrite was ineffective and is removed.
+Local regression verifies own and board tile info/download, and rejects foreign,
+unrevealed, expired, inactive and source access; listing/signing remain denied.
+The policy correction was applied after a clean single-migration preview.
+Actual post-fix hosted delivery remains to be recorded.
+
 The approved cohort script subsequently enabled controlled database access for
 Atoms #4/#5 with a 24-hour expiry; public access remains OFF. Vercel Production
 flags were saved as `PARTICI_PUZZLE_ENABLED=false` and

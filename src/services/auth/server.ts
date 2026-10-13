@@ -4,13 +4,12 @@ import { cookies } from "next/headers";
 import { dataConfiguration } from "../../data/supabase/config";
 import { createSupabaseServices } from "../supabase/services";
 
-export async function authClient(fetcher?: typeof fetch) {
+export async function authClient() {
   const config = dataConfiguration(process.env);
   if (config.mode !== "supabase")
     throw new Error("Real authentication requires Supabase mode");
   const jar = await cookies();
   return createServerClient(config.url, config.anonKey, {
-    ...(fetcher ? { global: { fetch: fetcher } } : {}),
     cookieOptions: {
       httpOnly: true,
       sameSite: "lax",

@@ -2,6 +2,7 @@
 
 ## v0.13.0-rc.1 — PARTICI-PUZZLE controlled infrastructure candidate
 
+- Correct hosted tile downloads by authorizing Supabase's prerequisite authenticated object-info operation under the existing per-tile RLS predicate. Remove the unsuccessful URL rewrite; retain the normal owner-session SDK path and disabled public gate.
 - Apply the approved additive hosted migration with private gameplay tables, existing-session Storage RLS, private pre-generated tiles, and default-OFF public/controlled database gates. No new privileged credential.
 - Add expiring operator-provisioned test membership and a separate controlled acceptance page; general beta participation remains disabled. Preserve the existing prototype and all gameplay rules.
 - Add puzzle-specific ingress protection and retain database throttling. Limit encoded preparation uploads to 3 MB for hosted request limits.

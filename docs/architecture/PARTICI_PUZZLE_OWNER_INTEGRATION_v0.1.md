@@ -104,9 +104,11 @@ The full-image derivative becomes readable after completion or expiry, and all
 delivery ends at scheduled end plus 30 days. The master has no participant read
 policy, including for administrators using ordinary download operations.
 
-List, info, signing and image transformations are excluded by operation-specific
+List, signing and image transformations are excluded by operation-specific
 policies. Solution mappings and participant identities remain private. RLS applies
 whether bytes are requested through Next.js or directly with the owner's session.
+The authenticated object-info operation required by hosted Storage downloads uses
+the identical per-object predicate; it does not authorize listing or hidden assets.
 Repeated authorized reads are allowed; an opaque filename is not a capability.
 Old names cease to authorize after reservation expiry, session revocation or
 lifecycle changes. No new bearer ticket or reusable signed URL is introduced.

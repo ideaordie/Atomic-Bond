@@ -1,5 +1,6 @@
 import { beforeEach, afterEach, it, expect } from "vitest";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { puzzleHttp } from "../../src/services/puzzle/http";
 import { uploadPuzzle } from "../../src/services/puzzle/owner-upload";
@@ -9,6 +10,12 @@ import { createPuzzleFixture } from "../helpers/puzzle-fixture.mjs";
 let f: Awaited<ReturnType<typeof createPuzzleFixture>>;
 beforeEach(async () => {
   f = await createPuzzleFixture(undefined, true);
+  await f.db.exec(
+    await readFile(
+      "supabase/migrations/202610140002_puzzle_storage_download_info.sql",
+      "utf8",
+    ),
+  );
 }, 60000);
 afterEach(async () => {
   await f?.db.close();
@@ -60,12 +67,18 @@ const asset = async (kind: string) =>
       [kind],
     )
   ).rows[0].name;
-it("enforces direct Storage reads independently: own/board yes, foreign/unrevealed/source/list/info/sign no", async () => {
+it("enforces direct Storage downloads and prerequisite info: own/board yes, foreign/unrevealed/source/list/sign no", async () => {
   const id = (await f.call(1, "reveal", { revision: 0 })).puzzle.reservation
     .piece;
   const name = (await f.rpc(1, "puzzle_asset", [f.puzzle, id])).name;
   expect(await read(1, name)).toHaveLength(1);
   expect(await read(2, name)).toHaveLength(0);
+  expect(
+    await read(1, name, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(1);
+  expect(
+    await read(2, name, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(0);
   await expect(read(-1, name)).rejects.toThrow();
   expect(await read(1, randomUUID() + ".png")).toHaveLength(0);
   const hidden = (
@@ -75,6 +88,17 @@ it("enforces direct Storage reads independently: own/board yes, foreign/unreveal
     )
   ).rows[0].name;
   expect(await read(1, hidden)).toHaveLength(0);
+  expect(
+    await read(1, hidden, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(0);
+  expect(
+    await read(
+      1,
+      await asset("source"),
+      "puzzle-originals",
+      "object.get_authenticated_info",
+    ),
+  ).toHaveLength(0);
   await f.db.exec(
     "create policy unrelated_permissive_fixture on storage.objects for select to authenticated using(true)",
   );
@@ -83,12 +107,7 @@ it("enforces direct Storage reads independently: own/board yes, foreign/unreveal
   await f.db.exec(
     "drop policy unrelated_permissive_fixture on storage.objects",
   );
-  for (const op of [
-    "object.list",
-    "object.get_authenticated_info",
-    "object.sign",
-    "object.transform",
-  ])
+  for (const op of ["object.list", "object.sign", "object.transform"])
     expect(await read(1, name, "puzzle-tiles", op)).toHaveLength(0);
   expect(await read(0, await asset("source"), "puzzle-originals")).toHaveLength(
     0,
@@ -115,6 +134,9 @@ it("enforces direct Storage reads independently: own/board yes, foreign/unreveal
     to: await f.solution(id),
   });
   expect(await read(2, name)).toHaveLength(1);
+  expect(
+    await read(2, name, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(1);
 });
 it("rejects expired/revoked sessions and reservations, future content and lifecycle changes", async () => {
   const id = (await f.call(1, "reveal", { revision: 0 })).puzzle.reservation
@@ -122,6 +144,9 @@ it("rejects expired/revoked sessions and reservations, future content and lifecy
   const name = (await f.rpc(1, "puzzle_asset", [f.puzzle, id])).name;
   await f.advance(5);
   expect(await read(1, name)).toHaveLength(0);
+  expect(
+    await read(1, name, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(0);
   await f.advance(5);
   const next = (
     await f.call(1, "reveal", { revision: (await f.read()).revision })
@@ -129,13 +154,22 @@ it("rejects expired/revoked sessions and reservations, future content and lifecy
   const nextName = (await f.rpc(1, "puzzle_asset", [f.puzzle, next])).name;
   await f.rpc(1, "deactivate_my_account");
   expect(await read(1, nextName)).toHaveLength(0);
+  expect(
+    await read(1, nextName, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(0);
   await f.exec(
     "update public.atoms set status='DELETED',display_name=null,x_handle=null where id=$1",
     [f.people[2].atom],
   );
   expect(await read(2, nextName)).toHaveLength(0);
+  expect(
+    await read(2, nextName, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(0);
   const full = await asset("full");
   expect(await read(3, full)).toHaveLength(0);
+  expect(
+    await read(3, full, "puzzle-tiles", "object.get_authenticated_info"),
+  ).toHaveLength(0);
   await f.exec(
     "update private.puzzles set starts_at=starts_at+interval '8 days',ends_at=ends_at+interval '8 days',completed_at=private.puzzle_now() where id=$1",
     [f.puzzle],
