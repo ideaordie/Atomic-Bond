@@ -1,6 +1,10 @@
 "use client";
 import { useState } from "react";
-import { scheduleControlledPuzzle, checkControlledStorage } from "./actions";
+import {
+  scheduleControlledPuzzle,
+  checkControlledStorage,
+  checkControlledCleanup,
+} from "./actions";
 type Board = {
   id: string;
   revision: number;
@@ -15,6 +19,7 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
     ),
     [busy, setBusy] = useState(false),
     [batch, setBatch] = useState(""),
+    [scheduledStart, setScheduledStart] = useState(""),
     [selected, setSelected] = useState(""),
     [probeName, setProbeName] = useState(""),
     [probeBucket, setProbeBucket] = useState("puzzle-tiles"),
@@ -91,11 +96,11 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
               try {
                 const r = await scheduleControlledPuzzle(
                   batch,
-                  new Date(Date.now() + 60000).toISOString(),
+                  new Date(scheduledStart || Date.now() + 60000).toISOString(),
                 );
                 setMessage(
                   r.ok
-                    ? "Controlled puzzle scheduled to start in one minute."
+                    ? "Controlled puzzle scheduled."
                     : "Schedule unavailable.",
                 );
               } finally {
@@ -104,6 +109,32 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
             }}
           >
             SCHEDULE CONTROLLED PUZZLE
+          </button>
+          <label>
+            Scheduled start (optional)
+            <input
+              type="datetime-local"
+              value={scheduledStart}
+              onChange={(e) => setScheduledStart(e.target.value)}
+            />
+          </label>
+          <button
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              try {
+                const r = await checkControlledCleanup();
+                setMessage(
+                  r.ok
+                    ? `Cleanup plan: ${r.eligibleObjects} eligible objects. No Storage objects deleted.`
+                    : "Cleanup unavailable.",
+                );
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            CHECK BOUNDED CLEANUP
           </button>
         </section>
       ) : (
