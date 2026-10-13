@@ -1,11 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  scheduleControlledPuzzle,
-  copyControlledMedia,
-  checkControlledStorage,
-  checkControlledCleanup,
-} from "./actions";
+import { scheduleControlledPuzzle, checkControlledCleanup } from "./actions";
 type Board = {
   id: string;
   revision: number;
@@ -22,8 +17,6 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
     [batch, setBatch] = useState(""),
     [scheduledStart, setScheduledStart] = useState(""),
     [selected, setSelected] = useState(""),
-    [probeName, setProbeName] = useState(""),
-    [probeBucket, setProbeBucket] = useState("puzzle-tiles"),
     [position, setPosition] = useState(0),
     [tilePuzzle, setTilePuzzle] = useState(""),
     [tilePiece, setTilePiece] = useState("");
@@ -62,24 +55,6 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
       {admin ? (
         <section>
           <h2>Administrator preparation</h2>
-          <button
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              try {
-                const result = await copyControlledMedia();
-                setMessage(
-                  result.ok
-                    ? `Media copy verified: ${result.verified}; newly copied: ${result.copied}; bytes: ${result.bytes}; inventory: ${result.total}.`
-                    : "Media copy unavailable.",
-                );
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            COPY AND VERIFY DATABASE MEDIA
-          </button>
           <p>Use only a disposable, authorized JPEG or PNG, at most 3 MB.</p>
           <label>
             Test image{" "}
@@ -290,47 +265,6 @@ export function HostedPuzzle({ admin }: { admin: boolean }) {
             }}
           >
             CHECK TILE HTTP RESPONSE
-          </button>
-        </section>
-      )}
-      {!admin && (
-        <section aria-label="Controlled Storage authorization check">
-          <h2>Storage authorization check</h2>
-          <label>
-            Test bucket
-            <select
-              value={probeBucket}
-              onChange={(e) => setProbeBucket(e.target.value)}
-            >
-              <option value="puzzle-tiles">puzzle-tiles</option>
-              <option value="puzzle-originals">puzzle-originals</option>
-            </select>
-          </label>
-          <label>
-            Opaque test object
-            <input
-              value={probeName}
-              onChange={(e) => setProbeName(e.target.value)}
-              autoComplete="off"
-            />
-          </label>
-          <button
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              try {
-                const r = await checkControlledStorage(probeBucket, probeName);
-                setMessage(
-                  `Storage ${r.result}; ${r.bytes} bytes.${"diagnostics" in r ? " " + JSON.stringify(r.diagnostics) : ""}`,
-                );
-              } catch {
-                setMessage("Storage UNAVAILABLE; 0 bytes.");
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            CHECK STORAGE READ
           </button>
         </section>
       )}

@@ -28,6 +28,49 @@ beforeEach(async () => {
 afterEach(async () => {
   await f?.db.close();
 });
+it("retirement isolates Storage even with an unrelated permissive policy and preserves bytes", async () => {
+  await f.exec(
+    "update private.puzzle_access_settings set public_enabled=false",
+  );
+  await f.db.exec(
+    await readFile(
+      "supabase/migrations/202610150002_puzzle_retire_storage_reads.sql",
+      "utf8",
+    ),
+  );
+  await f.db.exec(
+    "create policy unrelated_read on storage.objects for select to authenticated using(true)",
+  );
+  await f.exec("update private.puzzle_access_settings set public_enabled=true");
+  const id = (await f.call(1, "reveal", { revision: 0 })).puzzle.reservation
+    .piece;
+  expect((await f.rpc(1, "puzzle_media_get", [f.puzzle, id])).bytes).toBe(
+    bytes.length,
+  );
+  const rows = await f.db.transaction(
+    async (tx: {
+      exec: (s: string) => Promise<unknown>;
+      query: (s: string, a?: unknown[]) => Promise<{ rows: unknown[] }>;
+    }) => {
+      await tx.exec("set local role authenticated");
+      await tx.query(
+        "select set_config('request.jwt.claim.sub',$1,true),set_config('request.jwt.claims',$2,true),set_config('storage.operation','object.get_authenticated',true)",
+        [f.people[1].user, JSON.stringify({ session_id: f.people[1].session })],
+      );
+      return (
+        await tx.query(
+          "select name from storage.objects where bucket_id in ('puzzle-originals','puzzle-tiles')",
+        )
+      ).rows;
+    },
+  );
+  expect(rows).toHaveLength(0);
+  await expect(f.rpc(1, "puzzle_asset", [f.puzzle, id])).rejects.toThrow();
+  expect(
+    (await f.exec("select count(*)::int n from private.puzzle_media")).rows[0]
+      .n,
+  ).toBe(26);
+});
 const get = (actor: number, piece: string | null, puzzle?: string) =>
   f.rpc(actor, "puzzle_media_get", [puzzle ?? f.puzzle, piece]);
 const reveal = async () =>
