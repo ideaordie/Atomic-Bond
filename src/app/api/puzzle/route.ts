@@ -2,6 +2,7 @@ import { authClient } from "../../../services/auth/server";
 import { appOrigin } from "../../../services/auth/policy";
 import { puzzleHttp } from "../../../services/puzzle/http";
 import { checkRateLimit } from "@vercel/firewall";
+import { authenticatedTileFetch } from "../../../services/puzzle/storage-fetch";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 async function handle(request: Request) {
@@ -25,7 +26,7 @@ async function handle(request: Request) {
   return puzzleHttp(request, {
     enabled,
     origin: appOrigin(process.env),
-    client: authClient,
+    client: () => authClient(authenticatedTileFetch(fetch)),
   });
 }
 export const GET = handle;
