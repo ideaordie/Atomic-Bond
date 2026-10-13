@@ -1,8 +1,8 @@
-# Proposed specification addition — not finalized
+# Approved specification addition — incorporated in v0.5
 
-Preserve frozen Master Spec v0.4. The exact proposed future addition is Section
-48B below; no other product sections change. Versioning and publication require
-explicit approval.
+Task #13.3 explicitly approved the exact Section 48B below. Master Spec v0.5
+incorporates it while preserving frozen v0.4 and all its other product sections.
+Public gameplay activation remains separately gated.
 
 ## 48B. PARTICI-PUZZLE
 

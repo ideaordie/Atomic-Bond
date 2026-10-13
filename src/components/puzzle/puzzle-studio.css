@@ -1,0 +1,112 @@
+.puzzle-studio {
+  max-width: 960px;
+}
+.puzzle-studio button,
+.puzzle-studio input {
+  font: inherit;
+}
+.puzzle-studio button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+}
+.puzzle-studio button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.puzzle-studio :is(button, input):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.studio-field {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+  max-width: 500px;
+}
+.studio-field input {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  color: var(--text);
+  background: var(--surface);
+}
+.studio-field input[type="file"] {
+  overflow: hidden;
+}
+.studio-gates,
+.studio-note {
+  font-size: var(--helper-size);
+}
+.studio-batches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.studio-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.studio-preview {
+  margin: 20px 0;
+  max-width: 500px;
+}
+.studio-image {
+  position: relative;
+  aspect-ratio: 1;
+}
+.studio-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.studio-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  pointer-events: none;
+}
+.studio-grid span {
+  border: 1px solid #ffffff80;
+  box-shadow: inset 0 0 0 1px #00000025;
+}
+.studio-preview figcaption {
+  margin-top: 8px;
+  font-size: var(--helper-size);
+}
+.studio-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+.studio-check input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.studio-confirm {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  padding: 16px;
+}
+@media (max-width: 599px) {
+  .studio-batches {
+    grid-template-columns: 1fr;
+  }
+}

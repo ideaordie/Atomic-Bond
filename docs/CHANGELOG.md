@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.13.0-rc.5 — Puzzle Studio (gameplay disabled)
+
+- Add protected `/admin/puzzles` through Admin Hub, reusing verified preparation, scheduling and cleanup services. Include private 25-piece preview, READY status, paginated windows, progress and cleanup health.
+- Freeze approved Master Spec v0.5 with exact Section 48B; preserve all v0.4 sections and the historical frozen file.
+- Retire obsolete Storage upload authority and physically remove the 55 disposable legacy artwork objects through Storage, preserving manifest/hash evidence and PostgreSQL replacements. Only provider-created empty-folder placeholders remain. Historical CDN invalidation is not claimed.
+- Prepare original Connected Landscape artwork for private product review. Do not schedule official artwork or enable participation; both database gates remain OFF.
+
 ## v0.13.0-rc.4 — Bounded puzzle cleanup (gameplay disabled)
 
 - Reuse hosted pg_cron for bounded five-minute reservation, receipt and retained-media cleanup, with private health counts and SQLSTATE-only failure monitoring. Active/future media and rolling allowances remain protected.

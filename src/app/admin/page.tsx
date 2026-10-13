@@ -22,6 +22,14 @@ export default async function AdminPage() {
       <h1>ADMIN</h1>
       <p>Administrative tools and network operations.</p>
       <div className="admin-cards">
+        <article className="admin-card">
+          <h2>PUZZLE STUDIO</h2>
+          <p>
+            Prepare private artwork, review weekly windows and monitor puzzle
+            progress and cleanup.
+          </p>
+          <Link href="/admin/puzzles">OPEN PUZZLE STUDIO →</Link>
+        </article>
         {(await doodlePageAccess()) && (
           <article className="admin-card">
             <h2>GLOBAL DOODLE</h2>

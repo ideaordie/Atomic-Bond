@@ -1,19 +1,21 @@
 # Atomic Bond
 
-PARTICI-PUZZLE **v0.13.0-rc.4** is a disabled cleanup release candidate, not a general beta feature.
+PARTICI-PUZZLE **v0.13.0-rc.5** is a disabled Puzzle Studio release candidate, not a general beta feature.
 Public and controlled database participation remain OFF. Runtime media uses private
 PostgreSQL authorization; cleanup reuses Supabase Cron without a new credential.
 See [cleanup operations](docs/architecture/PARTICI_PUZZLE_CLEANUP_v0.1.md) and
 [launch readiness](docs/architecture/PARTICI_PUZZLE_LAUNCH_READINESS_v0.1.md).
+The protected [Puzzle Studio](docs/architecture/PUZZLE_STUDIO_v0.1.md) at `/admin/puzzles`
+supports administrator preparation and weekly scheduling without opening participation.
 
-Product authority is the approved [Master Spec v0.4](docs/MASTER_SPEC_v0.4.md), adding the narrowly scoped Global Doodle exception. Frozen v0.3 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
+Product authority is the approved [Master Spec v0.5](docs/MASTER_SPEC_v0.5.md), preserving v0.4 verbatim except version metadata and the approved Section 48B addition. Frozen v0.4 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
 
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
 adds `/admin` navigation and read-only `/admin/network` structural analytics using
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release candidate: **v0.13.0-rc.4 — Bounded puzzle cleanup (gameplay disabled)**.
+Current release candidate: **v0.13.0-rc.5 — Puzzle Studio (gameplay disabled)**.
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.
 See [Design System](docs/architecture/DESIGN_SYSTEM_v0.1.md).

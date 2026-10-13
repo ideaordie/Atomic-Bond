@@ -1,7 +1,9 @@
 # PARTICI-PUZZLE launch readiness — October 13, 2026
 
-The initial checkpoint below is historical. See the rc.4 update at the end for
-subsequent approved cleanup work.
+The checkpoints below are historical. Current Task #13.3 / rc.5 preparation is
+documented in [Puzzle Studio](PUZZLE_STUDIO_v0.1.md): Master Spec v0.5 is approved,
+legacy artwork objects are deleted, and official artwork review/scheduling and
+public activation remain separate gates. Both database participation gates stay OFF.
 
 Baseline: v0.13.0-rc.3, `d838af8`. Public launch is **not yet ready**.
 Both hosted database participation gates remain OFF. No official puzzle was
