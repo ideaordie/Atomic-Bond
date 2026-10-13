@@ -214,3 +214,66 @@ Before public launch: resolve and repeat actual hosted expiry/cancellation reads
 verify the bounded cleanup execution/operating procedure and separate Storage-byte
 recovery arrangements; obtain exact specification approval and explicit public
 activation approval. Neither this checkpoint nor its deployment authorizes launch.
+
+## Security investigation — verified Storage CDN behavior
+
+Controlled diagnostics were deployed in `5e2c12e`. They preserve the existing
+owner-session SDK request and record only status, byte count, Date, Cache-Control,
+Age and cf-cache-status; no authorization headers, URLs, tokens or bodies are
+reported. A second request adds the documented `cacheNonce` solely for comparison.
+No source/media credential, RLS policy or gameplay rule changed.
+
+Actual hosted HTTP evidence, October 13 Eastern:
+
+| State                                                         | Ordinary URL          | Fresh cacheNonce request |
+| ------------------------------------------------------------- | --------------------- | ------------------------ |
+| Previously expired tile, 00:42:10                             | 200, HIT, 2,362 bytes | 400, BYPASS, zero bytes  |
+| New valid Atom #4 reservation, 00:43:21                       | 200, HIT, 2,070 bytes | 200, HIT, 2,070 bytes    |
+| Same tile after authoritative cancellation, 00:43:59–00:44:00 | 200, HIT, 2,070 bytes | 400, BYPASS, zero bytes  |
+
+Successful cached responses carried `Cache-Control: public, max-age=0`, despite
+private buckets, upload `cacheControl: "0"` and download `cache: "no-store"`.
+This identifies cached Storage CDN delivery as the mechanism serving revoked
+content. No signed URL is generated or used. The earlier retained-expired-row
+snapshot proves the deadline test did not depend on cleanup. Reopening the
+controlled page for this diagnostic subsequently cleaned that expired row through
+its ordinary read; the expired cached response survived that removal too.
+Cancellation was an ordinary approved Atom #4 operation, not age-based cleanup.
+Prior real foreign-owner denial remains valid evidence; this investigation did
+not repeat Atom #5 sign-in or alter its state.
+
+Supabase documents [private-bucket per-user caching and HIT headers](https://supabase.com/docs/guides/storage/cdn/fundamentals)
+and [Smart CDN cache behavior/cacheNonce](https://supabase.com/docs/guides/storage/cdn/smart-cdn).
+Changing the application's query string is not an enforceable correction: a
+caller can reuse the already-authorized cached URL. Purge/delete is not an atomic
+reservation boundary and must not destroy shared assets. No narrow hotfix is
+claimed complete and no new release version is declared.
+
+Both database gates were closed again. The two locked pieces and all piece rows,
+Atom #5's row/allowances, and both PLACE/MOVE timestamps match the captured baseline.
+Atom #4's reveal cooldown changed only through ordinary expiry/cancellation.
+Closing gates denies fresh authorization; it must NOT be described as proof that
+previously cached Storage bytes have been purged.
+
+Next decision, before implementation:
+
+1. Prefer a Supabase-supported configuration that disables/bypasses caching for
+   every private puzzle request, including adversarial reuse of old URLs. Obtain
+   provider confirmation and repeat the exact tests; no such enforceable project
+   configuration was verified in this audit.
+2. Otherwise approve a media-boundary change: for these small pre-generated tiles,
+   private PostgreSQL byte storage with existing-session authorized RPC delivery
+   avoids Storage CDN and a new privileged credential; it requires a migration,
+   performance review and removal of old Storage access/caches. An isolated
+   non-caching media origin is another option with additional operations overhead.
+
+Already downloaded bytes/screenshots cannot be revoked, regardless of architecture.
+The enforceable target is denial of new server retrieval after the deadline or
+cancellation, not erasure from a participant's device. The current cached URL
+behavior fails that target.
+
+Targeted checks passed: eight diagnostic/probe tests; native PostgreSQL direct-read
+cancellation/deactivation concurrency; TypeScript, lint, production build and
+secret scan. Existing 406-test and 12-case responsive browser regression evidence
+is reused for unchanged gameplay. The only runtime addition is controlled,
+redacted instrumentation, disabled by the closed database gate.
