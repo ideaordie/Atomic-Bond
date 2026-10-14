@@ -16,6 +16,7 @@ export function PlayerReview({ images }: { images: string[] }) {
   const [version, setVersion] = useState(0);
   const [now] = useState(() => Date.now());
   const initial: PuzzleRead = {
+    moveAfter: null,
     serverTime: new Date(now).toISOString(),
     puzzle: {
       id,

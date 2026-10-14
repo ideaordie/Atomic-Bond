@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.13.3 — Post-placement MOVE guidance
+
+- Show a dismissible six-second inline hint after successful PLACE only when a fresh server snapshot permits MOVE and contains an unlocked piece. Gameplay rules remain unchanged.
+
 ## v0.13.2 — PARTICIPUZZLE simplified player
 
 - Rename the game heading, navigation label and browser title to PARTICIPUZZLE; preserve existing routes.

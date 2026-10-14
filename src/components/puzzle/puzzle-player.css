@@ -115,3 +115,25 @@
 .puzzle-preview {
   border: 2px dashed var(--text) !important;
 }
+.puzzle-move-guidance {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.puzzle-move-guidance p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+.puzzle-move-guidance small {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.puzzle-move-guidance > button {
+  font-size: 11px;
+  flex-shrink: 0;
+}

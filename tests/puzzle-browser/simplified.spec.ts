@@ -19,8 +19,10 @@ async function fixture(page: Page, reserved = false) {
     unavailable: false,
     stale: false,
     drop: false,
+    lockPlacement: false,
     state: {
       serverTime: new Date(start).toISOString(),
+      moveAfter: null,
       puzzle: {
         id,
         revision: 1,
@@ -71,7 +73,7 @@ async function fixture(page: Page, reserved = false) {
           expiresAt: new Date(f.now + 300000).toISOString(),
         };
       } else if (c.operation === "place") {
-        p.board.push({ id: held, position: c.to!, locked: false });
+        p.board.push({ id: held, position: c.to!, locked: f.lockPlacement });
         p.reservation = null;
         f.state.placeAfter = new Date(f.now + 3600000).toISOString();
       } else if (c.operation === "move") {
@@ -286,3 +288,88 @@ test("cooldown never reveals early and an older snapshot cannot replace a newer 
   ).toBeVisible();
   expect(f.calls.filter((c) => c.operation === "reveal")).toHaveLength(1);
 });
+
+test("post-place MOVE guidance expires after six seconds and leaves the board interactive", async ({
+  page,
+}, info) => {
+  const f = await fixture(page, true);
+  await page.goto("/review/puzzle/player/api");
+  await square(page, 2).click();
+  await page.getByRole("button", { name: "PLACE HERE" }).click();
+  const guidance = page.getByRole("complementary", { name: "Move guidance" });
+  await expect(guidance).toBeVisible();
+  await expect(guidance).toContainText("PIECE PLACED!");
+  await expect(guidance).toContainText("1 MOVE AVAILABLE");
+  await expect(guidance.getByRole("status")).toHaveAttribute(
+    "aria-live",
+    "polite",
+  );
+  await square(page, 2).click();
+  await square(page, 3).click();
+  await expect(page.getByRole("button", { name: "MOVE HERE" })).toBeEnabled();
+  for (const theme of ["light", "dark"] as const) {
+    await page.evaluate((value) => {
+      document.documentElement.dataset.appearance = value;
+    }, theme);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: `artifacts/move-guidance-${info.project.name}-${theme}.png`,
+      fullPage: true,
+    });
+  }
+  await page.clock.fastForward(5000);
+  await expect(guidance).toBeVisible();
+  await page.clock.fastForward(1100);
+  await expect(guidance).toHaveCount(0);
+  expect(f.calls.filter((c) => c.operation === "place")).toHaveLength(1);
+});
+
+test("post-place MOVE guidance supports keyboard dismissal", async ({
+  page,
+}) => {
+  await fixture(page, true);
+  await page.goto("/review/puzzle/player/api");
+  await square(page, 2).click();
+  await page.getByRole("button", { name: "PLACE HERE" }).click();
+  const dismiss = page.getByRole("button", { name: "Dismiss move guidance" });
+  await dismiss.focus();
+  await page.keyboard.press("Enter");
+  await expect(dismiss).toHaveCount(0);
+  await page.clock.fastForward(2000);
+  await expect(page.getByText("1 MOVE AVAILABLE")).toHaveCount(0);
+});
+
+for (const scenario of [
+  "cooldown",
+  "locked board",
+  "failed",
+  "fresh cooldown",
+]) {
+  test(`post-place MOVE guidance absent for ${scenario}`, async ({ page }) => {
+    const f = await fixture(page, true);
+    if (scenario === "cooldown")
+      f.state.moveAfter = new Date(f.now + 3600000).toISOString();
+    if (scenario === "locked board") f.lockPlacement = true;
+    await page.goto("/review/puzzle/player/api");
+    await square(page, 2).click();
+    if (scenario === "failed") f.stale = true;
+    // Change only the server response after the displayed initial eligibility.
+    if (scenario === "fresh cooldown")
+      f.state.moveAfter = new Date(f.now + 3600000).toISOString();
+    await page.getByRole("button", { name: "PLACE HERE" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      scenario === "failed"
+        ? "select again"
+        : scenario === "locked board"
+          ? "locked"
+          : "Piece placed",
+    );
+    await expect(
+      page.getByRole("complementary", { name: "Move guidance" }),
+    ).toHaveCount(0);
+  });
+}
