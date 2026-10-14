@@ -1,5 +1,7 @@
 # Growth email v0.1 — Task #9.1
 
+> Task #14.1 / v0.14.1 applies ACTIVE-only connectivity to current network metrics and connected authorization. See [current semantics and transition](ACTIVE_NETWORK_HOME_REGION_v0.1.md); historical release descriptions below are retained.
+
 Task #9.3 [account deactivation](ACCOUNT_DEACTIVATION_v0.1.md) preserves preference
 and provenance while lifecycle-ineligible. Unsent deliveries are cancelled with
 period uniqueness retained; explicit reactivation establishes the current graph

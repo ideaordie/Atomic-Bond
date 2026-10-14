@@ -1,9 +1,17 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ owner: vi.fn(), graph: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  owner: vi.fn(),
+  context: vi.fn(),
+  graph: vi.fn(),
+}));
 vi.mock("../../src/services/auth/server", () => ({
   requireOwner: mocks.owner,
+  ownerContext: mocks.context,
 }));
-import { ownerGeographicNetwork } from "../../src/services/auth/actions";
+import {
+  ownerGeographicNetwork,
+  refreshOwnerNetwork,
+} from "../../src/services/auth/actions";
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.owner.mockResolvedValue({
@@ -12,6 +20,21 @@ beforeEach(() => {
   });
   mocks.graph.mockResolvedValue({ nodes: [], edges: [] });
 });
+it.each(["DORMANT", "DEACTIVATED", "DELETED"])(
+  "clears a stale owner snapshot after %s without exposing a graph",
+  async (status) => {
+    mocks.context.mockResolvedValue({
+      user: { email_confirmed_at: "verified" },
+      atom: { publicId: "5", status },
+      services: { bonds: { graph: mocks.graph } },
+    });
+    expect(await refreshOwnerNetwork()).toEqual({
+      graph: { nodes: [], edges: [] },
+      pulses: [],
+    });
+    expect(mocks.graph).not.toHaveBeenCalled();
+  },
+);
 it("derives the root solely from verified server ownership", async () => {
   expect(await ownerGeographicNetwork()).toEqual({
     ownerId: "5",

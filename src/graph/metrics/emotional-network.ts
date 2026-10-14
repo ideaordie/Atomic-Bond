@@ -1,4 +1,5 @@
 import { getPerspective } from "../degrees/perspective";
+import { activeNetwork } from "../active-network";
 import type { GraphData } from "../../types/graph";
 import {
   READABLE_EMOTIONS,
@@ -13,7 +14,10 @@ export function emotionalNetwork(
   visible: readonly EmotionalPulse[],
   now: number,
 ) {
-  const perspective = getPerspective(graph, viewerId);
+  const activeGraph = activeNetwork(graph);
+  const perspective = activeGraph.nodes.some((node) => node.id === viewerId)
+    ? getPerspective(activeGraph, viewerId)
+    : { nodes: new Map(), distances: new Map() };
   const latest = new Map<string, EmotionalPulse>();
   for (const pulse of visible) {
     if (

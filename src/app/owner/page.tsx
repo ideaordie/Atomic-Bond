@@ -23,6 +23,11 @@ export default async function OwnerPage() {
         alias={atom!.alias}
         xHandle={atom!.xHandle}
         preferences={await services.preferences.get()}
+        homeRegion={
+          atom!.status === "ACTIVE"
+            ? (await services.locations.resolve(atom!.locationId))?.displayName
+            : undefined
+        }
       />
     </main>
   );

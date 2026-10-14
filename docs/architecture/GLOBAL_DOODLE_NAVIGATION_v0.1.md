@@ -1,5 +1,7 @@
 # Global Doodle standalone navigation — Task #12.3
 
+> Task #14.1 / v0.14.1 applies ACTIVE-only connectivity to current network metrics and connected authorization. See [current semantics and transition](ACTIVE_NETWORK_HOME_REGION_v0.1.md); historical release descriptions below are retained.
+
 Status: v0.12.3 publication authorized on October 12, 2026, based on v0.12.2 (`d4e8cec`). The approved Section 48A amendment is applied; v0.3 remains unchanged.
 
 ## Routes and navigation

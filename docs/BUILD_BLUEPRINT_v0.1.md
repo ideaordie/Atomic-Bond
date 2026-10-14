@@ -3,7 +3,7 @@
 ## Build Blueprint — v0.1
 
 **Status:** Initial Engineering Blueprint
-**Product Authority:** Atomic Bond Master Product Specification v0.4
+**Product Authority:** Atomic Bond Master Product Specification v0.6
 **Purpose:** Translate the frozen product specification into a modular, testable, agent-friendly software architecture.
 
 ---

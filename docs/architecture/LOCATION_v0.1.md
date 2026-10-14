@@ -1,5 +1,7 @@
 # Home Region - bundled canonical geography v0.1
 
+> Task #14.1 / Master Spec v0.6 supersedes the historical inactive-node traversal and tombstone visibility described below. Current network reads are ACTIVE-only; stored Bonds remain intact. See [current Home Region and network architecture](ACTIVE_NETWORK_HOME_REGION_v0.1.md). Released in v0.14.1.
+
 Task #8.3 supersedes the earlier external-provider evaluation. Atomic Bond intentionally uses coarse canonical country/subdivision geography rather than city-level geocoding for the MVP. This supports privacy, simplicity, reliability, global consistency, no external geocoding dependency and sufficient resolution for regional network visualization.
 
 ## Registration and validation

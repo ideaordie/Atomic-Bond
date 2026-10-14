@@ -1,8 +1,9 @@
 import { getPerspective } from "../degrees/perspective";
+import { activeNetwork } from "../active-network";
 import type { GraphData, NetworkReach } from "../../types/graph";
 
 export function networkReach(graph: GraphData, id: string): NetworkReach {
-  const view = getPerspective(graph, id);
+  const view = getPerspective(activeNetwork(graph), id);
   const nodes = [...view.distances.keys()].map((key) => view.nodes.get(key)!);
   const visibleLocations = nodes.filter(
     (n) => n.status !== "DEACTIVATED" && n.status !== "DELETED",

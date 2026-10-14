@@ -154,6 +154,13 @@ export function OwnerExperience({
     localPulse.current = pulse;
     setUpdatedAt(Date.now());
   }
+  if (!graph.nodes.some((node) => node.id === publicId))
+    return (
+      <section className="auth-panel">
+        <h1>ATOM UNAVAILABLE</h1>
+        <p>This Atom is not currently available.</p>
+      </section>
+    );
   return (
     <>
       <InstallOffer />

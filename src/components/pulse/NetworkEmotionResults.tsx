@@ -83,8 +83,8 @@ export function NetworkEmotionResults({
           </p>
           {reach.people > summary.connectedCount && (
             <p className="structural-coverage-note">
-              Structural reach includes deleted or deactivated Atoms. Emotional
-              coverage below includes only remaining participants.
+              Network reach includes only ACTIVE participants. Emotional
+              coverage updates with your current connected network.
             </p>
           )}
           <div

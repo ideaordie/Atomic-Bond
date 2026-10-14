@@ -86,13 +86,14 @@ export default function About() {
           You can permanently delete your account from Profile &amp;
           Preferences. This cannot be undone. Deletion removes your personal
           identity, Home Region, active Pulse and account access. Your permanent
-          Atom number and anonymized confirmed Bonds remain to preserve network
-          connections. Inactivity alone does not delete an account.
+          Atom number and anonymized confirmed Bond records remain as historical
+          records. Inactivity alone does not delete an account.
         </p>
         <p>
-          Atoms and the structural Bond network may be publicly viewable.
-          Private identity information, including email addresses, is not part
-          of the public Atom profile.
+          ACTIVE Atoms and confirmed Bonds between ACTIVE participants may be
+          publicly viewable. Inactive Atoms do not appear or connect groups in
+          the living network. Private identity information, including email
+          addresses, is not part of the public Atom profile.
         </p>
         <p>
           Emotional Pulse information is handled separately from unrestricted

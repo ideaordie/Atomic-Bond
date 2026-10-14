@@ -54,69 +54,79 @@ export function publicGraph(value: unknown): GraphData {
   const row = record(value);
   if (!Array.isArray(row.nodes) || !Array.isArray(row.edges))
     throw new Error("Invalid graph response");
-  const nodes: GraphNode[] = row.nodes.map((value) => {
-    const atom = publicAtom(value),
-      raw = record(value);
-    if (!Number.isSafeInteger(raw.degree) || Number(raw.degree) < 0)
-      throw new Error("Invalid graph degree");
-    if (atom.status === "DELETED" || atom.status === "DEACTIVATED")
+  const inactiveIds = new Set(
+    row.nodes
+      .filter((value) =>
+        ["DORMANT", "DEACTIVATED", "DELETED"].includes(
+          String(record(value).status),
+        ),
+      )
+      .map((value) => publicNumber(record(value).publicId)),
+  );
+  const nodes: GraphNode[] = row.nodes
+    .filter((value) => !inactiveIds.has(publicNumber(record(value).publicId)))
+    .map((value) => {
+      const atom = publicAtom(value),
+        raw = record(value);
+      if (!Number.isSafeInteger(raw.degree) || Number(raw.degree) < 0)
+        throw new Error("Invalid graph degree");
+      if (!atom.location) throw new Error("Missing public region");
+      // Legacy city rows keep their UUID/association; map known region names only in the public projection.
+      const country = COUNTRIES.find(
+        (c) => c.code === atom.location?.countryCode,
+      );
+      const subdivision = country?.subdivisions.find(
+        (s) =>
+          s.code === atom.location?.subdivisionCode ||
+          s.name === atom.location?.region,
+      );
       return {
         id: atom.publicId,
         publicId: atom.publicId,
         degree: Number(raw.degree),
-        status: atom.status,
-      };
-    if (!atom.location) throw new Error("Missing public region");
-    // Legacy city rows keep their UUID/association; map known region names only in the public projection.
-    const country = COUNTRIES.find(
-      (c) => c.code === atom.location?.countryCode,
-    );
-    const subdivision = country?.subdivisions.find(
-      (s) =>
-        s.code === atom.location?.subdivisionCode ||
-        s.name === atom.location?.region,
-    );
-    return {
-      id: atom.publicId,
-      publicId: atom.publicId,
-      degree: Number(raw.degree),
-      ...(atom.displayName ? { displayName: atom.displayName } : {}),
-      ...(atom.xHandle
-        ? {
-            socialProfiles: {
-              x: {
-                handle: atom.xHandle,
-                verification: { status: "unverified" as const },
+        ...(atom.displayName ? { displayName: atom.displayName } : {}),
+        ...(atom.xHandle
+          ? {
+              socialProfiles: {
+                x: {
+                  handle: atom.xHandle,
+                  verification: { status: "unverified" as const },
+                },
               },
-            },
-          }
-        : {}),
-      metadata: {
-        region: atom.location.region,
-        homeRegion: [atom.location.region, atom.location.countryName]
-          .filter(Boolean)
-          .join(", "),
-        countryCode: atom.location.countryCode,
-        ...(atom.location.countryName
-          ? { countryName: atom.location.countryName }
+            }
           : {}),
-        ...(subdivision ? { subdivisionCode: subdivision.code } : {}),
-      },
-    };
-  });
+        metadata: {
+          region: atom.location.region,
+          homeRegion: [atom.location.region, atom.location.countryName]
+            .filter(Boolean)
+            .join(", "),
+          countryCode: atom.location.countryCode,
+          ...(atom.location.countryName
+            ? { countryName: atom.location.countryName }
+            : {}),
+          ...(subdivision ? { subdivisionCode: subdivision.code } : {}),
+        },
+      };
+    });
   const ids = new Set(nodes.map((n) => n.id));
-  const edges = row.edges.map((value) => {
-    const edge = record(value),
-      source = publicNumber(edge.source),
-      target = publicNumber(edge.target);
-    if (source === target || !ids.has(source) || !ids.has(target))
-      throw new Error("Invalid public Bond");
-    return {
-      id: `${source}:${target}`,
-      source,
-      target,
-      createdAt: string(edge.createdAt),
-    };
-  });
+  const edges = row.edges
+    .filter(
+      (value) =>
+        !inactiveIds.has(String(record(value).source)) &&
+        !inactiveIds.has(String(record(value).target)),
+    )
+    .map((value) => {
+      const edge = record(value),
+        source = publicNumber(edge.source),
+        target = publicNumber(edge.target);
+      if (source === target || !ids.has(source) || !ids.has(target))
+        throw new Error("Invalid public Bond");
+      return {
+        id: `${source}:${target}`,
+        source,
+        target,
+        createdAt: string(edge.createdAt),
+      };
+    });
   return { nodes, edges };
 }

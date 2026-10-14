@@ -530,6 +530,52 @@ try {
   console.log(
     "PASS: deactivation/Pulse/Bond/invitation/send races, stale sessions, repeated reactivation and terminal deletion.",
   );
+  {
+    const owner = await active();
+    const region = (
+      await admin.query(
+        "select id from public.locations where canonical_key='iso3166:US-FL'",
+      )
+    ).rows[0].id;
+    await Promise.all([
+      call(owner, "update_my_home_region", [region]),
+      call(owner, "update_my_atom", ["Concurrent profile", null, location]),
+    ]);
+    const result = await call(owner, "my_atom");
+    assert.equal(result.locationId, region);
+    assert.equal(result.alias, "Concurrent profile");
+    const session = randomUUID();
+    await admin.query("insert into auth.sessions(id,user_id) values($1,$2)", [
+      session,
+      owner,
+    ]);
+    deletionClaims.set(owner, {
+      session_id: session,
+      amr: [{ method: "otp", timestamp: Date.now() / 1000 }],
+    });
+    const country = (
+      await admin.query(
+        "select id from public.locations where canonical_key='iso3166:AQ'",
+      )
+    ).rows[0].id;
+    await Promise.allSettled([
+      call(owner, "update_my_home_region", [country]),
+      call(owner, "deactivate_my_account"),
+    ]);
+    assert.equal(
+      (
+        await admin.query(
+          "select a.status from public.atoms a join private.atom_identities i on i.atom_id=a.id where i.auth_user_id=$1",
+          [owner],
+        )
+      ).rows[0].status,
+      "DEACTIVATED",
+    );
+    await assert.rejects(call(owner, "update_my_home_region", [region]));
+    console.log(
+      "PASS: concurrent Home Region/profile writes preserve both fields; lifecycle race cannot reactivate or edit an inactive owner.",
+    );
+  }
   console.log(
     "PASS: identity/Bond concurrency, dedicated growth LOGIN denial checks, overlapping growth reservations/claims, and restart-persistent idempotency.",
   );

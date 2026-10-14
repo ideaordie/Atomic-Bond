@@ -8,6 +8,7 @@ import type {
   NotificationService,
 } from "../participation/contracts";
 import { networkReach } from "../../graph/metrics/network-reach";
+import { activeNetwork } from "../../graph/active-network";
 
 const terminal = new Set<BondState>(["BOND_CONFIRMED", "DECLINED", "EXPIRED"]);
 export class MockBondService implements BondService {
@@ -23,7 +24,7 @@ export class MockBondService implements BondService {
     this.current = graph;
   }
   graph() {
-    return this.current;
+    return activeNetwork(this.current);
   }
   private transition(
     invite: Invitation,

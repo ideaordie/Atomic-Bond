@@ -8,6 +8,7 @@ export async function createDoodleFixture(
   suppliedDb,
   next = false,
   sevenDays = false,
+  activeNetwork = true,
 ) {
   const db = suppliedDb ?? new PGlite({ extensions: { pgcrypto } });
   const exec = async (sql, args = []) => db.query(sql, args);
@@ -20,6 +21,7 @@ export async function createDoodleFixture(
     .filter(
       (f) =>
         f.endsWith(".sql") &&
+        (activeNetwork || !f.startsWith("202610180001")) &&
         !f.startsWith("202610140001") &&
         !f.startsWith("202610140002") &&
         !f.startsWith("202610150001") &&

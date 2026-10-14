@@ -5,6 +5,7 @@ import { MotionPreference } from "../appearance/MotionPreference";
 import { AccountDeletion } from "./AccountDeletion";
 import { AccountDeactivation } from "./AccountDeactivation";
 import { WeeklyGrowthPreference } from "./WeeklyGrowthPreference";
+import { HomeRegionEditor } from "./HomeRegionEditor";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { normalizeXHandle, X_HANDLE_ERROR } from "../../utils/x-profile";
@@ -25,11 +26,13 @@ export function OwnerSettings({
   alias,
   xHandle,
   preferences,
+  homeRegion,
 }: {
   publicId: string;
   alias: string | null;
   xHandle: string | null;
   preferences: NotificationPreferences;
+  homeRegion?: string | undefined;
 }) {
   const [message, setMessage] = useState(""),
     [xError, setXError] = useState(""),
@@ -104,6 +107,7 @@ export function OwnerSettings({
         <button disabled={pending}>{pending ? "Saving…" : "Save"}</button>
         <p role="status">{message}</p>
       </form>
+      {homeRegion && <HomeRegionEditor current={homeRegion} />}
       <WeeklyGrowthPreference enabled={preferences.growthDigest === "weekly"} />
       <AppearancePreference />
       <MotionPreference />

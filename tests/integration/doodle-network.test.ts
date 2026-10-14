@@ -57,7 +57,7 @@ it("roots connected feed in verified ownership and includes only own/direct/indi
     f.rpc(1, "read_network_doodles", [f.people[4].atom]),
   ).rejects.toThrow();
 });
-it("preserves traversal through deactivated nodes without exposing their artwork", async () => {
+it("splits traversal at deactivated nodes without exposing their artwork", async () => {
   await f.rpc(2, "deactivate_my_account");
   expect(
     new Set(
@@ -65,7 +65,7 @@ it("preserves traversal through deactivated nodes without exposing their artwork
         (x: { id: string }) => x.id,
       ),
     ),
-  ).toEqual(new Set([ids[0], ids[2]]));
+  ).toEqual(new Set([ids[0]]));
   await expect(f.rpc(2, "read_network_doodles")).rejects.toThrow();
 });
 it("revalidates moderation and database expiration in network scope", async () => {

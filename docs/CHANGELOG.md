@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.14.1 — Editable Home Region & ACTIVE-only network
+
+- Separate canonical Home Region editor for verified ACTIVE owners; legacy profile saves cannot overwrite location.
+- ACTIVE-only graph, Pulse reach, Doodle MY NETWORK, Connected Groups and growth metrics; historical Bond records and permanent numbers remain intact.
+- Bounded 5,000-node traversal, inactive-selection refresh recovery, and a guarded growth-baseline transition.
+- Freeze approved Master Spec v0.6 amendments; preserve v0.5 unchanged. Hosted migration applied after recovery and delivery-lease checks; production record fingerprints, sequences and schedules preserved.
+
 ## v0.13.5 — Persistent PWA installation invitation
 
 - Add INSTALL APP to shared navigation, with native installation when available and

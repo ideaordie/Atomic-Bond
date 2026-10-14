@@ -147,7 +147,9 @@ export async function cancelOwnerInvitation(id: string) {
   await services.bonds.cancel(id);
 }
 export async function refreshOwnerNetwork() {
-  const { services, atom } = await requireOwner();
+  const { services, atom, user } = await ownerContext();
+  if (!user?.email_confirmed_at || !atom?.publicId || atom.status !== "ACTIVE")
+    return { graph: { nodes: [], edges: [] }, pulses: [] };
   return {
     graph: await services.bonds.graph(atom!.publicId!),
     pulses: await services.pulses.visible(),
@@ -251,5 +253,29 @@ export async function updateWeeklyGrowth(enabled: boolean) {
     return { saved: true };
   } catch {
     return { saved: false };
+  }
+}
+
+export async function updateHomeRegion(form: FormData) {
+  try {
+    await sameOrigin();
+    const { client, atom } = await requireOwner();
+    const locationId = form.get("locationId");
+    if (
+      atom?.status !== "ACTIVE" ||
+      typeof locationId !== "string" ||
+      !isCanonicalRegionId(locationId)
+    )
+      throw new Error();
+    const { error } = await client.rpc("update_my_home_region", {
+      p_location_id: locationId,
+    });
+    if (error) throw new Error();
+    return { saved: true };
+  } catch {
+    return {
+      error:
+        "Unable to update Home Region. Select a canonical country and region for your active account.",
+    };
   }
 }

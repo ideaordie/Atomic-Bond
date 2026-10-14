@@ -145,6 +145,7 @@ const methods = {
   my_notification_preferences: [],
   update_notification_preferences: ["p_growth_digest", "p_pulse_notifications"],
   update_my_atom: ["p_display_name", "p_x_handle", "p_location_id"],
+  update_my_home_region: ["p_location_id"],
 };
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, "http://127.0.0.1:54330");

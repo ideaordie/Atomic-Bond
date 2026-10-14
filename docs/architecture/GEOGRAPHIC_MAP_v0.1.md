@@ -1,5 +1,7 @@
 # Geographic Network Map v0.1
 
+> Task #14.1 / Master Spec v0.6 supersedes the historical inactive-node traversal and tombstone visibility described below. Current network reads are ACTIVE-only; stored Bonds remain intact. See [current Home Region and network architecture](ACTIVE_NETWORK_HOME_REGION_v0.1.md). Released in v0.14.1.
+
 Task #11.5 adds an optional geographic layout to the existing Canvas renderer. It does not change authoritative Atoms, Bonds, Pulse, reach, account lifecycle or registration geography. Approved for publication as v0.11.5 after local product review.
 
 ## Authority and privacy

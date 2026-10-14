@@ -12,14 +12,14 @@ See [cleanup operations](docs/architecture/PARTICI_PUZZLE_CLEANUP_v0.1.md) and
 The protected [Puzzle Studio](docs/architecture/PUZZLE_STUDIO_v0.1.md) at `/admin/puzzles`
 supports administrator preparation and weekly scheduling without opening participation.
 
-Product authority is the approved [Master Spec v0.5](docs/MASTER_SPEC_v0.5.md), preserving v0.4 verbatim except version metadata and the approved Section 48B addition. Frozen v0.4 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
+Product authority is the approved [Master Spec v0.6](docs/MASTER_SPEC_v0.6.md), incorporating the approved Home Region and ACTIVE-only network amendments. Frozen v0.5 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
 
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
 adds `/admin` navigation and read-only `/admin/network` structural analytics using
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.13.5 — Persistent PWA installation invitation**.
+Current release: **v0.14.1 — Editable Home Region & ACTIVE-only network**.
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.
@@ -241,3 +241,9 @@ See [Auth and email architecture](docs/architecture/AUTH_EMAIL_v0.1.md) for sign
 Task #12.3 release v0.12.3 separates the Global Doodle feed from the Living Atom and adds owner-authorized WORLD / MY NETWORK navigation. See [architecture and rollout](docs/architecture/GLOBAL_DOODLE_NAVIGATION_v0.1.md) and the [approved Section 48A amendment](docs/proposals/TASK_12_3_SPEC_AMENDMENT.md). Frozen v0.3 remains unchanged. The earlier [controlled-rollout record](docs/architecture/GLOBAL_DOODLE_ROLLOUT_v0.1.md) is retained for history.
 
 Task #12.4 / v0.12.4 extends newly published Doodles to seven days while preserving existing deadlines and the hourly cooldown. See [seven-day lifetime and retention](docs/architecture/GLOBAL_DOODLE_SEVEN_DAY_v0.1.md).
+
+## Task #14.1 — v0.14.1
+
+Master Spec v0.6 approves editable Home Region and ACTIVE-only connectivity.
+See [migration and review notes](docs/architecture/ACTIVE_NETWORK_HOME_REGION_v0.1.md).
+The approved migration is applied. Historical Bonds and account records are preserved; current network views and metrics include ACTIVE participants only.

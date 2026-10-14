@@ -108,18 +108,13 @@ test("two-stage deletion, recent access, anonymous return and permanent public t
       data: { p_public_id: number },
     })
   ).json();
-  expect(graph.nodes).toHaveLength(1);
-  expect(graph.nodes[0]).toMatchObject({
-    publicId: number,
-    status: "DELETED",
-    metadata: {},
-  });
+  expect(graph).toEqual({ nodes: [], edges: [] });
   expect(JSON.stringify(graph)).not.toMatch(
     /Disposable owner|removal_test|@example/,
   );
   await page.goto(`/a/${number}`);
   await expect(
-    page.getByText(`PUBLIC ATOM VIEW · ATOM #${number} · DELETED`),
+    page.getByRole("heading", { name: "ATOM UNAVAILABLE" }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Pulse", exact: true }),
@@ -127,8 +122,9 @@ test("two-stage deletion, recent access, anonymous return and permanent public t
   await expect(
     page.getByRole("button", { name: "DELETE ACCOUNT", exact: true }),
   ).toHaveCount(0);
-  await page.getByLabel("Select an Atom", { exact: true }).selectOption(number);
-  await expect(page.getByTestId("atom-context")).toContainText("DELETED");
+  await expect(page.getByLabel("Select an Atom", { exact: true })).toHaveCount(
+    0,
+  );
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

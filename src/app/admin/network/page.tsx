@@ -12,8 +12,7 @@ function Group({ group }: { group: ConnectedGroup }) {
     <article className="admin-card">
       <h3>{group.founding ? "FOUNDING NETWORK" : `GROUP #${group.id}`}</h3>
       <p>
-        {group.atomCount} structural Atoms · {group.activeAtomCount} ACTIVE
-        participants · {group.bondCount} confirmed Bonds
+        {group.atomCount} ACTIVE Atoms · {group.bondCount} confirmed Bonds
       </p>
       <p>
         {group.regions} regions · {group.countries} countries represented in
@@ -57,9 +56,9 @@ export default async function NetworkPage() {
         refresh.
       </p>
       <p>
-        Connected groups contain at least one confirmed Bond. Structural counts
-        retain deleted and deactivated endpoints; ACTIVE counts exclude them.
-        Hidden Home Regions are excluded.
+        Connected groups contain ACTIVE Atoms joined by confirmed Bonds between
+        ACTIVE endpoints. Inactive Atoms do not connect groups or contribute to
+        geographic counts. Stored historical Bonds remain unchanged.
       </p>
       <dl className="admin-metrics">
         {metrics.map(([label, value]) => (

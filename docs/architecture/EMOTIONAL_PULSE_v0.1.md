@@ -1,5 +1,7 @@
 Task #10.4 supersedes the eight-state vocabulary below locally. See [Expanded Pulse](EXPANDED_PULSE_v0.1.md) for current semantics and rollout gates.
 
+> Task #14.1 / v0.14.1 applies ACTIVE-only connectivity to current network metrics and connected authorization. See [current semantics and transition](ACTIVE_NETWORK_HOME_REGION_v0.1.md); historical release descriptions below are retained.
+
 # Living Emotional Network — Task #8.1 / v0.8.1
 
 Master Specification v0.2 remains authoritative, with the explicitly approved

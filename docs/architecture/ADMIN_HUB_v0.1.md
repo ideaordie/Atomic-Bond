@@ -1,5 +1,7 @@
 # Admin Hub and Connected Groups v0.1
 
+> Task #14.1 / Master Spec v0.6 supersedes the historical inactive-node traversal and tombstone visibility described below. Current network reads are ACTIVE-only; stored Bonds remain intact. See [current Home Region and network architecture](ACTIVE_NETWORK_HOME_REGION_v0.1.md). Released in v0.14.1.
+
 v0.10.2, approved for publication. `/admin` is a static navigation hub; `/admin/network`
 is a read-only current structural report; `/admin/signals` retains Signal authoring.
 Both tools link to Admin Home and My Atom. No public navigation entry is added.

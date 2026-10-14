@@ -60,7 +60,7 @@ test("deactivate, anonymous reopen, explicit same-Atom reactivation and preserve
   await expect(page).toHaveURL(/\/auth$/);
   await page.goto(`/a/${number}`);
   await expect(
-    page.getByText("DEACTIVATED · Anonymized connection"),
+    page.getByRole("heading", { name: "ATOM UNAVAILABLE" }),
   ).toBeVisible();
   await expect(
     page.getByText("Returning test owner", { exact: true }),

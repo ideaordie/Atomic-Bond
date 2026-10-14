@@ -75,6 +75,11 @@ export function LivingAtom({
     originalId: originalAtomId,
     selectedId: originalAtomId,
   });
+  const selectedId = graph.nodes.some(
+    (node) => node.id === selection.selectedId,
+  )
+    ? selection.selectedId
+    : originalAtomId;
   const canvasContainer = useRef<HTMLDivElement>(null);
   const focusCanvas = () =>
     canvasContainer.current
@@ -102,8 +107,8 @@ export function LivingAtom({
   );
   const reducedMotion = useReducedMotion();
   const baseScene = useMemo(
-    () => createScene(graph, selection.selectedId, emotionalView),
-    [graph, selection.selectedId, emotionalView],
+    () => createScene(graph, selectedId, emotionalView),
+    [graph, selectedId, emotionalView],
   );
   const mode = viewScale(orbitalCamera.zoom);
   const scene = useMemo(
@@ -215,7 +220,7 @@ export function LivingAtom({
     (p) => p.atomId === originalAtomId,
   );
   const running = pulse.distance !== null;
-  const isMine = ownerMode && selection.selectedId === originalAtomId;
+  const isMine = ownerMode && selectedId === originalAtomId;
 
   useEffect(() => {
     if (!running) return;
@@ -252,7 +257,7 @@ export function LivingAtom({
       window.clearInterval(timer);
       window.clearTimeout(stop);
     };
-  }, [running, scene.maxDistance, selection.selectedId]);
+  }, [running, scene.maxDistance, selectedId]);
 
   const inspect = useCallback((id: string) => {
     setInspectedId(id);
@@ -429,7 +434,10 @@ export function LivingAtom({
             <p>Includes retained deleted Atoms.</p>
           )}
           {graph.nodes.some((node) => node.status === "DEACTIVATED") && (
-            <p>Includes structural connections through deactivated Atoms.</p>
+            <p>
+              Includes ACTIVE Atoms and confirmed Bonds between active
+              participants.
+            </p>
           )}
         </div>
       }
@@ -467,11 +475,11 @@ export function LivingAtom({
           </button>
         </div>
       )}
-      {inspectedId && (
+      {inspectedId && graph.nodes.some((node) => node.id === inspectedId) && (
         <AtomContextPanel
           ownerMode={ownerMode}
           graph={graph}
-          centerId={selection.selectedId}
+          centerId={selectedId}
           originalId={originalAtomId}
           atomId={inspectedId}
           {...(emotionalSummary.active.find((p) => p.atomId === inspectedId)
@@ -581,7 +589,7 @@ export function LivingAtom({
               disabled={!emotionalView}
               ref={pulseButton}
               onClick={() => {
-                if (running) setPulse(idlePulse(selection.selectedId));
+                if (running) setPulse(idlePulse(selectedId));
                 else {
                   setComposerOpen(true);
                   setInspectedId(null);
