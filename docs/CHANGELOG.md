@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.14.2 — Returning-owner installation invitation
+
+- Reuse the optional installation invitation after successful returning-owner email-link confirmation, respecting standalone detection and existing 30-day browser dismissal.
+- Use NOT NOW and shorter supporting copy; isolate installation button styling from Auth primary-button colors and retain shared Light/Dark hover, pressed and focus tokens.
+- Preserve authentication, lifecycle, session, service-worker and persistent INSTALL APP behavior. Product-reviewed and approved for publication; no database, service-worker or authentication-policy changes.
+
 ## v0.14.1 — Editable Home Region & ACTIVE-only network
 
 - Production acceptance passed; designated the approved production baseline at release commit `e66fc02`. Verified Home Region persistence, map positioning and regional metrics on Atom #4; the product owner also confirmed a successful location change on another Atom.

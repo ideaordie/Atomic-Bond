@@ -19,7 +19,9 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Approved production baseline: **v0.14.1 — Editable Home Region & ACTIVE-only network**, release commit `e66fc02e082d27d731ad307f1a4b94544edb347a`. Task #14.1 has passed production acceptance; see the [verification record](docs/architecture/ACTIVE_NETWORK_HOME_REGION_v0.1.md#production-acceptance-and-approved-baseline).
+Current release: **v0.14.2 — Returning-owner installation invitation**. Reuses the existing optional PWA invitation after verified owner access and fixes NOT NOW contrast.
+
+Previous approved production baseline: **v0.14.1 — Editable Home Region & ACTIVE-only network**, release commit `e66fc02e082d27d731ad307f1a4b94544edb347a`. Task #14.1 has passed production acceptance; see the [verification record](docs/architecture/ACTIVE_NETWORK_HOME_REGION_v0.1.md#production-acceptance-and-approved-baseline).
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.

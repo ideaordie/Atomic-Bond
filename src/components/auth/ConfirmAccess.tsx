@@ -52,7 +52,7 @@ export function ConfirmAccess() {
               ? "You're securely signed in on this device."
               : "Email verified. Your Atom has been created."}
           </p>
-          {!result.returning && <InstallOffer />}
+          <InstallOffer />
           <Link className="explore-link" href={result.next}>
             {result.next.startsWith("/bond/")
               ? "Continue to Bond confirmation"
@@ -77,7 +77,9 @@ export function ConfirmAccess() {
                 setLink(null);
                 if ("error" in r) setError(r.error);
                 else {
-                  if (!r.returning) installation.invite();
+                  // Lifecycle management must finish before optional installation.
+                  if (r.publicId && !r.next.startsWith("/account/"))
+                    installation.invite();
                   if (
                     r.next.startsWith("/bond/") ||
                     r.next.startsWith("/account/")

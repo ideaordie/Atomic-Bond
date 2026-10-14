@@ -72,6 +72,9 @@ test("deactivate, anonymous reopen, explicit same-Atom reactivation and preserve
   await verify();
   await expect(page).toHaveURL(/\/account\/reactivate/);
   await expect(
+    page.getByRole("region", { name: "Install Atomic Bond" }),
+  ).toHaveCount(0);
+  await expect(
     page.getByText(`ATOM #${number} is currently deactivated.`),
   ).toBeVisible();
   await expect(

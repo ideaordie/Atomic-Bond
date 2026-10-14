@@ -30,6 +30,12 @@
 .install-offer .install-dismiss {
   background: transparent;
 }
+.install-offer button:not(:disabled):hover {
+  background: var(--hover);
+}
+.install-offer button:not(:disabled):active {
+  background: var(--pressed);
+}
 .install-preferences {
   margin-top: 24px;
 }
@@ -62,7 +68,7 @@ body:has(.pwa-offline) #pwa-app {
   padding-left: 22px;
 }
 .install-offer button:focus-visible {
-  outline: 2px solid var(--text);
+  outline: var(--focus-width) solid var(--focus);
   outline-offset: 3px;
 }
 .install-offer .install-primary {

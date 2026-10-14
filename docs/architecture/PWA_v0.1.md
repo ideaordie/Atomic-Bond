@@ -38,13 +38,21 @@ The shared navigation includes INSTALL APP in browser mode, including when no na
 prompt is available. Settings retains its explicit install option. Both disappear
 in standalone mode and after an accepted native installation in the current page.
 
-Successful new-Atom activation triggers an inline TAKE YOUR ATOM WITH YOU invitation
-on the confirmation page. A non-identifying sessionStorage pending flag carries it
-through Bond redirects to the owner view. Returning access does not trigger it.
-MAYBE LATER clears the pending flag and uses the existing 30-day browser dismissal
+Successful new-Atom activation and returning-owner email-link confirmation trigger
+the existing inline TAKE YOUR ATOM WITH YOU invitation only after verified ownership
+is resolved. Account deletion/reactivation continuations do not trigger it. A
+non-identifying sessionStorage pending flag carries it through Bond redirects to
+the owner view. Authentication errors, unresolved links and token refreshes do not
+trigger an invitation. NOT NOW clears the pending flag and uses the existing 30-day browser dismissal
 preference; the navigation option remains available. No identity, token or account
 information is stored. Storage failure leaves the application functional and suppresses
 automatic promotion conservatively. There is no automatic 30-second pop-up.
+
+Task #14.3 keeps the Auth panel's generic primary-button rule away from nested
+installation controls. Previously its inverse text color could combine with the
+dismiss control's transparent background. Installation controls retain their own
+shared surface/text, hover/pressed and focus tokens; NOT NOW is always enabled.
+No session or lifecycle policy changes are required.
 
 The captured Chromium event is single-use and invoked only by a user click.
 Dismissal never hides INSTALL APP. Without a native event, the action opens a native
@@ -214,3 +222,31 @@ login guarantee is made. Publication was approved after local product review.
 
 Platform references: [browser installation events](https://web.dev/learn/pwa/installation-prompt)
 and [Apple's Safari installation instructions](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios).
+
+## Returning-owner invitation verification (Task #14.3, v0.14.2)
+
+Baseline: v0.14.1 / `9607a2f`. Returning ACCESS MY ATOM verification now requests
+an invitation only after successful owner resolution. Account lifecycle redirects
+remain excluded. Existing browser-local dismissal and installed-context suppression
+apply to both returning owners and newly activated Atoms.
+
+Local verification passed: 451 unit/integration/security tests, client-boundary
+checks, PostgreSQL concurrency/restart checks, production build, formatting, lint,
+and TypeScript. All 111 general browser cases passed with one unchanged tablet
+Pulse timeout passing on targeted retry; three persistence cases passed. The 87
+owner-browser cases passed across the initial run and targeted reruns after fixing
+new test setup (keyboard focus and signed-out entry). The final PWA subset passed
+18/18. Source and built-browser secret scans passed.
+
+Returning-owner invitation screenshots were inspected in Light/Dark at 390×844,
+768×1024 and 1440×900. Tests check dismissal contrast, hover, pressed and keyboard
+focus, pending/error authentication suppression, dismissal persistence, standalone
+suppression, and preservation of new-owner installation. NOT NOW remains enabled.
+
+Four additional mobile WebKit tests passed against the development server. The
+production-build HTTP-loopback WebKit run could not preserve its Secure owner
+cookie on navigation; production cookie security was not changed. These tests do
+not replace physical iPhone Safari/Android/desktop native installation or HTTPS
+installed-app checks. Native prompts and standalone context are simulated locally.
+CI configuration, authentication services, service-worker rules, database migrations
+and frozen Master Spec v0.6 are unchanged. Product review passed and publication is approved.

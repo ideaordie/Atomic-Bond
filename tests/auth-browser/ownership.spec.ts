@@ -199,6 +199,9 @@ test("expired access link cannot establish an owner session or allocate an Atom"
   await expect(page.getByRole("main").getByRole("alert")).toContainText(
     "expired",
   );
+  await expect(
+    page.getByRole("region", { name: "Install Atomic Bond" }),
+  ).toHaveCount(0);
   await page.goto("/owner");
   await expect(page.getByRole("heading")).toHaveText("CREATE MY ATOM");
   expect(
@@ -220,5 +223,8 @@ test("expired invitation stays expired and malformed access fails safely", async
   await expect(page.getByRole("main").getByRole("alert")).toContainText(
     "could not be completed",
   );
+  await expect(
+    page.getByRole("region", { name: "Install Atomic Bond" }),
+  ).toHaveCount(0);
   expect(page.url()).toContain("/auth/confirm");
 });

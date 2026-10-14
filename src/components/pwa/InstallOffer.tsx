@@ -19,10 +19,7 @@ export function InstallOffer({
       aria-label="Install Atomic Bond"
     >
       <h2>{preferences ? "INSTALL ATOMIC BOND" : "TAKE YOUR ATOM WITH YOU"}</h2>
-      <p>
-        Add Atomic Bond to your device for quick access and an app-like
-        experience.
-      </p>
+      <p>Add Atomic Bond to your device for quick access.</p>
       <InstallControl invitation />
       {!preferences && (
         <button
@@ -30,7 +27,7 @@ export function InstallOffer({
           className="install-dismiss"
           onClick={state.dismiss}
         >
-          MAYBE LATER
+          NOT NOW
         </button>
       )}
     </section>

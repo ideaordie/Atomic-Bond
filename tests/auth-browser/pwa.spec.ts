@@ -40,6 +40,138 @@ async function installEvent(page: Page, outcome = "accepted") {
   }, outcome);
 }
 
+async function accessLink(
+  page: Page,
+  request: APIRequestContext,
+  email: string,
+) {
+  // Model a later signed-out visit without clearing browser-local install preferences.
+  await page.context().clearCookies();
+  await page.goto("/auth?mode=access");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Email me an access link" }).click();
+  await expect(page.getByRole("status")).toContainText("secure link");
+  const { link } = await (
+    await request.get(`http://127.0.0.1:54330/__test/mail?email=${email}`)
+  ).json();
+  await page.goto(link);
+}
+
+for (const theme of ["light", "dark"]) {
+  test(`returning access invites only after verification; ${theme} dismissal is readable and persistent`, async ({
+    page,
+    request,
+  }, info) => {
+    await page.goto("/auth?mode=access");
+    await page.evaluate(
+      (value) => localStorage.setItem("atomic-bond-appearance", value),
+      theme,
+    );
+    const before = await (
+      await request.get("http://127.0.0.1:54330/__test/counts")
+    ).json();
+    await accessLink(page, request, "inviter@example.invalid");
+    const offer = page.getByRole("region", { name: "Install Atomic Bond" });
+    await expect(offer).toHaveCount(0);
+    // Hold only the response transport: the real local server still performs verification.
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route("**/auth/confirm", async (route) => {
+      if (route.request().method() === "POST") await gate;
+      await route.continue();
+    });
+    await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
+    await expect(
+      page.getByRole("button", { name: "Verifying…" }),
+    ).toBeDisabled();
+    await expect(offer).toHaveCount(0);
+    release();
+    await expect(
+      page.getByRole("heading", { name: "WELCOME BACK" }),
+    ).toBeVisible();
+    await expect(offer).toHaveCount(1);
+    await expect(offer).toContainText(
+      "Add Atomic Bond to your device for quick access.",
+    );
+    const dismiss = offer.getByRole("button", { name: "NOT NOW", exact: true });
+    const contrast = () =>
+      dismiss.evaluate((button) => {
+        const luminance = (rgb: string) => {
+          const channels = rgb
+            .match(/[\d.]+/g)!
+            .slice(0, 3)
+            .map(Number)
+            .map((v) => {
+              const c = v / 255;
+              return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+            });
+          return (
+            channels[0]! * 0.2126 +
+            channels[1]! * 0.7152 +
+            channels[2]! * 0.0722
+          );
+        };
+        let surface: Element = button;
+        while (
+          getComputedStyle(surface).backgroundColor === "rgba(0, 0, 0, 0)" &&
+          surface.parentElement
+        )
+          surface = surface.parentElement;
+        const fg = luminance(getComputedStyle(button).color);
+        const bg = luminance(getComputedStyle(surface).backgroundColor);
+        return (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+      });
+    expect(await contrast()).toBeGreaterThanOrEqual(4.5);
+    await dismiss.hover();
+    expect(await contrast()).toBeGreaterThanOrEqual(4.5);
+    await page.mouse.down();
+    expect(await contrast()).toBeGreaterThanOrEqual(4.5);
+    await page.mouse.move(0, 0);
+    await page.mouse.up();
+    await dismiss.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(dismiss).toBeFocused();
+    expect(
+      await dismiss.evaluate((el) => getComputedStyle(el).outlineStyle),
+    ).not.toBe("none");
+    expect(await contrast()).toBeGreaterThanOrEqual(4.5);
+    await page.screenshot({
+      path: info.outputPath(`returning-${theme}.png`),
+      fullPage: true,
+    });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await installEvent(page, "dismissed"); // Provider rerender must not duplicate the invitation.
+    await expect(offer).toHaveCount(1);
+    await dismiss.press("Enter");
+    await expect(offer).toHaveCount(0);
+    await page.getByRole("link", { name: "MY ATOM", exact: true }).click();
+    await expect(page.getByTestId("atom-canvas")).toBeVisible();
+    const number = await page.getByTestId("selected-atom").innerText();
+    await page.reload();
+    await expect(offer).toHaveCount(0);
+    await expect(page.getByTestId("selected-atom")).toHaveText(number);
+    await expect(
+      page.getByRole("button", { name: "INSTALL APP", exact: true }),
+    ).toBeVisible();
+    await accessLink(page, request, "inviter@example.invalid");
+    await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
+    await expect(
+      page.getByRole("heading", { name: "WELCOME BACK" }),
+    ).toBeVisible();
+    await expect(offer).toHaveCount(0);
+    expect(
+      await (await request.get("http://127.0.0.1:54330/__test/counts")).json(),
+    ).toEqual(before);
+  });
+}
+
 test("registration invitation persists on reload; dismissal keeps navigation; native install is user initiated", async ({
   page,
   request,
@@ -52,7 +184,7 @@ test("registration invitation persists on reload; dismissal keeps navigation; na
   ).toBeVisible();
   await page.reload();
   await expect(offer).toBeVisible();
-  await offer.getByRole("button", { name: "MAYBE LATER" }).click();
+  await offer.getByRole("button", { name: "NOT NOW" }).click();
   await page.reload();
   await expect(offer).toHaveCount(0);
   const entry = page.getByRole("button", { name: "INSTALL APP", exact: true });
@@ -100,7 +232,7 @@ test("iOS instructions are optional, keyboard closable and fit", async ({
   ).toBe(true);
   await dialog.getByRole("button", { name: "CLOSE INSTRUCTIONS" }).click();
   await expect(dialog).toHaveCount(0);
-  await page.getByRole("button", { name: "MAYBE LATER" }).click();
+  await page.getByRole("button", { name: "NOT NOW" }).click();
   await expect(
     page.getByRole("button", { name: "INSTALL APP", exact: true }),
   ).toBeVisible();
@@ -120,6 +252,20 @@ test("standalone restores the same owner and suppresses install UI", async ({
   );
   const number = await page.getByTestId("selected-atom").textContent();
   await page.goto("/");
+  await expect(page.getByTestId("selected-atom")).toHaveText(number!);
+  await accessLink(
+    page,
+    request,
+    `pwa-installed-${info.project.name}@example.invalid`,
+  );
+  await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
+  await expect(
+    page.getByRole("heading", { name: "WELCOME BACK" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Install Atomic Bond" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "MY ATOM", exact: true }).click();
   await expect(page.getByTestId("selected-atom")).toHaveText(number!);
   await page.getByRole("link", { name: "Settings" }).click();
   await installEvent(page);

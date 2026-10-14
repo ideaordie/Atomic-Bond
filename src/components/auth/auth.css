@@ -166,7 +166,7 @@
   background: var(--surface);
 }
 
-.auth-panel button,
+.auth-panel button:not(:where(.install-offer button)),
 .entry-actions a {
   background: var(--accent);
   color: var(--on-accent);
