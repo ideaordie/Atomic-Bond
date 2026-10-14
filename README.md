@@ -1,27 +1,24 @@
 # Atomic Bond
 
-PARTICI-PUZZLE **v0.13.0** is available to authenticated ACTIVE participants.
-The first community puzzle is ACTIVE from October 13, 2026, 17:16:50.300673 UTC
-through October 20, 2026, 17:16:50.300673 UTC. Public participation
-is enabled and controlled access remains OFF. See the
-[public launch boundary](docs/architecture/PARTICI_PUZZLE_PUBLIC_LAUNCH_v0.1.md).
-Runtime media uses private
-PostgreSQL authorization; cleanup reuses Supabase Cron without a new credential.
-See [cleanup operations](docs/architecture/PARTICI_PUZZLE_CLEANUP_v0.1.md) and
-[launch readiness](docs/architecture/PARTICI_PUZZLE_LAUNCH_READINESS_v0.1.md).
-The protected [Puzzle Studio](docs/architecture/PUZZLE_STUDIO_v0.1.md) at `/admin/puzzles`
-supports administrator preparation and weekly scheduling without opening participation.
+The [automatic puzzle queue](docs/architecture/PARTICIPUZZLE_QUEUE_v0.1.md) powers
+PARTICIPUZZLE for authenticated ACTIVE owners. The protected Puzzle Studio at
+`/admin/puzzles` supports UPLOAD → PREVIEW → ADD TO QUEUE, ordering and pause/resume.
+Completed puzzles celebrate for one hour before the next READY puzzle starts.
+Private PostgreSQL media and existing five-minute cleanup remain in use.
+The synthetic development preview is `/review/puzzle/queue`.
 
-Product authority is the approved [Master Spec v0.6](docs/MASTER_SPEC_v0.6.md), incorporating the approved Home Region and ACTIVE-only network amendments. Frozen v0.5 and earlier versions are preserved. See the [Expanded Pulse architecture](docs/architecture/EXPANDED_PULSE_v0.1.md) for compatibility and staged deployment.
+Product authority is frozen [Master Spec v0.7](docs/MASTER_SPEC_v0.7.md), containing
+only the approved Section 48B queue amendment and version metadata changes.
+Frozen v0.6 and all earlier specifications remain unchanged.
 
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
 adds `/admin` navigation and read-only `/admin/network` structural analytics using
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.14.2 — Returning-owner installation invitation**. Reuses the existing optional PWA invitation after verified owner access and fixes NOT NOW contrast.
+Current release: **v0.15.0 — Automatic puzzle queue**. Administrator-managed ordering, one-hour completion celebration and automatic progression preserve existing gameplay and private media.
 
-Previous approved production baseline: **v0.14.1 — Editable Home Region & ACTIVE-only network**, release commit `e66fc02e082d27d731ad307f1a4b94544edb347a`. Task #14.1 has passed production acceptance; see the [verification record](docs/architecture/ACTIVE_NETWORK_HOME_REGION_v0.1.md#production-acceptance-and-approved-baseline).
+Previous approved production baseline: **v0.14.2**, commit `32e567d`.
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.
@@ -246,6 +243,6 @@ Task #12.4 / v0.12.4 extends newly published Doodles to seven days while preserv
 
 ## Task #14.1 — v0.14.1
 
-Master Spec v0.6 approves editable Home Region and ACTIVE-only connectivity.
+Master Spec v0.7 approves editable Home Region and ACTIVE-only connectivity.
 See [migration and review notes](docs/architecture/ACTIVE_NETWORK_HOME_REGION_v0.1.md).
 The approved migration is applied. Historical Bonds and account records are preserved; current network views and metrics include ACTIVE participants only.

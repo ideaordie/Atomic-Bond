@@ -52,7 +52,7 @@ for (const theme of ["light", "dark"])
     });
     await page.getByRole("button", { name: "Completed", exact: true }).click();
     await expect(
-      page.getByRole("img", { name: "Completed weekly puzzle artwork" }),
+      page.getByRole("img", { name: "Completed puzzle artwork" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "REVEAL MY PIECE" }),

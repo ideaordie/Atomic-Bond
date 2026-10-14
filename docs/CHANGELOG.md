@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.0 — Automatic puzzle queue
+
+- Queue lifecycle with one-hour completion celebration, serialized automatic advancement, preserved rolling gameplay allowances and lifecycle-aware private media cleanup.
+- Simplified administrator upload/preview/queue workflow, ordering, pause/resume and confirmed reasoned retirement; local synthetic Studio/player preview.
+- Approved Section 48B incorporated into Master Spec v0.7, preserving frozen v0.6. Guarded transition preserves completed puzzle history, private media and participant allowances; no unused artwork is automatically queued.
+
 ## v0.14.2 — Returning-owner installation invitation
 
 - Reuse the optional installation invitation after successful returning-owner email-link confirmation, respecting standalone detection and existing 30-day browser dismissal.

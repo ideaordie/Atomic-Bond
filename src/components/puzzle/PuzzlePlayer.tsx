@@ -6,7 +6,9 @@ import "./puzzle-player.css";
 export type PuzzleSnapshot = {
   id: string;
   revision: number;
-  endsAt: string;
+  endsAt: string | null;
+  celebrationEndsAt?: string | null;
+  completedAt?: string | null;
   status: string;
   board: { id: string; position: number; locked: boolean }[];
   reservation: null | { piece: string; expiresAt: string };
@@ -247,7 +249,9 @@ export function PuzzlePlayer({
   }, [initial, refresh]);
   const puzzle = data.puzzle;
   const ended = Boolean(
-    puzzle && (puzzle.status !== "ACTIVE" || !remaining(puzzle.endsAt, now)),
+    puzzle &&
+    (puzzle.status !== "ACTIVE" ||
+      (puzzle.endsAt !== null && !remaining(puzzle.endsAt, now))),
   );
   const reservation =
     puzzle?.reservation && remaining(puzzle.reservation.expiresAt, now)
@@ -363,12 +367,12 @@ export function PuzzlePlayer({
             {data.firstCommunity && data.nextStart
               ? `OUR FIRST COMMUNITY PUZZLE BEGINS ${new Date(data.nextStart).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" }).toUpperCase()}`
               : data.status === "WAITING"
-                ? "THE NEXT PICTURE IS ON ITS WAY"
+                ? "WAITING FOR THE NEXT PUZZLE"
                 : "YOUR SHARED PUZZLE"}
           </h2>
           <p>
             {data.status === "WAITING"
-              ? "Return when the next weekly puzzle begins."
+              ? "The next picture will appear here when it is ready."
               : "Checking availability…"}
           </p>
           {data.nextStart && (
@@ -396,13 +400,23 @@ export function PuzzlePlayer({
               </strong>
             </p>
             <p>
-              WEEKLY TIME
+              {puzzle.celebrationEndsAt
+                ? "CELEBRATION"
+                : puzzle.endsAt
+                  ? "WEEKLY TIME"
+                  : "SHARED CHALLENGE"}
               <strong>
-                {ended
-                  ? puzzle.status === "COMPLETE"
-                    ? "COMPLETE"
-                    : "WINDOW CLOSED"
-                  : duration(remaining(puzzle.endsAt, now))}
+                {puzzle.celebrationEndsAt
+                  ? remaining(puzzle.celebrationEndsAt, now)
+                    ? `ENDS IN ${duration(remaining(puzzle.celebrationEndsAt, now))}`
+                    : "CHECKING THE QUEUE…"
+                  : ended
+                    ? puzzle.status === "COMPLETE"
+                      ? "COMPLETE"
+                      : "WINDOW CLOSED"
+                    : puzzle.endsAt
+                      ? duration(remaining(puzzle.endsAt, now))
+                      : "UNTIL COMPLETE"}
               </strong>
             </p>
           </div>
@@ -538,17 +552,19 @@ export function PuzzlePlayer({
           {ended ? (
             <section>
               <h2>
-                {puzzle.status === "COMPLETE"
+                {puzzle.status === "COMPLETE" || puzzle.completedAt
                   ? "ONE COMPLETE PICTURE"
-                  : "THIS WEEK’S PICTURE"}
+                  : "PUZZLE ARCHIVED"}
               </h2>
-              <img
-                className="puzzle-complete"
-                alt="Completed weekly puzzle artwork"
-                src={imageUrl(puzzle.id)}
-                width={500}
-                height={500}
-              />
+              {(puzzle.status !== "ARCHIVED" || puzzle.completedAt) && (
+                <img
+                  className="puzzle-complete"
+                  alt="Completed puzzle artwork"
+                  src={imageUrl(puzzle.id)}
+                  width={500}
+                  height={500}
+                />
+              )}
             </section>
           ) : (
             <div className="puzzle-metrics">
