@@ -84,12 +84,6 @@ export function PuzzlePlayer({
   const stopped = useRef(false);
   const mounted = useRef(true);
   const [message, setMessage] = useState("");
-  const [moveGuidance, setMoveGuidance] = useState(false);
-  useEffect(() => {
-    if (!moveGuidance) return;
-    const timer = setTimeout(() => setMoveGuidance(false), 6000);
-    return () => clearTimeout(timer);
-  }, [moveGuidance]);
   const [failed, setFailed] = useState(false);
   const [denied, setDenied] = useState(false);
   const [selection, setSelection] = useState<Selection>(emptySelection);
@@ -186,7 +180,6 @@ export function PuzzlePlayer({
       if (inFlight.current || stopped.current) return;
       inFlight.current = true;
       setBusy(true);
-      setMoveGuidance(false);
       pending.current = command;
       try {
         const result = await transport(command);
@@ -220,23 +213,6 @@ export function PuzzlePlayer({
         // Write receipts may be old on retry; only a fresh read advances display state.
         const fresh = await transport({ operation: "read" });
         accept(fresh);
-        const serverNow = Date.parse(fresh.serverTime || "");
-        if (
-          mounted.current &&
-          !result.error &&
-          !fresh.error &&
-          command.operation === "place" &&
-          latest.current === fresh &&
-          fresh.puzzle &&
-          fresh.puzzle.id === command.puzzle &&
-          fresh.puzzle.status === "ACTIVE" &&
-          Date.parse(fresh.puzzle.endsAt) > serverNow &&
-          (fresh.moveAfter === null ||
-            Date.parse(fresh.moveAfter || "") <= serverNow) &&
-          fresh.puzzle.board.some((piece) => !piece.locked)
-        ) {
-          setMoveGuidance(true);
-        }
       } catch (error) {
         if (mounted.current) setUncertain(Boolean(pending.current));
         fail(error);
@@ -328,6 +304,12 @@ export function PuzzlePlayer({
   const { source, target } = selection;
   const moving = puzzle?.board.find((p) => p.id === source);
   const destination = puzzle?.board.find((p) => p.position === target);
+  const moveAvailable =
+    !ended &&
+    (data.moveAfter === null ||
+      (Number.isFinite(Date.parse(data.moveAfter || "")) &&
+        !remaining(data.moveAfter, now))) &&
+    Boolean(puzzle?.board.some((piece) => !piece.locked));
   const canConfirm =
     !busy &&
     !failed &&
@@ -441,15 +423,24 @@ export function PuzzlePlayer({
               )}
               <div>
                 <p>
-                  {source
-                    ? "Tap where this piece belongs."
-                    : reservation
-                      ? "Tap an empty square to place your piece."
-                      : pieceWait
-                        ? `Next piece available in ${duration(pieceWait)}.`
-                        : puzzle.board.length === 25
-                          ? "Select an unlocked piece to help complete the picture."
-                          : "Checking for your next piece…"}
+                  {source ? (
+                    "Tap where this piece belongs."
+                  ) : reservation ? (
+                    "Tap an empty square to place your piece."
+                  ) : moveAvailable ? (
+                    <>
+                      <strong>YOU HAVE 1 MOVE AVAILABLE</strong>
+                      <br />
+                      Tap any unlocked piece, then tap where you want to move
+                      it.
+                    </>
+                  ) : pieceWait ? (
+                    `Next piece available in ${duration(pieceWait)}.`
+                  ) : puzzle.board.length === 25 ? (
+                    "Select an unlocked piece to help complete the picture."
+                  ) : (
+                    "Checking for your next piece…"
+                  )}
                 </p>
                 {reservation && (
                   <small>
@@ -458,7 +449,7 @@ export function PuzzlePlayer({
                   </small>
                 )}
                 {target !== null && (
-                  <p>
+                  <p aria-live="polite" aria-atomic="true">
                     {source
                       ? destination
                         ? "Swap preview"
@@ -495,32 +486,6 @@ export function PuzzlePlayer({
               </div>
             </section>
           )}
-          {moveGuidance &&
-            !denied &&
-            !ended &&
-            !remaining(data.moveAfter, now) &&
-            puzzle.board.some((piece) => !piece.locked) && (
-              <aside
-                className="puzzle-move-guidance"
-                aria-label="Move guidance"
-              >
-                <div role="status" aria-live="polite" aria-atomic="true">
-                  <strong>PIECE PLACED!</strong>
-                  <p>
-                    You can also move one unlocked piece! Tap any movable piece,
-                    then choose where it belongs.
-                  </p>
-                  <small>1 MOVE AVAILABLE</small>
-                </div>
-                <button
-                  type="button"
-                  aria-label="Dismiss move guidance"
-                  onClick={() => setMoveGuidance(false)}
-                >
-                  DISMISS
-                </button>
-              </aside>
-            )}
           <div
             className="puzzle-board"
             role="group"

@@ -68,7 +68,7 @@ test("player uses authorized API, refreshes revisions and preserves independent 
     .getByRole("button", { name: "Position 2, empty", exact: true })
     .click();
   await page.getByRole("button", { name: "PLACE HERE" }).click();
-  await expect(page.getByText(/Next piece available in/)).toBeVisible();
+  await expect(page.getByText("YOU HAVE 1 MOVE AVAILABLE")).toBeVisible();
   await page
     .getByRole("button", { name: "Position 2, movable piece", exact: true })
     .click();

@@ -207,7 +207,7 @@ test("uncertain confirmation retries the identical request; stale board clears s
   f.drop = true;
   await page.getByRole("button", { name: "PLACE HERE" }).click();
   await page.getByRole("button", { name: "RETRY ACTION" }).click();
-  await expect(page.getByText(/Next piece available in/)).toBeVisible();
+  await expect(page.getByText("YOU HAVE 1 MOVE AVAILABLE")).toBeVisible();
   const writes = f.calls.filter((c) => c.operation === "place");
   expect(writes).toHaveLength(2);
   expect(writes[0]).toEqual(writes[1]);
@@ -289,67 +289,81 @@ test("cooldown never reveals early and an older snapshot cannot replace a newer 
   expect(f.calls.filter((c) => c.operation === "reveal")).toHaveLength(1);
 });
 
-test("post-place MOVE guidance expires after six seconds and leaves the board interactive", async ({
+test("MOVE instruction persists through time, refresh and reload, then returns to countdown after MOVE", async ({
   page,
 }, info) => {
   const f = await fixture(page, true);
   await page.goto("/review/puzzle/player/api");
   await square(page, 2).click();
   await page.getByRole("button", { name: "PLACE HERE" }).click();
-  const guidance = page.getByRole("complementary", { name: "Move guidance" });
-  await expect(guidance).toBeVisible();
-  await expect(guidance).toContainText("PIECE PLACED!");
-  await expect(guidance).toContainText("1 MOVE AVAILABLE");
-  await expect(guidance.getByRole("status")).toHaveAttribute(
-    "aria-live",
-    "polite",
-  );
-  await square(page, 2).click();
-  await square(page, 3).click();
-  await expect(page.getByRole("button", { name: "MOVE HERE" })).toBeEnabled();
-  for (const theme of ["light", "dark"] as const) {
+  const instruction = page.getByText("YOU HAVE 1 MOVE AVAILABLE", {
+    exact: true,
+  });
+  await expect(instruction).toBeVisible();
+  await expect(page.getByText(/Next piece available in/)).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Dismiss move guidance" }),
+  ).toHaveCount(0);
+  f.now += 120000;
+  await page.clock.fastForward(120000);
+  await expect(instruction).toBeVisible();
+  await page.reload();
+  await expect(instruction).toBeVisible();
+  for (const theme of ["light", "dark"]) {
     await page.evaluate((value) => {
       document.documentElement.dataset.appearance = value;
     }, theme);
+    await page.screenshot({
+      path: `artifacts/persistent-move-${info.project.name}-${theme}.png`,
+      fullPage: true,
+    });
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page.screenshot({
-      path: `artifacts/move-guidance-${info.project.name}-${theme}.png`,
-      fullPage: true,
-    });
   }
-  await page.clock.fastForward(5000);
-  await expect(guidance).toBeVisible();
-  await page.clock.fastForward(1100);
-  await expect(guidance).toHaveCount(0);
-  expect(f.calls.filter((c) => c.operation === "place")).toHaveLength(1);
+  await square(page, 2).focus();
+  await page.keyboard.press("Enter");
+  await square(page, 3).click();
+  await page.getByRole("button", { name: "MOVE HERE" }).click();
+  await expect(instruction).toHaveCount(0);
+  await expect(page.getByText(/Next piece available in/)).toBeVisible();
 });
 
-test("post-place MOVE guidance supports keyboard dismissal", async ({
+test("MOVE instruction tracks refreshed locked pieces and cooldown", async ({
   page,
 }) => {
-  await fixture(page, true);
+  const f = await fixture(page, true);
   await page.goto("/review/puzzle/player/api");
   await square(page, 2).click();
   await page.getByRole("button", { name: "PLACE HERE" }).click();
-  const dismiss = page.getByRole("button", { name: "Dismiss move guidance" });
-  await dismiss.focus();
-  await page.keyboard.press("Enter");
-  await expect(dismiss).toHaveCount(0);
-  await page.clock.fastForward(2000);
-  await expect(page.getByText("1 MOVE AVAILABLE")).toHaveCount(0);
+  const instruction = page.getByText("YOU HAVE 1 MOVE AVAILABLE", {
+    exact: true,
+  });
+  await expect(instruction).toBeVisible();
+  f.state.puzzle!.board[0]!.locked = true;
+  f.state.puzzle!.revision++;
+  f.now += 60000;
+  await page.clock.fastForward(60000);
+  await expect(instruction).toHaveCount(0);
+  await expect(page.getByText(/Next piece available in/)).toBeVisible();
+  f.state.puzzle!.board.push({ id: other, position: 2, locked: false });
+  f.state.puzzle!.revision++;
+  f.now += 60000;
+  await page.clock.fastForward(60000);
+  await expect(instruction).toBeVisible();
+  f.state.moveAfter = new Date(f.now + 3600000).toISOString();
+  f.now += 60000;
+  await page.clock.fastForward(60000);
+  await expect(instruction).toHaveCount(0);
+  await expect(page.getByText(/Next piece available in/)).toBeVisible();
 });
 
-for (const scenario of [
-  "cooldown",
-  "locked board",
-  "failed",
-  "fresh cooldown",
-]) {
-  test(`post-place MOVE guidance absent for ${scenario}`, async ({ page }) => {
+for (const scenario of ["cooldown", "locked board", "failed"]) {
+  test(`persistent MOVE instruction absent for ${scenario}`, async ({
+    page,
+  }) => {
     const f = await fixture(page, true);
     if (scenario === "cooldown")
       f.state.moveAfter = new Date(f.now + 3600000).toISOString();
@@ -357,9 +371,6 @@ for (const scenario of [
     await page.goto("/review/puzzle/player/api");
     await square(page, 2).click();
     if (scenario === "failed") f.stale = true;
-    // Change only the server response after the displayed initial eligibility.
-    if (scenario === "fresh cooldown")
-      f.state.moveAfter = new Date(f.now + 3600000).toISOString();
     await page.getByRole("button", { name: "PLACE HERE" }).click();
     await expect(page.getByRole("status")).toContainText(
       scenario === "failed"
@@ -368,8 +379,6 @@ for (const scenario of [
           ? "locked"
           : "Piece placed",
     );
-    await expect(
-      page.getByRole("complementary", { name: "Move guidance" }),
-    ).toHaveCount(0);
+    await expect(page.getByText("YOU HAVE 1 MOVE AVAILABLE")).toHaveCount(0);
   });
 }

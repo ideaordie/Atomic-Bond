@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.13.4 — Persistent MOVE instruction
+
+- Replace the six-second notice with authoritative MOVE eligibility guidance in the existing countdown area. Preserve it through refresh/reload, and restore the countdown when MOVE is used or no movable pieces remain.
+
 ## v0.13.3 — Post-placement MOVE guidance
 
 - Show a dismissible six-second inline hint after successful PLACE only when a fresh server snapshot permits MOVE and contains an unlocked piece. Gameplay rules remain unchanged.
