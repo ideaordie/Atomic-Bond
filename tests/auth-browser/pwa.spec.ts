@@ -19,7 +19,9 @@ async function owner(page: Page, request: APIRequestContext, email: string) {
   ).json();
   await page.goto(link);
   await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
-  await expect(page.getByRole("heading")).toHaveText("YOUR ATOM IS READY");
+  await expect(
+    page.getByRole("heading", { name: "YOUR ATOM IS READY", exact: true }),
+  ).toBeVisible();
   await page.goto("/explore");
   // Next streams a hidden server segment while hydrating the owner view.
   await expect(page.getByTestId("atom-canvas")).toHaveCount(1);
@@ -38,51 +40,40 @@ async function installEvent(page: Page, outcome = "accepted") {
   }, outcome);
 }
 
-test("contextual native install, dismissal, owner preferences and installed suppression", async ({
+test("registration invitation persists on reload; dismissal keeps navigation; native install is user initiated", async ({
   page,
   request,
 }, info) => {
-  await page.clock.install();
   await owner(page, request, `pwa-native-${info.project.name}@example.invalid`);
   const number = await page.getByTestId("selected-atom").textContent();
   const offer = page.getByRole("region", { name: "Install Atomic Bond" });
-  await expect(offer).toHaveCount(0); // Unsupported/no event never gets a fake button.
-  await installEvent(page);
-  await page.clock.fastForward(31_000);
-  await expect(offer).toBeVisible();
-  await page.screenshot({
-    path: info.outputPath("native-offer.png"),
-    fullPage: true,
-  });
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-  await offer.getByRole("button", { name: "NOT NOW" }).click();
+  await expect(
+    offer.getByRole("heading", { name: "TAKE YOUR ATOM WITH YOU" }),
+  ).toBeVisible();
   await page.reload();
-  await installEvent(page);
-  await page.clock.fastForward(31_000);
-  await expect(offer).toHaveCount(0);
-  await page.getByRole("link", { name: "Settings" }).click();
   await expect(offer).toBeVisible();
-  await page.screenshot({
-    path: info.outputPath("preferences-install.png"),
-    fullPage: true,
-  });
-  await offer
-    .getByRole("button", { name: "ADD TO HOME SCREEN", exact: true })
-    .click();
+  await offer.getByRole("button", { name: "MAYBE LATER" }).click();
+  await page.reload();
+  await expect(offer).toHaveCount(0);
+  const entry = page.getByRole("button", { name: "INSTALL APP", exact: true });
+  await entry.click();
+  await expect(page.getByRole("dialog")).toContainText("Chrome or Edge");
+  await page.keyboard.press("Escape");
+  await expect(entry).toBeFocused();
+  await installEvent(page, "dismissed");
+  await entry.click();
+  await expect(entry).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute(
     "data-native-prompt",
     "called",
   );
-  await expect(offer).toHaveCount(0);
-  await page.getByRole("link", { name: "RETURN TO MY ATOM" }).click();
+  await installEvent(page);
+  await entry.click();
+  await expect(entry).toHaveCount(0);
   await expect(page.getByTestId("selected-atom")).toHaveText(number!);
 });
 
-test("iOS manual guidance stays optional and fits each viewport", async ({
+test("iOS instructions are optional, keyboard closable and fit", async ({
   page,
   request,
 }, info) => {
@@ -90,25 +81,16 @@ test("iOS manual guidance stays optional and fits each viewport", async ({
     Object.defineProperty(navigator, "platform", { get: () => "MacIntel" });
     Object.defineProperty(navigator, "maxTouchPoints", { get: () => 5 });
   });
-  await page.clock.install();
   await owner(page, request, `pwa-ios-${info.project.name}@example.invalid`);
-  // Verify hydration before advancing the install timer. A visible streamed
-  // canvas alone does not prove that client effects have registered yet.
-  await page.getByRole("button", { name: "Zoom in" }).click();
-  await expect(page.getByTestId("atom-canvas")).toHaveAttribute(
-    "data-zoom",
-    "1.25",
-  );
-  await page.clock.runFor(100);
-  await page.clock.fastForward(31_000);
-  const offer = page.getByRole("region", { name: "Install Atomic Bond" });
-  await offer
-    .getByRole("button", { name: "HOW TO ADD TO HOME SCREEN" })
+  await page
+    .getByRole("button", { name: "INSTALL ATOMIC BOND", exact: true })
     .click();
-  await expect(offer).toContainText("Tap Share");
-  await expect(offer).toContainText("Open as Web App");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Tap Share");
+  await expect(dialog).toContainText("Open as Web App");
+  await expect(dialog).not.toContainText("Chrome or Edge");
   await page.screenshot({
-    path: info.outputPath("ios-guidance.png"),
+    path: info.outputPath("ios-install.png"),
     fullPage: true,
   });
   expect(
@@ -116,11 +98,11 @@ test("iOS manual guidance stays optional and fits each viewport", async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  await offer.getByRole("button", { name: "DONE" }).click();
-  await expect(offer).toHaveCount(0);
-  await page.getByRole("button", { name: "Pulse", exact: true }).click();
+  await dialog.getByRole("button", { name: "CLOSE INSTRUCTIONS" }).click();
+  await expect(dialog).toHaveCount(0);
+  await page.getByRole("button", { name: "MAYBE LATER" }).click();
   await expect(
-    page.getByRole("dialog", { name: "How are you right now?" }),
+    page.getByRole("button", { name: "INSTALL APP", exact: true }),
   ).toBeVisible();
 });
 
@@ -170,4 +152,71 @@ test("standalone restores the same owner and suppresses install UI", async ({
   await expect(
     page.getByRole("region", { name: "Your Network Overview details" }),
   ).toBeVisible();
+});
+
+test("Light/Dark invitation and Android fallback remain accessible without a native event", async ({
+  page,
+  request,
+}, info) => {
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, "userAgent", {
+      get: () => "Mozilla/5.0 Android Chrome/130.0 Mobile",
+    }),
+  );
+  await owner(
+    page,
+    request,
+    `pwa-android-${info.project.name}@example.invalid`,
+  );
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(
+      (theme) => localStorage.setItem("atomic-bond-appearance", theme),
+      theme,
+    );
+    await page.reload();
+    const offer = page.getByRole("region", { name: "Install Atomic Bond" });
+    await expect(offer).toBeVisible();
+    const invitationBox = await offer.boundingBox();
+    const headerBox = await page.locator("header.explore-nav").boundingBox();
+    expect(invitationBox!.y).toBeGreaterThanOrEqual(
+      headerBox!.y + headerBox!.height,
+    );
+    const entryBox = await page
+      .getByRole("button", { name: "INSTALL APP", exact: true })
+      .boundingBox();
+    expect(entryBox!.x).toBeGreaterThanOrEqual(0);
+    expect(entryBox!.x + entryBox!.width).toBeLessThanOrEqual(
+      page.viewportSize()!.width,
+    );
+    await page.screenshot({
+      path: info.outputPath(`invitation-${theme}.png`),
+      fullPage: true,
+    });
+    await page
+      .getByRole("button", { name: "INSTALL APP", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toContainText("three dots");
+    await expect(dialog).not.toContainText("Safari");
+    const bounds = await dialog.boundingBox();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+    await page.screenshot({
+      path: info.outputPath(`android-${theme}.png`),
+      fullPage: true,
+    });
+    await page.keyboard.press("Escape");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.evaluate(() => window.dispatchEvent(new Event("appinstalled")));
+  await expect(
+    page.getByRole("button", { name: "INSTALL APP", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: "Install Atomic Bond" }),
+  ).toHaveCount(0);
 });

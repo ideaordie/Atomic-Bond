@@ -33,27 +33,36 @@ Only the resulting public PNGs ship, not a screenshot or private source artwork.
 
 ## Install experience
 
-`PwaProvider` captures `beforeinstallprompt` globally, without automatically
-invoking it. `InstallOffer` is mounted only in verified owner experience and
-preferences. It waits at least 30 seconds of the owner view before offering,
-checks visibility and avoids an open product dialog. This is a quiet nonmodal
-card, not a prerequisite. NOT NOW suppresses automatic offers for 30 days on
-that browser. Only a dismissal deadline is stored; no identity or analytics.
-Unavailable storage suppresses automatic promotion conservatively. Preferences
-provides an explicit option even during the suppression period when supported.
+`PwaProvider` captures `beforeinstallprompt` globally without invoking it automatically.
+The shared navigation includes INSTALL APP in browser mode, including when no native
+prompt is available. Settings retains its explicit install option. Both disappear
+in standalone mode and after an accepted native installation in the current page.
 
-Chromium's captured event is single-use and invoked only by a user click.
-Acceptance/appinstalled hides promotion; browser dismissal starts suppression.
-No event means no native-install button. `display-mode: standalone` and iOS
-`navigator.standalone` suppress promotion. Installed detection outside standalone
-is not universal: another browser/profile may not know an app is installed.
+Successful new-Atom activation triggers an inline TAKE YOUR ATOM WITH YOU invitation
+on the confirmation page. A non-identifying sessionStorage pending flag carries it
+through Bond redirects to the owner view. Returning access does not trigger it.
+MAYBE LATER clears the pending flag and uses the existing 30-day browser dismissal
+preference; the navigation option remains available. No identity, token or account
+information is stored. Storage failure leaves the application functional and suppresses
+automatic promotion conservatively. There is no automatic 30-second pop-up.
 
-iPhone/iPad guidance uses the manual Share → Add to Home Screen → Add flow,
-including Open as Web App where shown. iPad desktop UA is recognized by MacIntel
-plus touch capability. This narrow platform detection is necessary because iOS
-has no equivalent native install event. If the menu is absent, guidance directs
-the participant to Safari. The site never claims to complete iOS installation.
-Unsupported desktops receive no broken action; browser menus remain available.
+The captured Chromium event is single-use and invoked only by a user click.
+Dismissal never hides INSTALL APP. Without a native event, the action opens a native
+HTML dialog with keyboard focus containment, Escape/Close, and platform instructions:
+iPhone/iPad Safari Share → Add to Home Screen (Open as Web App where shown),
+Android browser installation menu, Chrome/Edge desktop installation menu, Safari
+Add to Dock, or a general supported-browser fallback. Instructions do not claim
+installation has completed. Platform detection is for presentation only.
+
+Installed detection outside standalone is not universal: a separate browser/profile
+may not know an app is installed. The instructions acknowledge this and advise opening
+the existing icon. No persistent installed flag is used that could conceal the entry
+after uninstall. Installation does not promise permanent login; existing passwordless
+ACCESS MY ATOM restores ownership if the installed browser context needs authentication.
+
+Physical iPhone/iPad Safari, Android Chrome and desktop Chrome/Edge installation still
+require device acceptance. Automated browser tests simulate prompt and display-mode
+events, verify returning-owner behavior, and inspect offline public-only caches.
 
 ## Worker, cache and offline policy
 
@@ -180,3 +189,28 @@ and safe initializer. The worker's fixed asset list includes these two files;
 private navigation/data caching remains prohibited. Manifest identity, install
 behavior and launch routing are unchanged. OS-controlled splash artwork may
 remain light while the application uses the saved appearance.
+
+## Persistent invitation acceptance (v0.13.5)
+
+Baseline: v0.13.4 / `66329e4`. No manifest, worker, database, frozen specification,
+production configuration or authentication policy changes. The registration action
+adds only a successful-creation presentation flag; it grants no authority.
+
+Verified locally: 327 unit/graph/security tests; registration and cross-device owner
+regressions; native accepted/dismissed event simulation; iOS/iPad guidance; Android
+fallback; standalone owner return; keyboard dialog close/focus restoration;
+invitation reload/dismissal; appinstalled suppression; public-only offline cache;
+all navigation items reachable at 390×844, 768×1024 and 1440×900. Light/Dark screenshots
+checked at all three sizes. TypeScript, production build, lint, changed-file formatting,
+server-only client boundary and secret scans passed. The broad database integration
+run was stopped for resource contention; database code and migrations are unchanged.
+
+Review: `/review/pwa` is development-only and returns not-found in production.
+Native installation UI was simulated, not physically installed. Remaining device checks:
+check Safari Add to Home Screen, Android Chrome installation and Chrome/Edge desktop
+installation on real devices; reopen the installed app, verify the same Atom, and
+verify secure existing-owner access if browser storage is not shared. No permanent
+login guarantee is made. Publication was approved after local product review.
+
+Platform references: [browser installation events](https://web.dev/learn/pwa/installation-prompt)
+and [Apple's Safari installation instructions](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios).

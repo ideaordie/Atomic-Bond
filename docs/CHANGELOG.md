@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.13.5 — Persistent PWA installation invitation
+
+- Add INSTALL APP to shared navigation, with native installation when available and
+  accessible platform-specific instructions otherwise.
+- Offer TAKE YOUR ATOM WITH YOU after successful new registration; dismissal keeps
+  the persistent entry available. Remove delayed contextual promotion.
+- Preserve manifest, service-worker cache policy, passwordless access and account behavior.
+- Product-reviewed publication. Local browser/security checks passed; physical-device installation and session handoff remain manual acceptance items.
+
 ## v0.13.4 — Persistent MOVE instruction
 
 - Replace the six-second notice with authoritative MOVE eligibility guidance in the existing countdown area. Preserve it through refresh/reload, and restore the countdown when MOVE is used or no movable pieces remain.

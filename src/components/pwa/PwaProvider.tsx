@@ -3,7 +3,9 @@ import { useSyncExternalStore, useEffect, useState } from "react";
 import {
   DISMISS_KEY,
   DISMISS_MS,
-  isIOS,
+  installPlatform,
+  INVITATION_KEY,
+  type InstallPlatform,
   isStandalone,
   isSuppressed,
 } from "./install-policy";
@@ -15,14 +17,18 @@ interface InstallEvent extends Event {
 }
 interface InstallState {
   available: boolean;
-  ios: boolean;
+  platform: InstallPlatform;
+  invitation: boolean;
+  invite(): void;
   suppressed: boolean;
   dismiss(): void;
   install(): Promise<boolean>;
 }
 const initialState: InstallState = {
   available: false,
-  ios: false,
+  platform: "other",
+  invitation: false,
+  invite() {},
   suppressed: true,
   dismiss() {},
   async install() {
@@ -47,7 +53,8 @@ export const useInstall = () =>
 export function PwaProvider() {
   const [event, setEvent] = useState<InstallEvent | null>(null);
   const [installed, setInstalled] = useState(true);
-  const [ios, setIOS] = useState(false);
+  const [platform, setPlatform] = useState<InstallPlatform>("other");
+  const [invitation, setInvitation] = useState(false);
   const [suppressed, setSuppressed] = useState(true);
   const [offline, setOffline] = useState(false);
   useEffect(() => {
@@ -59,8 +66,8 @@ export function PwaProvider() {
           (navigator as Navigator & { standalone?: boolean }).standalone,
         ),
       );
-      setIOS(
-        isIOS(
+      setPlatform(
+        installPlatform(
           navigator.userAgent,
           navigator.platform,
           navigator.maxTouchPoints,
@@ -68,6 +75,7 @@ export function PwaProvider() {
       );
       setOffline(!navigator.onLine);
       try {
+        setInvitation(sessionStorage.getItem(INVITATION_KEY) === "pending");
         setSuppressed(
           isSuppressed(localStorage.getItem(DISMISS_KEY), Date.now()),
         );
@@ -83,6 +91,12 @@ export function PwaProvider() {
     const complete = () => {
       setInstalled(true);
       setEvent(null);
+      setInvitation(false);
+      try {
+        sessionStorage.removeItem(INVITATION_KEY);
+      } catch {
+        /* Optional UI state only. */
+      }
     };
     const disconnected = () => setOffline(true);
     // Keep stale content concealed until a fresh server navigation succeeds.
@@ -118,15 +132,26 @@ export function PwaProvider() {
   useEffect(() => {
     const dismiss = () => {
       setSuppressed(true);
+      setInvitation(false);
       try {
+        sessionStorage.removeItem(INVITATION_KEY);
         localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS));
       } catch {
         /* Quiet for this session. */
       }
     };
     snapshot = {
-      available: !installed && (ios || event !== null),
-      ios,
+      available: !installed,
+      platform,
+      invitation,
+      invite: () => {
+        setInvitation(true);
+        try {
+          sessionStorage.setItem(INVITATION_KEY, "pending");
+        } catch {
+          /* In-memory invitation still works. */
+        }
+      },
       suppressed,
       dismiss,
       install: async () => {
@@ -135,8 +160,10 @@ export function PwaProvider() {
         try {
           await event.prompt();
           const choice = await event.userChoice;
-          if (choice.outcome === "accepted") setInstalled(true);
-          else dismiss();
+          if (choice.outcome === "accepted") {
+            setInstalled(true);
+            dismiss();
+          } else dismiss();
           return true;
         } catch {
           return false;
@@ -144,7 +171,7 @@ export function PwaProvider() {
       },
     };
     for (const listener of listeners) listener();
-  }, [installed, ios, event, suppressed]);
+  }, [installed, platform, event, suppressed, invitation]);
   return (
     <>
       {offline && (

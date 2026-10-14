@@ -10,7 +10,10 @@
   touch-action: pan-x pan-y;
   padding: 4px;
 }
-.application-navigation a {
+:is(
+  .application-navigation a,
+  .application-navigation-shell > .install-navigation
+) {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -28,10 +31,16 @@
   border-color: var(--text);
   background: var(--surface-raised, var(--surface));
 }
-.application-navigation a:hover {
+:is(
+  .application-navigation a,
+  .application-navigation-shell > .install-navigation
+):hover {
   border-color: var(--border);
 }
-.application-navigation a:focus-visible {
+:is(
+  .application-navigation a,
+  .application-navigation-shell > .install-navigation
+):focus-visible {
   outline: 2px solid var(--text);
   outline-offset: -2px;
 }
@@ -43,7 +52,7 @@
   border-bottom: 1px solid var(--border);
   min-width: 0;
 }
-.shared-application-header .application-navigation {
+.shared-application-header .application-navigation-shell {
   margin-left: auto;
 }
 .shared-application-header > a {
@@ -53,7 +62,7 @@
   font-size: 12px;
   letter-spacing: 0.1em;
 }
-.explore-nav > .application-navigation {
+.explore-nav > .application-navigation-shell {
   flex: 1;
   max-width: max-content;
 }
@@ -65,7 +74,32 @@
   .shared-application-header > a {
     max-width: 86px;
   }
-  .application-navigation a {
+  :is(
+    .application-navigation a,
+    .application-navigation-shell > .install-navigation
+  ) {
     padding: 0 10px;
   }
+}
+
+.application-navigation-shell > .install-navigation {
+  background: var(--surface);
+  border-color: var(--border);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.application-navigation-shell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+.application-navigation-shell > .application-navigation {
+  flex: 1;
+}
+.application-navigation-shell > .install-navigation {
+  font-size: 10px;
+  padding: 0 8px;
 }

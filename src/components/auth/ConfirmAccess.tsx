@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { completeAccess } from "../../services/auth/actions";
 import "./auth.css";
+import { useInstall } from "../pwa/PwaProvider";
+import { InstallOffer } from "../pwa/InstallOffer";
 export function ConfirmAccess() {
+  const installation = useInstall();
   const [link, setLink] = useState<{ token: string; next: string } | null>(
       null,
     ),
@@ -49,6 +52,7 @@ export function ConfirmAccess() {
               ? "You're securely signed in on this device."
               : "Email verified. Your Atom has been created."}
           </p>
+          {!result.returning && <InstallOffer />}
           <Link className="explore-link" href={result.next}>
             {result.next.startsWith("/bond/")
               ? "Continue to Bond confirmation"
@@ -72,12 +76,15 @@ export function ConfirmAccess() {
                 const r = await completeAccess(link.token, link.next);
                 setLink(null);
                 if ("error" in r) setError(r.error);
-                else if (
-                  r.next.startsWith("/bond/") ||
-                  r.next.startsWith("/account/")
-                )
-                  window.location.replace(r.next);
-                else setResult(r);
+                else {
+                  if (!r.returning) installation.invite();
+                  if (
+                    r.next.startsWith("/bond/") ||
+                    r.next.startsWith("/account/")
+                  )
+                    window.location.replace(r.next);
+                  else setResult(r);
+                }
               } catch {
                 setError("Unable to complete access. Request a new link.");
               } finally {

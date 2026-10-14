@@ -23,7 +23,9 @@ test("welcome CTA uses verified registration and recognizes the same returning o
   ).json();
   await page.goto(link);
   await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
-  await expect(page.getByRole("heading")).toHaveText("YOUR ATOM IS READY");
+  await expect(
+    page.getByRole("heading", { name: "YOUR ATOM IS READY", exact: true }),
+  ).toBeVisible();
   const identity = await page.locator(".auth-panel p").first().innerText();
   await page.goto("/welcome");
   await page

@@ -19,7 +19,8 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release candidate: **v0.13.0-rc.5 — Puzzle Studio (gameplay disabled)**.
+Current release: **v0.13.5 — Persistent PWA installation invitation**.
+See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.
 See [Design System](docs/architecture/DESIGN_SYSTEM_v0.1.md).

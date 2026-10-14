@@ -22,7 +22,9 @@ test("expanded Pulse preview is local; all categories persist singly through own
   ).json();
   await page.goto(link);
   await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
-  await expect(page.getByRole("heading")).toHaveText("YOUR ATOM IS READY");
+  await expect(
+    page.getByRole("heading", { name: "YOUR ATOM IS READY", exact: true }),
+  ).toBeVisible();
   await page.goto("/explore");
   await page.getByRole("button", { name: "Pulse", exact: true }).click();
   let dialog = page.getByRole("dialog", { name: "How are you right now?" });

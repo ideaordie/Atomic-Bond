@@ -115,7 +115,10 @@ export async function finishRegistration(form: FormData) {
     if (!place || place.displayName === "Verification only") throw new Error();
     await context.services.atoms.create(details);
     await context.services.atoms.activate();
-    return { next: nextPath(form.get("next")) };
+    return {
+      next: nextPath(form.get("next")),
+      created: !context.atom?.publicId,
+    };
   } catch {
     return {
       error: "Unable to complete registration. Choose a valid home region.",

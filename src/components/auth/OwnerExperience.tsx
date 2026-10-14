@@ -156,6 +156,7 @@ export function OwnerExperience({
   }
   return (
     <>
+      <InstallOffer />
       <LivingAtom
         authorizeMap={async () => {
           const result = await ownerGeographicNetwork();
@@ -195,7 +196,6 @@ export function OwnerExperience({
         }}
       />
       {error && <p role="alert">{error}</p>}
-      <InstallOffer />
       <p className="bond-update" role="status">
         {creating
           ? "Preparing your invitation…"

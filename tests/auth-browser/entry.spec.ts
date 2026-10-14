@@ -33,7 +33,9 @@ test("entry, isolated owner sessions, explicit public viewing and empty real net
   ).toMatch(/^pkce_[a-f0-9]+$/);
   await page.goto(link);
   await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
-  await expect(page.getByRole("heading")).toHaveText("YOUR ATOM IS READY");
+  await expect(
+    page.getByRole("heading", { name: "YOUR ATOM IS READY", exact: true }),
+  ).toBeVisible();
   const number = (
     await page.locator(".auth-panel p").first().innerText()
   ).replace("ATOM #", "");

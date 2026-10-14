@@ -5,6 +5,7 @@ import manifest from "../../src/app/manifest";
 import {
   DISMISS_MS,
   isIOS,
+  installPlatform,
   isStandalone,
   isSuppressed,
 } from "../../src/components/pwa/install-policy";
@@ -47,4 +48,13 @@ describe("PWA identity and install policy", () => {
     expect(isSuppressed(null, now)).toBe(false);
     expect(isSuppressed("bad data", now)).toBe(false);
   });
+});
+
+it("selects only device-relevant fallback instructions", () => {
+  expect(installPlatform("iPhone Safari", "iPhone", 5)).toBe("ios");
+  expect(installPlatform("Mac Safari", "MacIntel", 5)).toBe("ios");
+  expect(installPlatform("Android Chrome", "Linux", 5)).toBe("android");
+  expect(installPlatform("Chrome Edg/130", "Win32", 0)).toBe("desktop");
+  expect(installPlatform("Safari", "MacIntel", 0)).toBe("safari");
+  expect(installPlatform("Firefox", "Linux", 0)).toBe("other");
 });
