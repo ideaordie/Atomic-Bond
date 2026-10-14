@@ -1,6 +1,6 @@
 # Editable Home Region and ACTIVE-only network — Task #14.1
 
-Status: approved for v0.14.1 publication. Hosted migration applied and integrity verified on October 14, 2026 UTC.
+Status: production acceptance passed; v0.14.1 is the approved production baseline. Hosted migration applied and integrity verified on October 14, 2026 UTC.
 
 ## Product authority
 
@@ -123,3 +123,17 @@ acceptance remains a manual check; hosted migration/data comparisons passed.
 - Hosted inactive graphs are empty; returned nodes are ACTIVE and expose no private identity fields. New RPC grants permit authenticated owners only; anonymous/service-role execution and direct private traversal are denied.
 - Doodle and puzzle cleanup executions succeeded; puzzle cleanup reported zero failures.
 - Rollback was not required. Any later compensation must be reviewed against intervening activity and must not blindly restore growth history.
+
+## Production acceptance and approved baseline
+
+The product owner explicitly accepted Task #14.1 after the following production verification. The approved application baseline is **v0.14.1**, release commit `e66fc02e082d27d731ad307f1a4b94544edb347a`, with frozen Master Spec v0.6 unchanged.
+
+- The release deployment was Vercel Ready at `https://atomicbond.ideaordie.com`; Git was synchronized and clean at publication. Hosted migration history was current.
+- The verified Atom #4 owner used the production Settings form to save Canada → Ontario. The success message appeared, and Ontario persisted after a full Settings reload.
+- Living Atom retained four direct Bonds and nine connected Atoms. Regional reach changed from one region / one country to two regions / two countries, and persisted on a fresh Living Atom load.
+- The geographic map placed Atom #4 in the Ontario cluster (one Atom), with the other eight connected Atoms in Florida. The accessible cluster member selector identified Atom #4. Existing Pulse and Network Signal remained visible.
+- Atom #4 remains in Ontario by explicit product-owner choice; no restoration is pending. The product owner separately reported testing a location change on another Atom and confirmed all features worked. That second test is user-reported acceptance, not an independently observed browser test.
+- Release verification included 333 unit/graph/security tests, 118 integration tests, native PostgreSQL concurrency/restart checks, 81 authenticated browser tests and three responsive lifecycle/map tests. Formatting, lint, TypeScript, production build and secret checks passed. The integration/concurrency/browser evidence was reused from the verified implementation checkpoint; the final 333-test suite and release build were rerun before publication.
+- Existing account records, historical Bonds, number sequences, schedules and preserved growth history matched the pre-migration comparison. No rollback was required.
+
+This acceptance record changes documentation only. It introduces no application, schema, participant-data, schedule or specification changes. Existing beta scale and refresh limitations above remain applicable.

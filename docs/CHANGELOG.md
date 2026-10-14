@@ -2,6 +2,7 @@
 
 ## v0.14.1 — Editable Home Region & ACTIVE-only network
 
+- Production acceptance passed; designated the approved production baseline at release commit `e66fc02`. Verified Home Region persistence, map positioning and regional metrics on Atom #4; the product owner also confirmed a successful location change on another Atom.
 - Separate canonical Home Region editor for verified ACTIVE owners; legacy profile saves cannot overwrite location.
 - ACTIVE-only graph, Pulse reach, Doodle MY NETWORK, Connected Groups and growth metrics; historical Bond records and permanent numbers remain intact.
 - Bounded 5,000-node traversal, inactive-selection refresh recovery, and a guarded growth-baseline transition.
