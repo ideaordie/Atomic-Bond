@@ -24,7 +24,10 @@ test("public beta About page has readable sections and keyboard return navigatio
     page.getByText(/Unsubscribing from growth updates does not prevent/),
   ).toBeVisible();
   await expect(page.getByRole("link", { name: /Settings/i })).toHaveCount(0);
-  await expect(page.getByRole("button")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "INSTALL APP", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button")).toHaveCount(1);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
