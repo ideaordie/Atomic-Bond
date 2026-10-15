@@ -19,13 +19,13 @@ test("welcome plays once, pauses/replays, stays responsive and uses existing reg
   await page.clock.fastForward(2000);
   expect(await canvas.getAttribute("data-time")).toBe(paused);
   await page.getByRole("button", { name: "PLAY", exact: true }).click();
-  await page.clock.fastForward(26000);
-  await expect(canvas).toHaveAttribute("data-time", "25.000");
+  await page.clock.fastForward(31000);
+  await expect(canvas).toHaveAttribute("data-time", "30.000");
   await expect(
     page.getByRole("button", { name: "REPLAY", exact: true }),
   ).toBeVisible();
   await page.clock.fastForward(5000);
-  await expect(canvas).toHaveAttribute("data-time", "25.000");
+  await expect(canvas).toHaveAttribute("data-time", "30.000");
   const box = (await canvas.boundingBox())!;
   expect(box.width / box.height).toBeCloseTo(16 / 9, 2);
   expect(
@@ -50,7 +50,7 @@ test("welcome plays once, pauses/replays, stays responsive and uses existing reg
   ).toBeVisible();
   await expect
     .poll(async () => Number(await canvas.getAttribute("data-time")))
-    .toBeLessThan(25);
+    .toBeLessThan(30);
 });
 
 test("welcome reduced-motion and no-JavaScript fallbacks keep CTA accessible", async ({
@@ -60,7 +60,7 @@ test("welcome reduced-motion and no-JavaScript fallbacks keep CTA accessible", a
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/welcome");
   const canvas = page.getByTestId("welcome-canvas");
-  await expect(canvas).toHaveAttribute("data-time", "25.000");
+  await expect(canvas).toHaveAttribute("data-time", "30.000");
   await expect(page.getByText("Reduced motion · still scenes")).toBeVisible();
   await expect(
     page.getByRole("link", { name: "CREATE YOUR ATOM", exact: true }),
@@ -76,7 +76,7 @@ test("welcome reduced-motion and no-JavaScript fallbacks keep CTA accessible", a
   const staticPage = await context.newPage();
   await staticPage.goto("http://127.0.0.1:3100/welcome");
   await expect(
-    staticPage.getByRole("img", { name: /A solitary Atom/ }),
+    staticPage.getByRole("img", { name: /Atomic Bond. Connect/ }),
   ).toBeVisible();
   await expect(
     staticPage.getByRole("link", { name: "CREATE YOUR ATOM", exact: true }),

@@ -65,3 +65,10 @@ reviewed for overflow, readable hierarchy and unobstructed controls. Chromium's
 HTML5 player completed the 750-frame MP4 without media errors; six frames were
 dropped during concurrent regression workload. Full offline decoding retained
 all frames and black-frame detection found none.
+
+## v0.16.0 successor
+
+The approved 30-second [Connect. Create. Play. Together. campaign](PROMOTIONAL_CAMPAIGN_v0.1.md)
+replaces the on-page introduction while retaining the existing Canvas player,
+accessible controls, reduced-motion stills, secure registration and no-JavaScript
+fallback. The 25-second details above describe the historical v0.11.3 release.

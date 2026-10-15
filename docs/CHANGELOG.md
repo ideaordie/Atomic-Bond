@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.16.0 — Connect. Create. Play. Together.
+
+- Publish the approved 30-second synthetic campaign on `/welcome`, preserving playback controls, reduced-motion stills, no-JavaScript fallback and secure registration links.
+- Introduce an isolated creative review and deterministic 900-frame silent 1080p MP4 export for X advertising.
+- Reuse the Living Atom renderer and synthetic geography; all Doodle and puzzle artwork is original illustration. No production participant content, schema, gameplay, authentication, scheduling or frozen-specification changes.
+
 ## v0.15.0 — Automatic puzzle queue
 
 - Queue lifecycle with one-hour completion celebration, serialized automatic advancement, preserved rolling gameplay allowances and lifecycle-aware private media cleanup.

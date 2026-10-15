@@ -42,7 +42,7 @@
 .welcome-frame {
   margin: 0;
   aspect-ratio: 16 / 9;
-  background: #fff;
+  background: #030609;
 }
 .welcome-frame img,
 .welcome-frame canvas {

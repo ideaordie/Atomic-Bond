@@ -1,0 +1,46 @@
+.promotion-review {
+  background: #080b10;
+  color: #fff;
+}
+.promotion-review header > p:last-child,
+.promotion-review .intro-notes {
+  color: #bbc3cb;
+}
+.promotion-review .intro-frame {
+  background: #030609;
+  border-color: #434a52;
+}
+.promotion-review button {
+  background: #131820;
+  color: white;
+  border-color: #75808d;
+}
+.promotion-review button:disabled {
+  color: #8e99a5;
+  border-color: #414954;
+}
+.promotion-review .intro-scenes button[aria-pressed="true"] {
+  background: #29323d;
+  border-color: white;
+}
+.promotion-review .intro-scenes span,
+.promotion-review .intro-scenes small,
+.promotion-review summary {
+  color: #c7ced6;
+}
+.promotion-review button:focus-visible,
+.promotion-review input:focus-visible,
+.promotion-review summary:focus-visible {
+  outline-color: white;
+}
+.promotion-review input {
+  accent-color: white;
+}
+.promotion-review .promotion-motion {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}

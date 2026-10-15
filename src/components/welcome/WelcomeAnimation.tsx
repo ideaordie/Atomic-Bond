@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { paintIntroduction } from "../../prototypes/introduction/paint";
+import { paintPromotion } from "../../prototypes/promotion/paint";
 import {
   DURATION,
   FRAME,
   SCENES,
   sampleTimeline,
-} from "../../prototypes/introduction/timeline";
+} from "../../prototypes/promotion/timeline";
 
 export function WelcomeAnimation() {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -28,9 +28,11 @@ export function WelcomeAnimation() {
     function paint() {
       const scene = sampleTimeline(time).sceneIndex;
       if (!media.matches || scene !== lastStill) {
-        paintIntroduction(
+        paintPromotion(
           ctx!,
-          media.matches ? [2, 7.6, 14.3, 20, 25][scene]! : time,
+          media.matches
+            ? [4, 8, 14.8, 22, 29][scene]!
+            : Math.floor(time * 30) / 30,
         );
         lastStill = scene;
       }
@@ -107,10 +109,10 @@ export function WelcomeAnimation() {
         {/* Static same-renderer fallback, including no-JavaScript or unavailable Canvas. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/introduction-poster.png"
+          src="/promotion-poster.png"
           width={FRAME.width}
           height={FRAME.height}
-          alt="A solitary Atom. Social media was supposed to connect us. Illustrative network, not live participant data."
+          alt="Atomic Bond. Connect. Create. Play. Together. One world. More ways to connect. Join free."
           hidden={ready}
         />
         <canvas
@@ -120,7 +122,7 @@ export function WelcomeAnimation() {
           hidden={!ready}
           data-testid="welcome-canvas"
           role="img"
-          aria-label="Illustrative animation: a solitary Atom forms a Bond, connections branch through other people, and a colorful network spans a stylized world map. You are more connected than you know."
+          aria-label="Synthetic animation: Atoms connect across a world map, a heart joins Global Doodle, and participants complete a collaborative puzzle. Connect. Create. Play. Together."
         />
         <figcaption className="welcome-sr">
           Synthetic illustration, not live participant data. Connection does not
@@ -144,14 +146,17 @@ export function WelcomeAnimation() {
               : "PLAY"}
         </button>
         <span>
-          {reduced ? "Reduced motion · still scenes" : "25 seconds · no sound"}
+          {reduced ? "Reduced motion · still scenes" : "30 seconds · no sound"}
         </span>
         <details>
           <summary>Read introduction</summary>
           {SCENES.map((scene) => (
             <p key={scene.start}>{scene.lines.join(" ")}</p>
           ))}
-          <p>CREATE YOUR ATOM. MAKE A BOND. SEE WHERE IT LEADS.</p>
+          <p>
+            ONE WORLD. MORE WAYS TO CONNECT. ATOMICBOND.IDEAORDIE.COM. JOIN
+            FREE.
+          </p>
         </details>
       </div>
     </section>

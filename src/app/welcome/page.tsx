@@ -3,8 +3,8 @@ import { WelcomeAnimation } from "../../components/welcome/WelcomeAnimation";
 import "./welcome.css";
 
 export const metadata = {
-  title: "Atomic Bond — You are more connected than you know",
-  description: "Create your Atom. Make a Bond. See where it leads.",
+  title: "Atomic Bond — Connect. Create. Play. Together.",
+  description: "One world. More ways to connect.",
 };
 export default function WelcomePage() {
   return (
@@ -19,13 +19,13 @@ export default function WelcomePage() {
         </nav>
       </header>
       <h1>
-        YOU ARE MORE CONNECTED
+        CONNECT. CREATE. PLAY.
         <br />
-        THAN YOU KNOW.
+        TOGETHER.
       </h1>
       <WelcomeAnimation />
       <section className="welcome-conversion" aria-label="Join Atomic Bond">
-        <p>Create your Atom. Make a Bond. See where it leads.</p>
+        <p>One world. More ways to connect.</p>
         <Link className="welcome-cta" href="/auth?mode=register">
           CREATE YOUR ATOM
         </Link>

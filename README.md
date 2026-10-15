@@ -16,16 +16,16 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.15.0 — Automatic puzzle queue**. Administrator-managed ordering, one-hour completion celebration and automatic progression preserve existing gameplay and private media.
+Current release: **v0.16.0 — Connect. Create. Play. Together.** The approved 30-second synthetic campaign powers `/welcome`, with accessible playback and a silent 1080p advertising export. See [campaign architecture](docs/architecture/PROMOTIONAL_CAMPAIGN_v0.1.md).
 
-Previous approved production baseline: **v0.14.2**, commit `32e567d`.
+Previous approved production baseline: **v0.15.0**, commit `783cd3a`.
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.
 See [Design System](docs/architecture/DESIGN_SYSTEM_v0.1.md).
 
 Preserved baseline: **v0.11.3 — Animated Welcome**.
-The public `/welcome` page uses the approved silent 25-second synthetic introduction,
+The public `/welcome` page now uses the approved silent 30-second synthetic campaign,
 with accessible playback and the existing secure registration flow. See
 [Animated Welcome](docs/architecture/ANIMATED_WELCOME_v0.1.md) for playback,
 privacy, responsive verification and the separate local advertising export.
