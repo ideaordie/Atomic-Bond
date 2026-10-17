@@ -20,14 +20,14 @@ for (const theme of ["light", "dark"])
       path: info.outputPath("default.png"),
       fullPage: true,
     });
-    for (let i = 0; i < 12; i++)
+    for (let i = 0; i < 16; i++)
       await page.getByRole("button", { name: "Zoom in", exact: true }).click();
-    await expect(canvas).toHaveAttribute("data-zoom", "8.00");
+    await expect(canvas).toHaveAttribute("data-zoom", "16.00");
     await page.screenshot({
       path: info.outputPath("maximum.png"),
       fullPage: true,
     });
-    for (let i = 0; i < 12; i++)
+    for (let i = 0; i < 16; i++)
       await page.getByRole("button", { name: "Zoom out", exact: true }).click();
     await expect(canvas).toHaveAttribute("data-zoom", "1.00");
     await page.screenshot({
@@ -57,8 +57,8 @@ for (const theme of ["light", "dark"])
       }
     expect(outside).toBe(0);
     await canvas.focus();
-    for (let i = 0; i < 12; i++) await page.keyboard.press("+");
-    await expect(canvas).toHaveAttribute("data-zoom", "8.00");
+    for (let i = 0; i < 16; i++) await page.keyboard.press("+");
+    await expect(canvas).toHaveAttribute("data-zoom", "16.00");
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     for (let i = 0; i < 10; i++) {
       await page.mouse.wheel(0, 100);
@@ -88,9 +88,9 @@ for (const theme of ["light", "dark"])
         touchPoints: [],
       });
     };
-    await pinch(10, 120);
-    await expect(canvas).toHaveAttribute("data-zoom", "8.00");
-    await pinch(120, 10);
+    await pinch(5, 120);
+    await expect(canvas).toHaveAttribute("data-zoom", "16.00");
+    await pinch(120, 5);
     await expect(canvas).toHaveAttribute("data-zoom", "1.00");
     await canvas.focus();
     await page.keyboard.press("ArrowRight");

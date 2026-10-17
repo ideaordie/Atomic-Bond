@@ -3,7 +3,7 @@ import type { Camera, Point } from "../types/scene";
 export const INITIAL_CAMERA: Camera = { zoom: 1, x: 0, y: 0 };
 export const MIN_ZOOM = 0.65;
 export const MAX_ZOOM = 4;
-export const MAP_ZOOM_BOUNDS = { min: 1, max: 8 } as const;
+export const MAP_ZOOM_BOUNDS = { min: 1, max: 16 } as const;
 
 /** Cursor-anchored zoom; translations use CSS pixels. */
 export function zoomCamera(

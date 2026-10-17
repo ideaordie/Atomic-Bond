@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.16.4.6 — 16× Map Zoom
+
+- Increase the map-only maximum zoom from 8× to 16×; preserve the 1× minimum/default and existing orbital zoom limits.
+- Update targeted button, keyboard, wheel and pinch coverage. Six responsive Light/Dark browser tests and 16 camera/geography unit tests passed, along with lint, formatting and production build. No geographic, privacy, database or frozen specification changes.
+
 ## v0.16.4.5 — SHOW MAP Zoom Range
 
 - Adjust map-only zoom bounds from 0.65–4 to 1–8, keeping the fitted default/recenter view and orbital camera limits unchanged.
