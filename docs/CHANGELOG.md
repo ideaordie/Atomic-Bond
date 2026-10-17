@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.4.2 — Deferred Home Region Loading
+
+- Load the canonical country/region catalog only when the participant opens the Country selector; retain shared caching, canonical validation and recoverable loading feedback.
+- Reduce measured initial authentication-route JavaScript by 96,412 gzip bytes (39.3%) while preserving registration, existing-owner authentication and invitation continuity.
+- Add slow-load, retry, unmount and cache regression coverage at mobile, tablet and desktop sizes. Master Spec v0.8, database, CI and production configuration remain unchanged.
+- See [Task #17.2 evidence](operations/TASK_17_2_GEOGRAPHY_LOADING.md), including first-use latency and physical-device limitations.
+
 ## v0.16.4.1 — Single-click verification navigation
 
 - Keep invitation-registration verification pending through navigation and guard duplicate presses; read the current email fragment at the deliberate click.
