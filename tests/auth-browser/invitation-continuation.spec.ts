@@ -187,14 +187,20 @@ test("altered continuation fails without authentication, and simultaneous links 
   await a.reload();
   await a.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
   await expect(a).toHaveURL(`/bond/${first.invite.token}`);
-  const broken = second.link.replace(/continuation=./, "continuation=!");
+  const brokenUrl = new URL(second.link);
+  const brokenFragment = new URLSearchParams(brokenUrl.hash.slice(1));
+  brokenFragment.delete("token_hash");
+  brokenFragment.delete("access");
+  brokenFragment.set("continuation", "!invalid");
+  brokenUrl.hash = brokenFragment.toString();
+  const broken = brokenUrl.toString();
   await b.goto(broken);
   await expect(b.getByRole("main").getByRole("alert")).toContainText(
     "unavailable",
   );
   await expect(
-    b.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }),
-  ).toBeDisabled();
+    b.getByRole("link", { name: "MY ATOM", exact: true }),
+  ).toBeVisible();
   await context.close();
 });
 
@@ -202,8 +208,8 @@ test("a different existing session cannot substitute its owner for the emailed f
   page,
   request,
 }, info) => {
-  const a = `bound-owner-a-${info.project.name}@example.invalid`;
-  const b = `bound-owner-b-${info.project.name}@example.invalid`;
+  const a = `bound-owner-a-${info.project.name}-${info.repeatEachIndex}@example.invalid`;
+  const b = `bound-owner-b-${info.project.name}-${info.repeatEachIndex}@example.invalid`;
   const number = await existingOwner(page, request, a);
   const pending = await requestInviteAccess(page, request, a);
   await existingOwner(page, request, b);
@@ -216,7 +222,14 @@ test("a different existing session cannot substitute its owner for the emailed f
   await expect(
     page.getByRole("heading", { name: "WELCOME BACK" }),
   ).toBeVisible();
+  await page.evaluate(() => {
+    document.documentElement.dataset.callbackDocument = "previous";
+  });
   await page.goto(pending.link);
+  await expect(page.locator("html")).not.toHaveAttribute(
+    "data-callback-document",
+    "previous",
+  );
   await page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }).click();
   await expect(page).toHaveURL(`/bond/${pending.invite.token}`);
   await page.getByRole("link", { name: "NOT NOW", exact: true }).click();

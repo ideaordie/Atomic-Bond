@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.16.3.1 — Authentication Flow Repair
+
+- Keep provider authentication independent of optional invitation context; retain
+  recipient/OTP binding and explicit Bond consent.
+- Recover verified account access after callback reload/error; make callback NOT NOW
+  skip only the invitation rather than discard authentication.
+- Reset stale callback state when another authentication link opens. See [incident evidence and limitations](operations/AUTH_RECOVERY_v0.16.3.1.md); the reported physical-device failure is not yet confirmed resolved.
+
 ## v0.16.3 — Bond Invitation Authentication Continuity
 
 - Bind invitation email continuation to the verified recipient and Auth attempt;

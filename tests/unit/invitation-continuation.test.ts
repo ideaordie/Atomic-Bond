@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   invitationIntent,
+  sealAccess,
+  readAccess,
   verifyProductionContinuationConfiguration,
   bindInvitation,
   readInvitation,
@@ -133,12 +135,53 @@ describe("sealed invitation authentication", () => {
       )!,
     );
     expect(url.search).toBe("");
-    expect(url.hash).not.toContain("&");
-    expect(
-      readInvitation(url.hash.slice("#continuation=".length)),
-    ).toMatchObject({ next, userId, token });
+    const fragment = new URLSearchParams(url.hash.slice(1));
+    expect(fragment.has("token_hash")).toBe(false);
+    expect(readAccess(fragment.get("access")!).token).toBe(token);
+    expect(readInvitation(fragment.get("continuation")!)).toMatchObject({
+      next,
+      userId,
+      token,
+    });
     await expect(
       deliverAuthEmail(body + " ", headers, secret, origin, service),
     ).rejects.toThrow();
+    const invalidContext = JSON.parse(body);
+    invalidContext.email_data.redirect_to = `${origin}/auth/confirm?next=c1.invalid`;
+    const fallbackBody = JSON.stringify(invalidContext);
+    await deliverAuthEmail(
+      fallbackBody,
+      { ...headers, "webhook-signature": hook.sign(id, date, fallbackBody) },
+      secret,
+      origin,
+      service,
+    );
+    const fallback = new URL(
+      send.mock.calls[1]![0].text.split("\n").find((line) =>
+        line.startsWith("https://"),
+      )!,
+    );
+    const fallbackFragment = new URLSearchParams(fallback.hash.slice(1));
+    expect(readAccess(fallbackFragment.get("access")!).token).toBe(token);
+    expect(fallbackFragment.has("continuation")).toBe(false);
+    expect(readAccess(fallbackFragment.get("access")!).next).toBe("/explore");
   });
+});
+
+it("stages authentication independently of damaged optional context with bounded encrypted storage", () => {
+  const value = sealAccess(token, "https://invalid.example", "damaged", now);
+  expect(value).not.toContain(token);
+  expect(readAccess(value, now)).toMatchObject({
+    token,
+    next: "/explore",
+    continuation: "damaged",
+  });
+  expect(() => readAccess(value, now + 3600000)).toThrow();
+  expect(() => readInvitation(value, now)).toThrow();
+  expect(() =>
+    readAccess(bindInvitation(intent(), email, userId, token, now), now),
+  ).toThrow();
+  expect(() =>
+    readAccess((value[0] === "A" ? "B" : "A") + value.slice(1), now),
+  ).toThrow();
 });

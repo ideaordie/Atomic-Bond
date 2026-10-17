@@ -11,6 +11,8 @@ import {
 } from "./policy";
 import {
   invitationIntent,
+  sealAccess,
+  readAccess,
   readInvitation,
   continuationId,
   matchesContinuation,
@@ -84,6 +86,7 @@ async function finishAccess(
   tokenHash: string,
   next: string,
   bound?: BoundIntent,
+  invitationRecovery = false,
 ) {
   try {
     await sameOrigin();
@@ -99,11 +102,14 @@ async function finishAccess(
           "This link is invalid, expired, or already used. Request a new access email.",
       };
     const context = await ownerContext();
+    if (!context.user?.email_confirmed_at) throw new Error();
     if (
-      !context.user?.email_confirmed_at ||
-      (bound && !matchesContinuation(bound, context.user))
-    )
-      throw new Error();
+      bound &&
+      (!matchesContinuation(bound, context.user) || bound.token !== tokenHash)
+    ) {
+      next = "/explore";
+      invitationRecovery = true;
+    }
     const deletion = await context.client.rpc("account_deletion_status");
     if (!deletion.error && deletion.data?.pending)
       return { next: "/account/delete", publicId: null, returning: true };
@@ -129,7 +135,12 @@ async function finishAccess(
       await context.services.atoms.create(details);
     }
     const atom = await context.services.atoms.activate();
-    return { next: nextPath(next), publicId: atom.publicId, returning };
+    return {
+      next: nextPath(next),
+      publicId: atom.publicId,
+      returning,
+      invitationRecovery,
+    };
   } catch {
     return {
       error:
@@ -139,11 +150,20 @@ async function finishAccess(
 }
 
 const continuationCookie = (id: string) => `ab-bond-auth-${id}`;
-export async function stageInvitationAccess(value: string) {
+export async function stageInvitationAccess(
+  value: string,
+  tokenHash?: string,
+  next = "/explore",
+  access?: string,
+) {
   try {
     await sameOrigin();
-    const data = readInvitation(value);
-    const id = continuationId(value);
+    if (access) tokenHash = readAccess(access).token;
+    // New invitation links carry an independently encrypted access credential.
+    // Old sealed-only links remain supported during the deployment transition.
+    if (tokenHash) value = sealAccess(tokenHash, next, value);
+    const data = tokenHash ? readAccess(value) : readInvitation(value);
+    const id = continuationId(tokenHash || value);
     const jar = await cookies();
     const active = jar
       .getAll()
@@ -168,15 +188,42 @@ export async function stageInvitationAccess(value: string) {
     };
   }
 }
-export async function completeInvitationAccess(id: string) {
+export async function completeInvitationAccess(
+  id: string,
+  skipInvitation = false,
+) {
   try {
     await sameOrigin();
     if (!/^[a-f0-9]{32}$/.test(id)) throw new Error();
     const jar = await cookies();
     const value = jar.get(continuationCookie(id))?.value;
-    if (!value || continuationId(value) !== id) throw new Error();
-    const bound = readInvitation(value);
-    const result = await finishAccess(bound.token, bound.next, bound);
+    if (!value) throw new Error();
+    let token: string,
+      next = "/explore",
+      bound: BoundIntent | undefined;
+    let invitationRecovery = false;
+    try {
+      const access = readAccess(value);
+      if (continuationId(access.token) !== id) throw new Error();
+      token = access.token;
+      next = access.next;
+      if (access.continuation && !skipInvitation) {
+        try {
+          bound = readInvitation(access.continuation);
+          if (bound.token !== token) throw new Error();
+          next = bound.next;
+        } catch {
+          bound = undefined;
+          invitationRecovery = true;
+        }
+      }
+    } catch {
+      if (continuationId(value) !== id) throw new Error();
+      bound = readInvitation(value);
+      token = bound.token;
+      next = skipInvitation ? "/explore" : bound.next;
+    }
+    const result = await finishAccess(token, next, bound, invitationRecovery);
     jar.set(continuationCookie(id), "", { path: "/auth/confirm", maxAge: 0 });
     return result;
   } catch {
@@ -193,6 +240,34 @@ export async function dismissInvitationAccess(id: string) {
       path: "/auth/confirm",
       maxAge: 0,
     });
+}
+
+/** Recovery uses only the independently verified current session, never stale invitation input. */
+export async function recoverAuthenticatedAccess() {
+  try {
+    await sameOrigin();
+    const context = await ownerContext();
+    if (!context.user?.email_confirmed_at) return null;
+    const deletion = await context.client.rpc("account_deletion_status");
+    if (!deletion.error && deletion.data?.pending)
+      return { next: "/account/delete", publicId: null, returning: true };
+    if (context.atom?.status === "DEACTIVATED")
+      return {
+        next: "/account/reactivate",
+        publicId: context.atom.publicId,
+        returning: true,
+      };
+    if (!context.atom || !context.atom.publicId)
+      return { next: "/auth", publicId: null, returning: false };
+    if (!["ACTIVE", "DORMANT"].includes(context.atom.status)) return null;
+    return {
+      next: "/explore",
+      publicId: context.atom.publicId,
+      returning: true,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function finishRegistration(form: FormData) {

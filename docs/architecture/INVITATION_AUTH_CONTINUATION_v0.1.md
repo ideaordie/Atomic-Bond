@@ -156,3 +156,11 @@ server cold start, emitting only `Invitation continuation configuration validate
 A missing/malformed key fails the candidate build before promotion. The same
 check in the email hook and callback runtime verifies both consumers. Neither
 keys nor fingerprints nor ciphertext are included in this diagnostic.
+
+## Local Task #16.3.1 correction (not published)
+
+The local candidate separates provider authentication from optional invitation
+restoration and adds verified-session callback recovery. See the
+[incident report](../operations/AUTH_RECOVERY_v0.16.3.1.md) for exact behavior,
+compatibility and unresolved production-device evidence. The v0.16.3 description
+above records the deployed historical implementation, not the corrected candidate.

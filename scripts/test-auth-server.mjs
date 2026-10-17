@@ -1,4 +1,7 @@
-import { bindInvitation } from "../src/services/auth/invitation-continuation.ts";
+import {
+  bindInvitation,
+  sealAccess,
+} from "../src/services/auth/invitation-continuation.ts";
 // Loopback-only Auth test mechanism + real migrated SQL. Never deploy this fixture.
 import { createServer } from "node:http";
 import { randomUUID, randomBytes, createHmac } from "node:crypto";
@@ -262,7 +265,7 @@ const server = createServer(async (req, res) => {
           redirect = new URL(url.searchParams.get("redirect_to"));
         const next = redirect.searchParams.get("next") || "/explore";
         const link = next.startsWith("c1.")
-          ? `${redirect.origin}/auth/confirm#continuation=${bindInvitation(next.slice(3), email, user.id, hash)}`
+          ? `${redirect.origin}/auth/confirm#${new URLSearchParams({ continuation: bindInvitation(next.slice(3), email, user.id, hash), access: sealAccess(hash, "/explore", "") })}`
           : `${redirect.origin}/auth/confirm#${new URLSearchParams({ token_hash: hash, next })}`;
         links.set(hash, { user, expires: Date.now() + 3600000 });
         mail.set(email, link);

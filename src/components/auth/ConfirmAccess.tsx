@@ -5,13 +5,14 @@ import {
   completeAccess,
   stageInvitationAccess,
   completeInvitationAccess,
-  dismissInvitationAccess,
+  recoverAuthenticatedAccess,
 } from "../../services/auth/actions";
 import "./auth.css";
 import { useInstall } from "../pwa/PwaProvider";
 import { InstallOffer } from "../pwa/InstallOffer";
 export function ConfirmAccess() {
   const installation = useInstall();
+  const [hasInvitation, setHasInvitation] = useState(false);
   const [flow, setFlow] = useState<string | null>(null);
   const [link, setLink] = useState<{ token: string; next: string } | null>(
       null,
@@ -33,7 +34,12 @@ export function ConfirmAccess() {
       const p = new URLSearchParams(window.location.hash.slice(1));
       const token = p.get("token_hash");
       const sealed = p.get("continuation");
-      if (sealed) {
+      const access = p.get("access");
+      if (
+        sealed ||
+        access ||
+        (token && /^(?:pkce_)?[a-fA-F0-9]{32,128}$/.test(token))
+      ) {
         queueMicrotask(() => {
           if (active && revision === generation) {
             setFlow(null);
@@ -42,7 +48,12 @@ export function ConfirmAccess() {
             setError("");
           }
         });
-        void stageInvitationAccess(sealed)
+        void stageInvitationAccess(
+          sealed || "",
+          token || undefined,
+          p.get("next") || "/explore",
+          access || undefined,
+        )
           .then((r) => {
             if (!active || revision !== generation) return;
             window.history.replaceState(
@@ -51,8 +62,15 @@ export function ConfirmAccess() {
               r.flow ? `/auth/confirm?flow=${r.flow}` : "/auth/confirm",
             );
             setFlow(r.flow || null);
+            setHasInvitation(Boolean(sealed));
             setLinkChecked(true);
             setError(r.error || "");
+            if (r.error && token) setLink({ token, next: "/explore" });
+            if (r.error && !token)
+              void recoverAuthenticatedAccess().then((owner) => {
+                if (active && revision === generation && owner)
+                  setResult(owner);
+              });
           })
           .catch(() => {
             if (!active || revision !== generation) return;
@@ -65,7 +83,13 @@ export function ConfirmAccess() {
       if (/^[a-f0-9]{32}$/.test(savedFlow || ""))
         queueMicrotask(() => setFlow(savedFlow));
       queueMicrotask(() => setLinkChecked(true));
-      if (!token) return;
+      if (!token) {
+        if (!/^[a-f0-9]{32}$/.test(savedFlow || ""))
+          void recoverAuthenticatedAccess().then((owner) => {
+            if (active && revision === generation && owner) setResult(owner);
+          });
+        return;
+      }
       window.history.replaceState(null, "", "/auth/confirm");
       queueMicrotask(() => {
         setError("");
@@ -74,40 +98,93 @@ export function ConfirmAccess() {
       });
     };
     readLink();
-    window.addEventListener("hashchange", readLink);
+    // Email apps can reuse this exact document with a new fragment. A fresh
+    // document prevents the previous account/result and in-flight RSC action
+    // from winning over the newly supplied credential. The fragment is retained
+    // by reload and is never part of the HTTP request.
+    const replaceEmail = () => {
+      const fragment = new URLSearchParams(window.location.hash.slice(1));
+      if (
+        ["token_hash", "continuation", "access"].some((key) =>
+          fragment.has(key),
+        )
+      )
+        window.location.reload();
+      else readLink();
+    };
+    window.addEventListener("hashchange", replaceEmail);
     return () => {
       active = false;
-      window.removeEventListener("hashchange", readLink);
+      window.removeEventListener("hashchange", replaceEmail);
     };
   }, []);
+  async function verify(skipInvitation: boolean) {
+    if ((!link && !flow) || pending) return;
+    setPending(true);
+    setError("");
+    try {
+      const r = flow
+        ? await completeInvitationAccess(flow, skipInvitation)
+        : await completeAccess(link!.token, link!.next);
+      setFlow(null);
+      setLink(null);
+      window.history.replaceState(null, "", "/auth/confirm");
+      if ("error" in r) {
+        setError(r.error);
+        const owner = await recoverAuthenticatedAccess();
+        if (owner) setResult(owner);
+      } else {
+        if (r.publicId && !r.next.startsWith("/account/"))
+          installation.invite();
+        if (r.next.startsWith("/bond/") || r.next.startsWith("/account/"))
+          window.location.replace(r.next);
+        else setResult(r);
+      }
+    } catch {
+      setError(
+        "Unable to complete access. Reopen the email link or request a new link.",
+      );
+      const owner = await recoverAuthenticatedAccess();
+      if (owner) setResult(owner);
+    } finally {
+      setPending(false);
+    }
+  }
   return (
     <section className="auth-panel">
       <h1>
         {result
-          ? result.returning
-            ? "WELCOME BACK"
-            : "YOUR ATOM IS READY"
+          ? !result.publicId
+            ? "COMPLETE YOUR ATOM"
+            : result.returning
+              ? "WELCOME BACK"
+              : "YOUR ATOM IS READY"
           : "ACCESS MY ATOM"}
       </h1>
       {result ? (
         <>
-          <p>ATOM #{result.publicId}</p>
+          {result.publicId && <p>ATOM #{result.publicId}</p>}
+          {error && <p role="alert">{error}</p>}
           <p>
-            {result.returning
-              ? "You're securely signed in on this device."
-              : "Email verified. Your Atom has been created."}
+            {!result.publicId
+              ? "Your email is verified. Continue to finish the required account steps."
+              : result.returning
+                ? "You're securely signed in on this device."
+                : "Email verified. Your Atom has been created."}
           </p>
           {result.invitationRecovery && (
             <p role="status">
-              You are signed in. This older access link cannot securely restore
-              its invitation. Reopen the original Bond invitation to confirm it.
+              You are signed in. This access link cannot securely restore its
+              invitation. Reopen the original Bond invitation to confirm it.
             </p>
           )}
           <InstallOffer />
           <Link className="explore-link" href={result.next}>
             {result.next.startsWith("/bond/")
               ? "Continue to Bond confirmation"
-              : "MY ATOM"}
+              : result.publicId
+                ? "MY ATOM"
+                : "COMPLETE MY ATOM"}
           </Link>
         </>
       ) : (
@@ -120,45 +197,16 @@ export function ConfirmAccess() {
           <button
             className="flow-primary"
             disabled={(!link && !flow) || pending}
-            onClick={async () => {
-              if (!link && !flow) return;
-              setPending(true);
-              try {
-                const r = flow
-                  ? await completeInvitationAccess(flow)
-                  : await completeAccess(link!.token, link!.next);
-                setFlow(null);
-                window.history.replaceState(null, "", "/auth/confirm");
-                setLink(null);
-                if ("error" in r) setError(r.error);
-                else {
-                  // Lifecycle management must finish before optional installation.
-                  if (r.publicId && !r.next.startsWith("/account/"))
-                    installation.invite();
-                  if (
-                    r.next.startsWith("/bond/") ||
-                    r.next.startsWith("/account/")
-                  )
-                    window.location.replace(r.next);
-                  else setResult(r);
-                }
-              } catch {
-                setError("Unable to complete access. Request a new link.");
-              } finally {
-                setPending(false);
-              }
-            }}
+            onClick={() => void verify(false)}
           >
             {pending ? "Verifying…" : "VERIFY / ACCESS MY ATOM"}
           </button>
-          {flow && (
+          {flow && hasInvitation && (
             <button
+              title="Verify your email and continue without the Bond invitation"
               className="flow-secondary"
               disabled={pending}
-              onClick={async () => {
-                await dismissInvitationAccess(flow);
-                window.location.replace("/explore");
-              }}
+              onClick={() => void verify(true)}
             >
               NOT NOW
             </button>

@@ -29,7 +29,7 @@ export function verifyProductionContinuationConfiguration() {
 if (verifyProductionContinuationConfiguration())
   console.info("Invitation continuation configuration validated.");
 
-function seal(purpose: string, data: RequestIntent | BoundIntent) {
+function seal(purpose: string, data: unknown) {
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key(), iv);
   cipher.setAAD(Buffer.from(`atomic-bond/continuation/v1/${purpose}`));
@@ -41,7 +41,7 @@ function seal(purpose: string, data: RequestIntent | BoundIntent) {
     "base64url",
   );
 }
-function open(purpose: string, value: string, now: number): BoundIntent {
+function decrypt(purpose: string, value: string) {
   if (!/^[A-Za-z0-9_-]{60,3000}$/.test(value))
     throw new Error("Invalid continuation");
   const bytes = Buffer.from(value, "base64url");
@@ -55,6 +55,10 @@ function open(purpose: string, value: string, now: number): BoundIntent {
       "utf8",
     ),
   );
+  return data;
+}
+function open(purpose: string, value: string, now: number): BoundIntent {
+  const data = decrypt(purpose, value);
   if (
     !Number.isSafeInteger(data.exp) ||
     data.exp <= now ||
@@ -120,4 +124,42 @@ export function matchesContinuation(
   user: { id: string; email?: string },
 ) {
   return data.userId === user.id && data.email === normalize(user.email || "");
+}
+
+/** Independently staged authentication; invitation context is optional. */
+export function sealAccess(
+  token: string,
+  next: string,
+  continuation: string,
+  now = Date.now(),
+) {
+  if (
+    !/^(?:pkce_)?[a-fA-F0-9]{32,128}$/.test(token) ||
+    continuation.length > 3000
+  )
+    throw new Error("Invalid access link");
+  return seal("access", {
+    token,
+    next: next === "/account/delete" ? next : "/explore",
+    continuation,
+    exp: now + MAX_AGE,
+    nonce: randomBytes(16).toString("hex"),
+  });
+}
+export function readAccess(
+  value: string,
+  now = Date.now(),
+): { token: string; next: string; continuation: string; exp: number } {
+  const data = decrypt("access", value);
+  if (
+    !Number.isSafeInteger(data.exp) ||
+    data.exp <= now ||
+    data.exp > now + MAX_AGE ||
+    !/^(?:pkce_)?[a-fA-F0-9]{32,128}$/.test(data.token) ||
+    !["/explore", "/account/delete"].includes(data.next) ||
+    typeof data.continuation !== "string" ||
+    data.continuation.length > 3000
+  )
+    throw new Error("Invalid access link");
+  return data;
 }
