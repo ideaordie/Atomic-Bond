@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.16.4.5 — SHOW MAP Zoom Range
+
+- Adjust map-only zoom bounds from 0.65–4 to 1–8, keeping the fitted default/recenter view and orbital camera limits unchanged.
+- Apply consistent limits to buttons, wheel, pinch and keyboard zoom without changing geographic data, map styling, pan or cluster selection.
+- Verify 16 camera/geography unit tests and 15 targeted browser tests across mobile, tablet and desktop in Light/Dark, plus TypeScript, lint, formatting, build and secret checks. Physical-device pinch verification remains pending. Frozen Master Spec v0.8 and production data are unchanged.
+
 ## v0.16.4.4 — Bond Confirmation Presentation Repair
 
 - Confirm registration-originated Bonds through the existing authorized service via a POST route, clearing the receipt immediately without premature page revalidation.

@@ -8,7 +8,7 @@ import type { PulseDirection } from "../pulse/presentation";
 import { blendEmotionPaints } from "../animation/emotion-transition";
 import { transitionProgress } from "../animation/motion";
 import { createAmbientClock } from "../animation/ambient-clock";
-import { panCamera, zoomCamera } from "../interaction/camera";
+import { MAP_ZOOM_BOUNDS, panCamera, zoomCamera } from "../interaction/camera";
 import { createCanvasRenderer } from "./canvas-renderer";
 import type { EmotionPaint } from "../pulse/emotion-presentation";
 
@@ -215,6 +215,8 @@ export function AtomCanvas({
     let moved = false;
     const interactionCamera = () =>
       current.current.interactionCamera ?? current.current.camera;
+    const zoomBounds = () =>
+      current.current.mapOpen ? MAP_ZOOM_BOUNDS : undefined;
     let gestureCamera = interactionCamera();
     const localPoint = (event: PointerEvent | WheelEvent): Point => {
       const rect = canvas.getBoundingClientRect();
@@ -261,10 +263,15 @@ export function AtomCanvas({
         const rect = canvas.getBoundingClientRect();
         updateCamera(
           panCamera(
-            zoomCamera(gestureCamera, oldSpan > 0 ? newSpan / oldSpan : 1, {
-              x: oldMid.x - rect.width / 2,
-              y: oldMid.y - rect.height / 2,
-            }),
+            zoomCamera(
+              gestureCamera,
+              oldSpan > 0 ? newSpan / oldSpan : 1,
+              {
+                x: oldMid.x - rect.width / 2,
+                y: oldMid.y - rect.height / 2,
+              },
+              zoomBounds(),
+            ),
             { x: newMid.x - oldMid.x, y: newMid.y - oldMid.y },
           ),
         );
@@ -307,6 +314,7 @@ export function AtomCanvas({
           interactionCamera(),
           Math.exp(-Math.max(-100, Math.min(100, event.deltaY)) * 0.003),
           { x: point.x - rect.width / 2, y: point.y - rect.height / 2 },
+          zoomBounds(),
         ),
       );
     };
@@ -324,7 +332,12 @@ export function AtomCanvas({
       if (["+", "=", "-"].includes(event.key)) {
         event.preventDefault();
         updateCamera(
-          zoomCamera(interactionCamera(), event.key === "-" ? 0.8 : 1.25),
+          zoomCamera(
+            interactionCamera(),
+            event.key === "-" ? 0.8 : 1.25,
+            undefined,
+            zoomBounds(),
+          ),
         );
       }
     };

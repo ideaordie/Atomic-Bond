@@ -7,6 +7,7 @@ import { createSpatialScene, viewScale } from "./layout/spatial";
 import { AtomCanvas } from "./renderer/AtomCanvas";
 import {
   INITIAL_CAMERA,
+  MAP_ZOOM_BOUNDS,
   returnToOriginal,
   selectAtom,
   zoomCamera,
@@ -616,14 +617,32 @@ export function LivingAtom({
           <button
             type="button"
             aria-label="Zoom in"
-            onClick={() => setCamera((value) => zoomCamera(value, 1.25))}
+            onClick={() =>
+              setCamera((value) =>
+                zoomCamera(
+                  value,
+                  1.25,
+                  undefined,
+                  mapOpen ? MAP_ZOOM_BOUNDS : undefined,
+                ),
+              )
+            }
           >
             +
           </button>
           <button
             type="button"
             aria-label="Zoom out"
-            onClick={() => setCamera((value) => zoomCamera(value, 0.8))}
+            onClick={() =>
+              setCamera((value) =>
+                zoomCamera(
+                  value,
+                  0.8,
+                  undefined,
+                  mapOpen ? MAP_ZOOM_BOUNDS : undefined,
+                ),
+              )
+            }
           >
             −
           </button>
