@@ -1,5 +1,13 @@
 # Task #16.3 — Invitation authentication continuation proposal
 
+**Historical proposal, subsequently rolled back:** The approval status below
+records the original checkpoint, not current deployment guidance. The v0.16.3
+implementation and v0.16.3.1 repair were reverted; see the
+[recovery record](../operations/ROLLBACK_TO_v0.16.2.md). The active v0.16.4.1
+new-registration-only design is documented in
+[New-Atom Invitation Continuity](NEW_ATOM_INVITATION_CONTINUITY_v0.1.md) and its
+[single-click repair acceptance](../operations/TASK_16_4_1_LOCAL_ACCEPTANCE.md).
+
 Status: approved for local implementation by the product owner; hosted configuration, commit and deployment remain unauthorized.
 
 ## Evidence and limits

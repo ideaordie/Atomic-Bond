@@ -1,5 +1,15 @@
 # Invitation authentication continuation — Task #16.3
 
+**Historical, rolled back:** This document describes the v0.16.3 experiment,
+including its v0.16.3.1 repair, not the active authentication architecture.
+Both were reverted by recovery commit f9b2aa66e7001f972178832c6f9b01aae2df6b73.
+See the [recovery record](../operations/ROLLBACK_TO_v0.16.2.md).
+The active v0.16.4.1 implementation isolates invitation-originated new-Atom
+registration; see the [approved design](../proposals/NEW_ATOM_INVITATION_CONTINUITY_v0.1.md)
+and [single-click repair acceptance](../operations/TASK_16_4_1_LOCAL_ACCEPTANCE.md).
+Existing-owner authentication does not use this historical broad continuation.
+The original release description and evidence below are preserved.
+
 Release v0.16.3. Master Spec v0.8 is unchanged. Earlier local-checkpoint results below are retained as historical evidence.
 
 ## Diagnosis
