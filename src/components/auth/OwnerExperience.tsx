@@ -17,7 +17,10 @@ import {
 import "./auth.css";
 import { createNetworkReconciler } from "../../services/pulses/network-reconciliation";
 import { usePulseClock } from "../pulse/use-pulse-clock";
-import { firstBondEligible } from "../../living-atom/animation/first-bond";
+import {
+  firstBondEligible,
+  FIRST_BOND_NOTICE_MS,
+} from "../../living-atom/animation/first-bond";
 export function OwnerExperience({
   graph: initialGraph,
   publicId,
@@ -25,6 +28,7 @@ export function OwnerExperience({
   initialArrivalId = null,
   initialFirstBond = false,
   activeOwner = false,
+  showInstallOffer = true,
 }: {
   graph: GraphData;
   publicId: string;
@@ -32,6 +36,7 @@ export function OwnerExperience({
   initialArrivalId?: string | null;
   initialFirstBond?: boolean;
   activeOwner?: boolean;
+  showInstallOffer?: boolean;
 }) {
   const [graph, setGraph] = useState(initialGraph);
   const [arrival, setArrival] = useState(initialArrivalId);
@@ -58,7 +63,7 @@ export function OwnerExperience({
   const firstBond = firstBondEligible(graph, publicId, activeOwner);
   useEffect(() => {
     if (notice !== "YOUR NETWORK HAS BEGUN") return;
-    const timer = setTimeout(() => setNotice(""), 2800);
+    const timer = setTimeout(() => setNotice(""), FIRST_BOND_NOTICE_MS);
     return () => clearTimeout(timer);
   }, [notice]);
   useEffect(() => {
@@ -164,7 +169,7 @@ export function OwnerExperience({
     );
   return (
     <>
-      <InstallOffer />
+      {showInstallOffer && <InstallOffer />}
       <LivingAtom
         authorizeMap={async () => {
           const result = await ownerGeographicNetwork();

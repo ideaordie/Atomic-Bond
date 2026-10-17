@@ -1,15 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { confirmOwnerBond } from "../../services/auth/actions";
-import {
-  confirmRegistrationInvitation,
-  dismissRegistrationInvitation,
-} from "../../services/auth/registration-actions";
+import { dismissRegistrationInvitation } from "../../services/auth/registration-actions";
 import Link from "next/link";
 import { OwnerExperience } from "./OwnerExperience";
 import type { ReactNode } from "react";
+import { FIRST_BOND_NOTICE_MS } from "../../living-atom/animation/first-bond";
 import "../../app/explore/explore.css";
 import "../participation/participation.css";
+
+async function confirmRegisteredBond(): Promise<
+  Awaited<ReturnType<typeof confirmOwnerBond>>
+> {
+  const response = await fetch("/auth/register/invitation/confirm", {
+    method: "POST",
+    credentials: "same-origin",
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("Confirmation unavailable");
+  return response.json();
+}
+
 export function BondConfirmation({
   token,
   children,
@@ -24,6 +35,15 @@ export function BondConfirmation({
   > | null>(null);
   const [error, setError] = useState(""),
     [pending, setPending] = useState(false);
+  const confirming = useRef(false);
+  useEffect(() => {
+    if (!registrationInvitation || !result?.graph) return;
+    const timer = setTimeout(
+      () => window.location.replace("/explore"),
+      FIRST_BOND_NOTICE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [registrationInvitation, result]);
   if (result?.graph)
     return (
       <div className="explore-page">
@@ -41,6 +61,7 @@ export function BondConfirmation({
           initialArrivalId={result.arrivalId}
           initialFirstBond={result.firstBond}
           activeOwner={result.activeOwner}
+          showInstallOffer={!registrationInvitation}
         />
       </div>
     );
@@ -55,10 +76,12 @@ export function BondConfirmation({
         className="flow-primary"
         disabled={pending}
         onClick={async () => {
+          if (confirming.current) return;
+          confirming.current = true;
           setPending(true);
           try {
             const r = registrationInvitation
-              ? await confirmRegistrationInvitation()
+              ? await confirmRegisteredBond()
               : await confirmOwnerBond(token);
             if (r.next) {
               window.history.replaceState(null, "", "/explore");
@@ -67,6 +90,7 @@ export function BondConfirmation({
           } catch {
             setError("Unable to confirm. Sign in again and retry.");
           } finally {
+            confirming.current = false;
             setPending(false);
           }
         }}

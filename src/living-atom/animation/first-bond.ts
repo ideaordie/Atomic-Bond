@@ -1,5 +1,7 @@
 import type { GraphData } from "../../types/graph";
 
+export const FIRST_BOND_NOTICE_MS = 2800;
+
 /** Presentation only. The supplied graph contains authoritative confirmed edges. */
 export function firstBondEligible(
   graph: GraphData,

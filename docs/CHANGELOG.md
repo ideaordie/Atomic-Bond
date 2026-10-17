@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.4.4 — Bond Confirmation Presentation Repair
+
+- Confirm registration-originated Bonds through the existing authorized service via a POST route, clearing the receipt immediately without premature page revalidation.
+- Preserve the 2.8-second YOUR NETWORK HAS BEGUN presentation, then navigate to MY ATOM and show the optional installation invitation.
+- Preserve explicit consent, verified-owner authorization, single-use confirmation and replay protection. No database, secret, email-template or frozen Master Spec changes.
+- Add deterministic timing, duplicate-request, replay, interrupted-response and dismissal coverage across mobile, tablet and desktop. See [Task #17.3.2 evidence](operations/TASK_17_3_2_BOND_SUCCESS.md). Physical iPhone acceptance remains pending.
+
 ## v0.16.4.3 — Verification Email UI Cleanup
 
 - Present ordinary verification/access and invitation-registration emails with mobile-friendly HTML buttons and an explicit plain-text alternative.
