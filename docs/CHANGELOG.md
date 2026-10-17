@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.16.1 — First Bond invitation paths
+
+- Separate in-person QR and remote sharing paths; opening CREATE BOND alone no longer prepares an invitation.
+- Native sharing, copy/manual-copy recovery and precise delivery/expiry messaging reuse the existing owner-authorized five-minute invitation and recipient confirmation.
+- Preserve first-Bond animation, authentication, database rules and analytics exclusions. Measurement and longer remote-lifetime recommendations remain proposals only.
+
 ## v0.16.0 — Connect. Create. Play. Together.
 
 - Publish the approved 30-second synthetic campaign on `/welcome`, preserving playback controls, reduced-motion stills, no-JavaScript fallback and secure registration links.

@@ -280,6 +280,7 @@ test("standalone restores the same owner and suppresses install UI", async ({
   await page
     .getByRole("button", { name: /^CREATE (YOUR FIRST )?BOND$/ })
     .click();
+  await page.getByRole("button", { name: /TOGETHER IN PERSON/ }).click();
   await expect(
     page
       .getByRole("dialog", { name: /^CREATE (YOUR FIRST )?BOND$/ })

@@ -180,6 +180,15 @@ const server = createServer(async (req, res) => {
       );
       return reply(200, {});
     }
+    if (url.pathname === "/__test/invitation-count")
+      return reply(
+        200,
+        (
+          await db.query(
+            "select count(*)::int count, (select json_build_object('id',id,'createdAt',created_at,'expiresAt',expires_at) from public.bond_invitations order by created_at desc limit 1) latest from public.bond_invitations",
+          )
+        ).rows[0],
+      );
     if (url.pathname === "/__test/counts")
       return reply(
         200,

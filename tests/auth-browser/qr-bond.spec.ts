@@ -37,6 +37,7 @@ async function invitation(page: Page) {
   const dialog = page.getByRole("dialog", {
     name: /^CREATE (YOUR FIRST )?BOND$/,
   });
+  await dialog.getByRole("button", { name: /TOGETHER IN PERSON/ }).click();
   await expect(dialog.getByRole("timer")).toContainText(
     "Invitation expires in:",
   );
@@ -74,9 +75,11 @@ test("first invitation cancellation and expiry preserve the genuine zero-Bond st
   expect(expired.url).not.toBe(cancelled.url);
   await page.clock.install();
   await page.clock.fastForward(301000);
-  await expect(expired.dialog.getByText("Waiting for connection…")).toHaveCount(
-    0,
-  );
+  await expect(
+    expired.dialog.getByText(
+      "Waiting for their confirmation. No Bond has been created yet.",
+    ),
+  ).toHaveCount(0);
   await expect(expired.dialog.getByRole("img")).toHaveCount(0);
   await expired.dialog
     .getByRole("button", { name: "Back to CREATE BOND" })
@@ -160,7 +163,9 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     original.dialog.getByText(/their own Atom, then confirm/),
   ).toBeVisible();
   await expect(
-    original.dialog.getByText("Waiting for connection…"),
+    original.dialog.getByText(
+      "Waiting for their confirmation. No Bond has been created yet.",
+    ),
   ).toBeVisible();
   await page.setViewportSize({ width: 844, height: 390 });
   const qrImage = original.dialog.getByRole("img");
@@ -374,4 +379,202 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     await (await request.get("http://127.0.0.1:54330/__test/counts")).json(),
   ).toEqual(after);
   await isolated.close();
+});
+
+test("invitation paths defer creation, share privately, fall back to copy, and retain the deadline", async ({
+  page,
+  request,
+}, info) => {
+  await page.addInitScript(() => {
+    const state = window as typeof window & {
+      shared?: ShareData[];
+      copied?: string;
+      shareMode?: string;
+      copyFails?: boolean;
+    };
+    state.shared = [];
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: async (data: ShareData) => {
+        state.shared!.push(data);
+        if (state.shareMode === "cancel")
+          throw new DOMException("Cancelled", "AbortError");
+        if (state.shareMode === "fail")
+          throw new DOMException("Blocked", "NotAllowedError");
+      },
+    });
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (text: string) => {
+          if (state.copyFails)
+            throw new DOMException("Blocked", "NotAllowedError");
+          state.copied = text;
+        },
+      },
+    });
+  });
+  await register(page, request, `sharing-${info.project.name}@example.invalid`);
+  const count = async () =>
+    (
+      await (
+        await request.get("http://127.0.0.1:54330/__test/invitation-count")
+      ).json()
+    ).count as number;
+  const before = await count();
+  const snapshot = async () =>
+    (await (
+      await request.get("http://127.0.0.1:54330/__test/invitation-count")
+    ).json()) as {
+      count: number;
+      latest: { id: string; createdAt: string; expiresAt: string };
+    };
+  await page
+    .getByRole("button", { name: "CREATE YOUR FIRST BOND", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await expect(
+    dialog.getByRole("button", { name: /SEND TO SOMEONE/ }),
+  ).toBeVisible();
+  expect(await count()).toBe(before);
+  await expect(dialog.getByRole("timer")).toHaveCount(0);
+  await page.getByRole("button", { name: "Close invitation" }).click();
+  expect(await count()).toBe(before);
+  await page
+    .getByRole("button", { name: "CREATE YOUR FIRST BOND", exact: true })
+    .click();
+  await dialog.getByRole("button", { name: /SEND TO SOMEONE/ }).click();
+  await expect(
+    dialog.getByRole("button", { name: "SEND INVITATION", exact: true }),
+  ).toBeVisible();
+  expect(await count()).toBe(before + 1);
+  const prepared = await snapshot();
+  expect(
+    Date.parse(prepared.latest.expiresAt) -
+      Date.parse(prepared.latest.createdAt),
+  ).toBe(300000);
+  await expect(dialog.getByRole("timer")).toContainText(
+    /Invitation expires in: [45]:\d{2}/,
+  );
+  await expect(dialog.getByRole("img")).toHaveCount(0);
+  const send = dialog.getByRole("button", {
+    name: "SEND INVITATION",
+    exact: true,
+  });
+  await expect(dialog.getByRole("timer")).toBeInViewport();
+  const box = await send.boundingBox();
+  expect(box!.y + box!.height).toBeLessThan(info.project.use.viewport!.height);
+  await page.screenshot({
+    path: info.outputPath("remote-invitation-light.png"),
+    fullPage: true,
+  });
+  await page.evaluate(() => {
+    document.documentElement.dataset.appearance = "dark";
+  });
+  await expect(page.locator("html")).toHaveAttribute("data-appearance", "dark");
+  await page.screenshot({
+    path: info.outputPath("remote-invitation-dark.png"),
+    fullPage: true,
+  });
+  await page.evaluate(() => {
+    document.documentElement.dataset.appearance = "light";
+  });
+  await send.focus();
+  await page.keyboard.press("Enter");
+  await expect(dialog.getByRole("status")).toContainText(
+    "Delivery is not confirmed",
+  );
+  const shared = await page.evaluate(
+    () => (window as typeof window & { shared: ShareData[] }).shared,
+  );
+  expect(shared).toHaveLength(1);
+  expect(shared[0]!.title).toBe("Connect on Atomic Bond");
+  expect(shared[0]!.text).toContain("confirm our Bond");
+  expect(shared[0]!.url).toMatch(
+    /^http:\/\/127\.0\.0\.1:3104\/bond\/[a-f0-9]{64}$/,
+  );
+  await page.evaluate(() => {
+    (window as typeof window & { shareMode: string }).shareMode = "cancel";
+  });
+  await send.click();
+  await expect(dialog.getByRole("status")).toContainText("Sharing cancelled");
+  expect(await snapshot()).toEqual(prepared);
+  await page.getByRole("button", { name: "Close invitation" }).click();
+  await page
+    .getByRole("button", { name: "CREATE YOUR FIRST BOND", exact: true })
+    .click();
+  await expect(dialog.getByRole("timer")).toHaveCount(0);
+  await dialog.getByRole("button", { name: /SEND TO SOMEONE/ }).click();
+  await expect(send).toBeVisible();
+  expect(await snapshot()).toEqual(prepared);
+  await page.evaluate(() => {
+    (window as typeof window & { shareMode: string }).shareMode = "fail";
+  });
+  await send.click();
+  await expect(dialog.getByRole("status")).toContainText("Use COPY LINK");
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "share", {
+      value: undefined,
+      configurable: true,
+    });
+  });
+  await send.click();
+  await expect(dialog.getByRole("status")).toContainText(
+    "unavailable in this browser",
+  );
+  await dialog.getByRole("button", { name: "COPY LINK", exact: true }).click();
+  await expect(dialog.getByRole("status")).toContainText(
+    "Nothing has been sent automatically",
+  );
+  expect(
+    await page.evaluate(
+      () => (window as typeof window & { copied: string }).copied,
+    ),
+  ).toBe(shared[0]!.url);
+  await page.evaluate(() => {
+    (window as typeof window & { copyFails: boolean }).copyFails = true;
+  });
+  await dialog.getByRole("button", { name: "COPY LINK", exact: true }).click();
+  await expect(
+    dialog.getByRole("textbox", { name: "Private invitation link" }),
+  ).toHaveValue(shared[0]!.url!);
+  await dialog.getByRole("button", { name: "SHOW QR CODE" }).click();
+  await expect(dialog.getByRole("img")).toBeVisible();
+  await expect(dialog.getByRole("textbox")).toHaveCount(0);
+  expect(await count()).toBe(before + 1);
+  await expect(dialog.getByRole("timer")).toContainText(
+    "Invitation expires in:",
+  );
+  expect(await snapshot()).toEqual(prepared);
+  await page.screenshot({
+    path: info.outputPath("in-person-invitation-light.png"),
+    // This QR points only to the isolated loopback fixture, never production.
+    fullPage: true,
+  });
+  await expect(dialog.getByRole("timer")).toBeInViewport();
+  await page.clock.install();
+  await page.clock.fastForward(301000);
+  await expect(dialog.getByRole("img")).toHaveCount(0);
+  await expect(
+    dialog.getByRole("button", { name: "COPY LINK", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    dialog.getByText("THIS BOND INVITATION HAS EXPIRED"),
+  ).toBeVisible();
+  await dialog.getByRole("button", { name: "Back to CREATE BOND" }).click();
+  expect(await count()).toBe(before + 1);
+  // Expire the synthetic database record too: client time is not authorization.
+  await request.get("http://127.0.0.1:54330/__test/expire-invites");
+  await page.clock.setFixedTime(new Date());
+  await dialog.getByRole("button", { name: /TOGETHER IN PERSON/ }).click();
+  await expect(dialog.getByRole("img")).toBeVisible();
+  const replacement = await snapshot();
+  expect(replacement.count).toBe(before + 2);
+  expect(replacement.latest.id).not.toBe(prepared.latest.id);
+  expect(
+    Date.parse(replacement.latest.expiresAt) -
+      Date.parse(replacement.latest.createdAt),
+  ).toBe(300000);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
 });

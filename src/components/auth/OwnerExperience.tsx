@@ -37,6 +37,7 @@ export function OwnerExperience({
   const [arrival, setArrival] = useState(initialArrivalId);
   const graphRef = useRef(initialGraph);
   const [creating, setCreating] = useState(false);
+  const [invitationOpen, setInvitationOpen] = useState(false);
   const creatingRef = useRef(false);
   const [notice, setNotice] = useState(
     initialFirstBond
@@ -46,8 +47,7 @@ export function OwnerExperience({
         : "",
   );
   const [pulses, setPulses] = useState(initialPulses),
-    [invite, setInvite] = useState<DisplayInvitation | null>(null),
-    [error, setError] = useState("");
+    [invite, setInvite] = useState<DisplayInvitation | null>(null);
   const now = usePulseClock(pulses);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [status, setStatus] = useState<
@@ -95,6 +95,7 @@ export function OwnerExperience({
                   : "BOND CREATED",
               );
               setInvite(null);
+              setInvitationOpen(false);
               pendingUntil.current = 0;
             }
             if (JSON.stringify(graphRef.current) !== JSON.stringify(updated)) {
@@ -181,41 +182,35 @@ export function OwnerExperience({
         creatingBond={creating}
         arrivalId={arrival}
         emotional={{ pulses, now, send, updatedAt, status }}
-        onCreateBond={() => {
-          if (creatingRef.current) return;
-          creatingRef.current = true;
-          setCreating(true);
-          setError("");
-          void createOwnerInvitation()
-            .then((value) => {
-              pendingUntil.current = Date.parse(value.expiresAt);
-              setInvite(value);
-            })
-            .catch(() =>
-              setError(
-                "Unable to create an invitation. Sign in again or retry.",
-              ),
-            )
-            .finally(() => {
-              creatingRef.current = false;
-              setCreating(false);
-            });
-        }}
+        onCreateBond={() => setInvitationOpen(true)}
       />
-      {error && <p role="alert">{error}</p>}
       <p className="bond-update" role="status">
-        {creating
-          ? "Preparing your invitation…"
-          : notice === "YOUR NETWORK HAS BEGUN"
-            ? ""
-            : notice}
+        {notice === "YOUR NETWORK HAS BEGUN" ? "" : notice}
       </p>
-      {invite && (
+      {invitationOpen && (
         <BondInvitation
           firstBond={firstBond}
           invite={invite}
           publicId={publicId}
-          close={() => setInvite(null)}
+          creating={creating}
+          create={async () => {
+            if (creatingRef.current) return;
+            creatingRef.current = true;
+            setCreating(true);
+            await createOwnerInvitation()
+              .then((value) => {
+                pendingUntil.current = Date.parse(value.expiresAt);
+                setInvite(value);
+              })
+              .finally(() => {
+                creatingRef.current = false;
+                setCreating(false);
+              });
+          }}
+          close={() => {
+            setInvitationOpen(false);
+            setInvite(null);
+          }}
         />
       )}
     </>

@@ -45,4 +45,13 @@ test("direct routes, production assets and private artifact exclusion", async ({
   ]) {
     expect((await request.get(path)).status()).toBe(404);
   }
+  // Next can stream notFound() after sending a 200 header. No review UI is rendered.
+  for (const path of ["/review/invitation", "/review/invitation?recipient=1"]) {
+    const response = await request.get(path);
+    expect([200, 404]).toContain(response.status());
+    const html = await response.text();
+    expect(html).toContain("This page could not be found");
+    expect(html).not.toContain("FIRST BOND — LOCAL REVIEW");
+    expect(html).not.toContain("Synthetic invitations prepared:");
+  }
 });

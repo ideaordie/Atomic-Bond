@@ -419,3 +419,52 @@
 .auth-panel .appearance-preference h2 {
   font-size: var(--helper-size);
 }
+
+/* Invitation choices keep remote sharing above the fold, separate from QR. */
+.invitation-paths {
+  display: grid;
+  gap: var(--space-3);
+}
+.invitation-paths button {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-4);
+  font-weight: 600;
+}
+.invitation-paths button span {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--helper-size);
+  font-weight: 400;
+}
+.invitation-share-actions {
+  display: grid;
+  gap: var(--space-2);
+}
+.invitation-share-actions button {
+  margin: 0;
+  width: 100%;
+}
+.invitation-share-actions .flow-primary {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.invitation-content:focus {
+  outline: none;
+}
+.invitation-manual-copy {
+  display: block;
+  text-align: left;
+}
+.invitation-manual-copy textarea {
+  width: 100%;
+  min-height: 90px;
+  color: var(--text);
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.invitation-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

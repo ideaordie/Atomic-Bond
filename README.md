@@ -16,7 +16,9 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.16.0 — Connect. Create. Play. Together.** The approved 30-second synthetic campaign powers `/welcome`, with accessible playback and a silent 1080p advertising export. See [campaign architecture](docs/architecture/PROMOTIONAL_CAMPAIGN_v0.1.md).
+Current release: **v0.16.1 — First Bond invitation paths**. In-person QR and remote sharing reuse the existing five-minute invitation and explicit mutual confirmation.
+See [invitation acceptance and device limitations](docs/architecture/FIRST_BOND_INVITATION_v0.2.md).
+The approved 30-second synthetic campaign still powers `/welcome`; see [campaign architecture](docs/architecture/PROMOTIONAL_CAMPAIGN_v0.1.md).
 
 Previous approved production baseline: **v0.15.0**, commit `783cd3a`.
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
