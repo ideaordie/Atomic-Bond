@@ -37,7 +37,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
     .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
     .click();
   await expect(receiver).toHaveURL(`/bond/${invite.token}`);
-  await receiver.getByRole("button", { name: "ACCEPT BOND" }).click();
+  await receiver.getByRole("button", { name: "CONFIRM BOND" }).click();
   await expect(
     receiver.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),
   ).toBeVisible();
@@ -166,7 +166,7 @@ test("new invitation verification, owner actions, logout and cross-device same A
     receiver.getByText("YOU ARE ALREADY BONDED", { exact: true }),
   ).toBeVisible();
   await expect(
-    receiver.getByRole("button", { name: "ACCEPT BOND" }),
+    receiver.getByRole("button", { name: "CONFIRM BOND" }),
   ).toHaveCount(0);
   await receiver.goto("/explore");
   await expect(receiver.getByTestId("selected-atom")).toHaveText(`#${number}`);

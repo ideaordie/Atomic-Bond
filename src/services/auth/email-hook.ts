@@ -1,5 +1,4 @@
 import { Webhook } from "standardwebhooks";
-import { bindInvitation, sealAccess } from "./invitation-continuation";
 import { emailLink } from "./policy";
 import type { ResendNotificationService } from "../notifications/resend-notification-service";
 
@@ -16,7 +15,7 @@ export async function deliverAuthEmail(
     body,
     headers,
   ) as {
-    user?: { id?: string; email?: string };
+    user?: { email?: string };
     email_data?: {
       token_hash?: string;
       redirect_to?: string;
@@ -40,27 +39,7 @@ export async function deliverAuthEmail(
       growthDigest: "disabled" as const,
     },
   };
-  const redirect = new URL(data.redirect_to);
-  if (redirect.origin !== origin || redirect.pathname !== "/auth/confirm")
-    throw new Error("Invalid callback destination");
-  const intent = redirect.searchParams.get("next");
-  let link = emailLink(origin, data.token_hash, data.redirect_to);
-  if (intent?.startsWith("c1.")) {
-    const access = sealAccess(data.token_hash, "/explore", "");
-    link = `${origin}/auth/confirm#${new URLSearchParams({ access })}`;
-    try {
-      const continuation = bindInvitation(
-        intent.slice(3),
-        email,
-        verified.user?.id || "",
-        data.token_hash,
-      );
-      link = `${origin}/auth/confirm#${new URLSearchParams({ continuation, access })}`;
-    } catch {
-      // The signed provider OTP remains usable; invalid optional context grants no Bond intent.
-      // Do not log the request, envelope, recipient or credential.
-    }
-  }
+  const link = emailLink(origin, data.token_hash, data.redirect_to);
   const id = headers["webhook-id"];
   if (!id || !/^[\w-]{1,200}$/.test(id)) throw new Error("Invalid hook id");
   if (data.email_action_type === "signup")

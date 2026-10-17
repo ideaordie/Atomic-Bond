@@ -1,5 +1,12 @@
 # Changelog
 
+## Emergency recovery — restore v0.16.2
+
+- Restore application, email hook, fixtures and tests exactly to release `2a5651b` through a history-preserving revert of v0.16.3 and v0.16.3.1.
+- Preserve all hosted data, migrations, RLS, production secrets and frozen Master Spec v0.8.
+- Existing encrypted authentication emails require a fresh login email. Sign in first, then reopen the original valid Bond invitation; pending invitation context may still be lost during authentication.
+- See [recovery procedure and evidence](operations/ROLLBACK_TO_v0.16.2.md).
+
 ## v0.16.3.1 — Authentication Flow Repair
 
 - Keep provider authentication independent of optional invitation context; retain

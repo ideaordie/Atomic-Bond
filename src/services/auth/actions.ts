@@ -1,5 +1,5 @@
 "use server";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { authClient, ownerContext, requireOwner } from "./server";
 import {
@@ -9,15 +9,6 @@ import {
   registration,
   isAuthTokenHash,
 } from "./policy";
-import {
-  invitationIntent,
-  sealAccess,
-  readAccess,
-  readInvitation,
-  continuationId,
-  matchesContinuation,
-  type BoundIntent,
-} from "./invitation-continuation";
 import { isSelectablePulse, type Emotion } from "../../types/emotional-pulse";
 import { invitationPresentation } from "../bonds/qr-invitation";
 import { bondRelationship } from "../bonds/relationship";
@@ -42,19 +33,11 @@ export async function requestAccess(form: FormData) {
       if (!place || place.displayName === "Verification only")
         return { error: "Select a home region from the available locations." };
     }
-    const destination = input.next.startsWith("/bond/")
-      ? "c1." +
-        invitationIntent(
-          input.email,
-          input.next,
-          (await services.bonds.read(input.next.slice(6))).expiresAt,
-        )
-      : input.next;
     const { error } = await client.auth.signInWithOtp({
       email: input.email,
       options: {
         shouldCreateUser: Boolean(input.details),
-        emailRedirectTo: `${appOrigin(process.env)}/auth/confirm?next=${encodeURIComponent(destination)}`,
+        emailRedirectTo: `${appOrigin(process.env)}/auth/confirm?next=${encodeURIComponent(input.next)}`,
         ...(input.details ? { data: { atomic_bond: input.details } } : {}),
       },
     });
@@ -71,23 +54,6 @@ export async function requestAccess(form: FormData) {
   }
 }
 export async function completeAccess(tokenHash: string, next: string) {
-  // Previously issued links can authenticate, but unsigned invitation context
-  // cannot claim a binding to that authentication attempt.
-  const destination = nextPath(next);
-  const result = await finishAccess(
-    tokenHash,
-    destination.startsWith("/bond/") ? "/explore" : destination,
-  );
-  return destination.startsWith("/bond/") && !("error" in result)
-    ? { ...result, invitationRecovery: true }
-    : result;
-}
-async function finishAccess(
-  tokenHash: string,
-  next: string,
-  bound?: BoundIntent,
-  invitationRecovery = false,
-) {
   try {
     await sameOrigin();
     if (!isAuthTokenHash(tokenHash)) throw new Error();
@@ -103,13 +69,6 @@ async function finishAccess(
       };
     const context = await ownerContext();
     if (!context.user?.email_confirmed_at) throw new Error();
-    if (
-      bound &&
-      (!matchesContinuation(bound, context.user) || bound.token !== tokenHash)
-    ) {
-      next = "/explore";
-      invitationRecovery = true;
-    }
     const deletion = await context.client.rpc("account_deletion_status");
     if (!deletion.error && deletion.data?.pending)
       return { next: "/account/delete", publicId: null, returning: true };
@@ -135,12 +94,7 @@ async function finishAccess(
       await context.services.atoms.create(details);
     }
     const atom = await context.services.atoms.activate();
-    return {
-      next: nextPath(next),
-      publicId: atom.publicId,
-      returning,
-      invitationRecovery,
-    };
+    return { next: nextPath(next), publicId: atom.publicId, returning };
   } catch {
     return {
       error:
@@ -148,128 +102,6 @@ async function finishAccess(
     };
   }
 }
-
-const continuationCookie = (id: string) => `ab-bond-auth-${id}`;
-export async function stageInvitationAccess(
-  value: string,
-  tokenHash?: string,
-  next = "/explore",
-  access?: string,
-) {
-  try {
-    await sameOrigin();
-    if (access) tokenHash = readAccess(access).token;
-    // New invitation links carry an independently encrypted access credential.
-    // Old sealed-only links remain supported during the deployment transition.
-    if (tokenHash) value = sealAccess(tokenHash, next, value);
-    const data = tokenHash ? readAccess(value) : readInvitation(value);
-    const id = continuationId(tokenHash || value);
-    const jar = await cookies();
-    const active = jar
-      .getAll()
-      .filter((c) => c.name.startsWith("ab-bond-auth-"));
-    if (!jar.has(continuationCookie(id)) && active.length >= 4)
-      return {
-        error:
-          "Too many open access links. Finish or dismiss an existing link first.",
-      };
-    jar.set(continuationCookie(id), value, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/auth/confirm",
-      maxAge: Math.max(1, Math.floor((data.exp - Date.now()) / 1000)),
-    });
-    return { flow: id };
-  } catch {
-    return {
-      error:
-        "This invitation access link is unavailable. Reopen the original invitation and request a new access email.",
-    };
-  }
-}
-export async function completeInvitationAccess(
-  id: string,
-  skipInvitation = false,
-) {
-  try {
-    await sameOrigin();
-    if (!/^[a-f0-9]{32}$/.test(id)) throw new Error();
-    const jar = await cookies();
-    const value = jar.get(continuationCookie(id))?.value;
-    if (!value) throw new Error();
-    let token: string,
-      next = "/explore",
-      bound: BoundIntent | undefined;
-    let invitationRecovery = false;
-    try {
-      const access = readAccess(value);
-      if (continuationId(access.token) !== id) throw new Error();
-      token = access.token;
-      next = access.next;
-      if (access.continuation && !skipInvitation) {
-        try {
-          bound = readInvitation(access.continuation);
-          if (bound.token !== token) throw new Error();
-          next = bound.next;
-        } catch {
-          bound = undefined;
-          invitationRecovery = true;
-        }
-      }
-    } catch {
-      if (continuationId(value) !== id) throw new Error();
-      bound = readInvitation(value);
-      token = bound.token;
-      next = skipInvitation ? "/explore" : bound.next;
-    }
-    const result = await finishAccess(token, next, bound, invitationRecovery);
-    jar.set(continuationCookie(id), "", { path: "/auth/confirm", maxAge: 0 });
-    return result;
-  } catch {
-    return {
-      error:
-        "This invitation access link is unavailable. Reopen the original invitation and request a new access email.",
-    };
-  }
-}
-export async function dismissInvitationAccess(id: string) {
-  await sameOrigin();
-  if (/^[a-f0-9]{32}$/.test(id))
-    (await cookies()).set(continuationCookie(id), "", {
-      path: "/auth/confirm",
-      maxAge: 0,
-    });
-}
-
-/** Recovery uses only the independently verified current session, never stale invitation input. */
-export async function recoverAuthenticatedAccess() {
-  try {
-    await sameOrigin();
-    const context = await ownerContext();
-    if (!context.user?.email_confirmed_at) return null;
-    const deletion = await context.client.rpc("account_deletion_status");
-    if (!deletion.error && deletion.data?.pending)
-      return { next: "/account/delete", publicId: null, returning: true };
-    if (context.atom?.status === "DEACTIVATED")
-      return {
-        next: "/account/reactivate",
-        publicId: context.atom.publicId,
-        returning: true,
-      };
-    if (!context.atom || !context.atom.publicId)
-      return { next: "/auth", publicId: null, returning: false };
-    if (!["ACTIVE", "DORMANT"].includes(context.atom.status)) return null;
-    return {
-      next: "/explore",
-      publicId: context.atom.publicId,
-      returning: true,
-    };
-  } catch {
-    return null;
-  }
-}
-
 export async function finishRegistration(form: FormData) {
   try {
     await sameOrigin();

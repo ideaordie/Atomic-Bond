@@ -63,10 +63,10 @@ export function BondConfirmation({
           }
         }}
       >
-        {pending ? "Confirming Bond…" : "ACCEPT BOND"}
+        {pending ? "Confirming Bond…" : "CONFIRM BOND"}
       </button>
       <Link className="decline-bond" href="/explore" replace>
-        NOT NOW
+        DECLINE
       </Link>
       <p>
         Declining creates no Bond and does not notify or penalize either person.
