@@ -4,6 +4,7 @@ import type {
 } from "../participation/contracts";
 import { growthEmail } from "../growth/email";
 import type { GrowthDelivery } from "../growth/contracts";
+import { authEmail } from "./auth-email";
 
 export class EmailDeliveryError extends Error {
   constructor(public readonly status: number) {
@@ -40,7 +41,7 @@ export class ResendNotificationService implements NotificationService {
         from: this.from,
         to: identity.email,
         subject: "Verify your Atomic Bond email",
-        text: `ATOMIC BOND\n\nVerify your email to create or access your Atom.\n\nVERIFY MY ATOM\n${link}\n\nIf you did not request this email, you can ignore it.`,
+        ...authEmail(link),
       },
       idempotencyKey,
     );
@@ -56,7 +57,7 @@ export class ResendNotificationService implements NotificationService {
         from: this.from,
         to: identity.email,
         subject: "Your Atomic Bond access link",
-        text: `ATOMIC BOND\n\nReturn securely to your Atom.\n\nVIEW MY ATOM\n${link}\n\nIf you did not request this email, you can ignore it.`,
+        ...authEmail(link),
       },
       idempotencyKey,
     );

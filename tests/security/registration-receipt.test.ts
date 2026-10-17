@@ -136,6 +136,16 @@ describe("isolated new-registration receipt", () => {
       );
       expect(fragment.has("receipt")).toBe(kind === "signup" && marked);
       expect(url.href).not.toContain(invitation);
+      const message = send.mock.calls[0]![0];
+      const htmlDestination = message.html
+        .match(/href="([^"]*)"/)[1]
+        .replace(/&amp;/g, "&");
+      expect(htmlDestination).toBe(url.href);
+      expect(message.html).toContain(
+        kind === "signup" && marked
+          ? "YOUR CONNECTION IS WAITING"
+          : "VERIFY YOUR ATOM",
+      );
     },
   );
 });

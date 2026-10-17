@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.16.4.3 — Verification Email UI Cleanup
+
+- Present ordinary verification/access and invitation-registration emails with mobile-friendly HTML buttons and an explicit plain-text alternative.
+- Preserve exact verification destinations, encrypted receipts, callback behavior, subjects, recipients and delivery authorization. No authentication, database, secret or frozen Master Spec v0.8 changes.
+- Verify URL escaping, signed-hook destination equivalence, responsive rendering and authentication regressions. Real inbox/client rendering remains a follow-up; see [Task #17.3 acceptance](operations/TASK_17_3_EMAIL_PRESENTATION.md).
+
 ## v0.16.4.2 — Deferred Home Region Loading
 
 - Load the canonical country/region catalog only when the participant opens the Country selector; retain shared caching, canonical validation and recoverable loading feedback.
