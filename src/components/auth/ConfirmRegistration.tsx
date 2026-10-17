@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   completeInvitedRegistration,
@@ -9,16 +9,11 @@ import { useInstall } from "../pwa/PwaProvider";
 import "./auth.css";
 export function ConfirmRegistration() {
   const install = useInstall();
-  const [link, setLink] = useState({ token: "", receipt: "" });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const inFlight = useRef(false);
   useEffect(() => {
     const read = () => {
-      const fragment = new URLSearchParams(window.location.hash.slice(1));
-      setLink({
-        token: fragment.get("token_hash") || "",
-        receipt: fragment.get("receipt") || "",
-      });
       setError("");
     };
     read();
@@ -33,26 +28,37 @@ export function ConfirmRegistration() {
         still require your explicit confirmation.
       </p>
       <button
+        type="button"
         className="flow-primary"
         disabled={pending}
         onClick={async () => {
+          if (inFlight.current) return;
+          inFlight.current = true;
           setPending(true);
           setError("");
           try {
-            const result = link.token
-              ? await completeInvitedRegistration(link.token, link.receipt)
+            // Read the current email fragment at the deliberate click, even if
+            // hydration or a replacement email's hash effect has not committed.
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            const token = fragment.get("token_hash") || "";
+            const receipt = fragment.get("receipt") || "";
+            const result = token
+              ? await completeInvitedRegistration(token, receipt)
               : await recoverInvitedRegistration();
             if ("next" in result && result.next) {
-              window.history.replaceState(null, "", "/auth/register/confirm");
               if ("created" in result && result.created) install.invite();
+              // One navigation also replaces the sensitive fragment. Do not
+              // enqueue a Next history restore or re-enable during page loading.
               window.location.replace(result.next);
+              return;
             } else if ("error" in result)
               setError(result.error || "Unable to verify.");
+            else setError("Unable to continue. Please try again.");
           } catch {
             setError("Unable to connect. Please try again.");
-          } finally {
-            setPending(false);
           }
+          inFlight.current = false;
+          setPending(false);
         }}
       >
         {pending ? "Verifying…" : "VERIFY / ACCESS MY ATOM"}

@@ -26,6 +26,127 @@ async function prepare(page: Page, request: APIRequestContext) {
   expect(link).not.toContain(invite.token);
   return { link: link as string, invite, email };
 }
+
+test.describe("verification navigation", () => {
+  test.use({ serviceWorkers: "block" });
+  test("a replacement email is read at click time and rapid duplicate clicks send one action", async ({
+    page,
+    request,
+  }) => {
+    const first = await prepare(page, request);
+    const second = await prepare(page, request);
+    await page.goto(first.link);
+    await expect(
+      page.getByRole("button", { name: "VERIFY / ACCESS MY ATOM" }),
+    ).toBeVisible();
+    const expectedToken = new URLSearchParams(
+      new URL(second.link).hash.slice(1),
+    ).get("token_hash")!;
+    const submitted: string[] = [];
+    page.on("request", (request) => {
+      if (
+        request.method() === "POST" &&
+        new URL(request.url()).pathname === "/auth/register/confirm"
+      )
+        submitted.push(request.postData() || "");
+    });
+    await page.evaluate((hash) => {
+      window.location.hash = hash;
+      const button =
+        document.querySelector<HTMLButtonElement>(".auth-panel button")!;
+      button.click();
+      button.click();
+    }, new URL(second.link).hash);
+    await expect(page).toHaveURL("/auth/register/invitation");
+    expect(submitted.length).toBe(1);
+    // Compare synthetic credentials without including them in assertion output.
+    expect(submitted[0]?.includes(expectedToken)).toBe(true);
+    await expect(
+      page.getByRole("button", { name: "ACCEPT BOND" }),
+    ).toBeVisible();
+  });
+  test("one verification click stays busy through slow action and destination navigation", async ({
+    page,
+    request,
+  }) => {
+    const { link } = await prepare(page, request);
+    const before = await (await request.get(`${fixture}/__test/counts`)).json();
+    await page.goto(link);
+    await page.evaluate(() => {
+      let busy = false;
+      sessionStorage.removeItem("test-verification-reset");
+      new MutationObserver(() => {
+        const button =
+          document.querySelector<HTMLButtonElement>(".auth-panel button");
+        if (button?.textContent === "Verifying…") busy = true;
+        if (busy && button && !button.disabled)
+          sessionStorage.setItem("test-verification-reset", "yes");
+      }).observe(document.body, {
+        subtree: true,
+        attributes: true,
+        childList: true,
+        characterData: true,
+      });
+    });
+    let actions = 0;
+    let releaseAction!: () => void;
+    const actionDelay = new Promise<void>(
+      (resolve) => (releaseAction = resolve),
+    );
+    await page.route("**/auth/register/confirm", async (route) => {
+      if (route.request().method() !== "POST") return route.continue();
+      actions++;
+      const response = await route.fetch();
+      await actionDelay;
+      await route.fulfill({ response });
+    });
+    let destinationRequested = false;
+    let releaseNavigation!: () => void;
+    const navigationDelay = new Promise<void>(
+      (resolve) => (releaseNavigation = resolve),
+    );
+    await page.route("**/auth/register/invitation", async (route) => {
+      destinationRequested = true;
+      await navigationDelay;
+      await route.continue();
+    });
+    try {
+      await page
+        .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
+        .click();
+      await expect.poll(() => actions).toBe(1);
+      await expect(
+        page.getByRole("button", { name: "Verifying…" }),
+      ).toBeDisabled();
+      // Force an immediate unrelated component update while verification is pending.
+      await page.evaluate(() => window.dispatchEvent(new Event("hashchange")));
+      await expect(
+        page.getByRole("button", { name: "Verifying…" }),
+      ).toBeDisabled();
+      releaseAction();
+      await expect.poll(() => destinationRequested).toBe(true);
+      expect(actions).toBe(1);
+      releaseNavigation();
+      await expect(page).toHaveURL("/auth/register/invitation");
+      expect(
+        await page.evaluate(() =>
+          sessionStorage.getItem("test-verification-reset"),
+        ),
+      ).toBeNull();
+      await expect(
+        page.getByRole("button", { name: "ACCEPT BOND" }),
+      ).toBeVisible();
+      expect(
+        (await (await request.get(`${fixture}/__test/counts`)).json()).bonds,
+      ).toBe(before.bonds);
+      await page.getByRole("button", { name: "NOT NOW", exact: true }).click();
+      await expect(page).toHaveURL("/explore");
+    } finally {
+      releaseAction();
+      releaseNavigation();
+    }
+  });
+});
 test("same-browser registration, pre-verification reload, explicit consent and one Bond", async ({
   page,
   request,

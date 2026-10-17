@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.16.4.1 — Single-click verification navigation
+
+- Keep invitation-registration verification pending through navigation and guard duplicate presses; read the current email fragment at the deliberate click.
+- Remove the unnecessary intermediate history transition. Preserve all server authentication, encrypted receipts, explicit Bond consent, database state and frozen Master Spec v0.8.
+- Add delayed-navigation and replacement-email regression coverage. Physical iPhone confirmation of the one-click correction remains pending; see [acceptance evidence](operations/TASK_16_4_1_LOCAL_ACCEPTANCE.md).
+
 ## v0.16.4 — New-Atom Bond Invitation Continuity
 
 - Restore invitation context only for invitation-originated new-Atom registration, using a dedicated verification callback and an encrypted receipt bound to the verified registration attempt and owner session.
