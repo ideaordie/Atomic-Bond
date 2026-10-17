@@ -40,6 +40,9 @@ export default async function AuthPage({
         next={next}
         verified={Boolean(user?.email_confirmed_at)}
         initialMode={query.mode === "access" ? "access" : "register"}
+        invitedRegistration={
+          !user && query.mode === "register" && next.startsWith("/bond/")
+        }
       />
     </main>
   );

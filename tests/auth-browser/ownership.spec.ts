@@ -36,8 +36,8 @@ test("new invitation verification, owner actions, logout and cross-device same A
   await receiver
     .getByRole("button", { name: "VERIFY / ACCESS MY ATOM" })
     .click();
-  await expect(receiver).toHaveURL(`/bond/${invite.token}`);
-  await receiver.getByRole("button", { name: "CONFIRM BOND" }).click();
+  await expect(receiver).toHaveURL("/auth/register/invitation");
+  await receiver.getByRole("button", { name: "ACCEPT BOND" }).click();
   await expect(
     receiver.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),
   ).toBeVisible();

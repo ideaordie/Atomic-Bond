@@ -4,6 +4,15 @@ import { randomUUID, randomBytes, createHmac } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
+import "./test-typescript-loader.mjs";
+import { Webhook } from "standardwebhooks";
+const { deliverAuthEmail } = await import("../src/services/auth/email-hook.ts");
+const { ResendNotificationService } =
+  await import("../src/services/notifications/resend-notification-service.ts");
+process.env.AUTH_CONTINUATION_KEY = "16".repeat(32); // Synthetic loopback-only fixture.
+const hookSecret = Buffer.from("synthetic-local-email-hook-only").toString(
+  "base64",
+);
 const db = new PGlite({ extensions: { pgcrypto } });
 await db.exec(
   `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;`,
@@ -169,6 +178,15 @@ const server = createServer(async (req, res) => {
       for (const entry of links.values()) entry.expires = 0;
       return reply(200, {});
     }
+    if (url.pathname === "/__test/cancel-invitation") {
+      await rpc("cancel_bond_invitation", [url.searchParams.get("id")], owner);
+      return reply(200, {});
+    }
+    if (url.pathname === "/__test/missing-registration-details") {
+      const user = users.get(url.searchParams.get("email"));
+      if (user) user.user_metadata.atomic_bond = {};
+      return reply(200, {});
+    }
     if (url.pathname === "/__test/stale-auth") {
       for (const claims of claimsByUser.values())
         claims.amr[0].timestamp -= 3600;
@@ -253,9 +271,44 @@ const server = createServer(async (req, res) => {
             (body.code_challenge ? "pkce_" : "") +
             randomBytes(32).toString("hex"),
           redirect = new URL(url.searchParams.get("redirect_to"));
-        const link = `${redirect.origin}/auth/confirm#${new URLSearchParams({ token_hash: hash, next: redirect.searchParams.get("next") || "/explore" })}`;
+        const hookBody = JSON.stringify({
+          user,
+          email_data: {
+            token_hash: hash,
+            redirect_to: redirect.href,
+            email_action_type: user.email_confirmed_at ? "magiclink" : "signup",
+          },
+        });
+        const id = randomUUID(),
+          now = new Date();
+        await deliverAuthEmail(
+          hookBody,
+          {
+            "webhook-id": id,
+            "webhook-timestamp": String(Math.floor(now.getTime() / 1000)),
+            "webhook-signature": new Webhook(hookSecret).sign(
+              id,
+              now,
+              hookBody,
+            ),
+          },
+          hookSecret,
+          redirect.origin,
+          new ResendNotificationService(
+            {
+              async send(message) {
+                mail.set(
+                  email,
+                  message.text
+                    .split("\n")
+                    .find((line) => line.startsWith(redirect.origin)),
+                );
+              },
+            },
+            "test@example.invalid",
+          ),
+        );
         links.set(hash, { user, expires: Date.now() + 3600000 });
-        mail.set(email, link);
       }
       return reply(200, {});
     }

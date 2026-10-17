@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.4 — New-Atom Bond Invitation Continuity
+
+- Restore invitation context only for invitation-originated new-Atom registration, using a dedicated verification callback and an encrypted receipt bound to the verified registration attempt and owner session.
+- Complete authentication and activation independently of optional invitation context; reuse explicit ACCEPT BOND / NOT NOW confirmation and preserve original 24-hour deadlines.
+- Preserve existing-owner authentication, ordinary registration, account lifecycle, migrations and frozen Master Spec v0.8. Reuse the existing managed server-only key.
+- Controlled publication for real email and physical-device acceptance; simulated browser tests do not establish iPhone/PWA compatibility. See [acceptance and recovery](operations/TASK_16_4_LOCAL_ACCEPTANCE.md).
+
 ## Emergency recovery — restore v0.16.2
 
 - Restore application, email hook, fixtures and tests exactly to release `2a5651b` through a history-preserving revert of v0.16.3 and v0.16.3.1.

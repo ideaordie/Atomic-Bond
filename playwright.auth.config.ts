@@ -27,6 +27,7 @@ export default defineConfig({
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_test_only",
         APP_ORIGIN: "http://127.0.0.1:3104",
         AUTH_ALLOW_LOCALHOST: "true",
+        AUTH_CONTINUATION_KEY: "16".repeat(32), // Synthetic fixture only.
         RESEND_API_KEY: "",
         SUPABASE_AUTH_HOOK_SECRET: "",
         SUPABASE_ACCOUNT_DELETION_SECRET_KEY:

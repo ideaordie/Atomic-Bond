@@ -1,6 +1,10 @@
 "use client";
 import { useState } from "react";
 import { requestAccess, finishRegistration } from "../../services/auth/actions";
+import {
+  requestInvitedRegistration,
+  finishInvitedRegistration,
+} from "../../services/auth/registration-actions";
 import { useInstall } from "../pwa/PwaProvider";
 import { HomeRegion } from "./HomeRegion";
 import "./auth.css";
@@ -9,10 +13,12 @@ export function AccessForm({
   next,
   verified = false,
   initialMode = "register",
+  invitedRegistration = false,
 }: {
   next: string;
   verified?: boolean;
   initialMode?: "register" | "access";
+  invitedRegistration?: boolean;
 }) {
   const installation = useInstall();
   const [mode, setMode] = useState(initialMode),
@@ -87,8 +93,12 @@ export function AccessForm({
           setSent(false);
           try {
             const result = verified
-              ? await finishRegistration(form)
-              : await requestAccess(form);
+              ? invitedRegistration
+                ? await finishInvitedRegistration(form)
+                : await finishRegistration(form)
+              : invitedRegistration && mode === "register"
+                ? await requestInvitedRegistration(form)
+                : await requestAccess(form);
             if ("next" in result && result.next) {
               if ("created" in result && result.created) installation.invite();
               window.location.assign(result.next);

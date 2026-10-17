@@ -1,5 +1,6 @@
 import { Webhook } from "standardwebhooks";
 import { emailLink } from "./policy";
+import { verificationReceipt } from "./registration-receipt";
 import type { ResendNotificationService } from "../notifications/resend-notification-service";
 
 export async function deliverAuthEmail(
@@ -15,7 +16,11 @@ export async function deliverAuthEmail(
     body,
     headers,
   ) as {
-    user?: { email?: string };
+    user?: {
+      email?: string;
+      id?: string;
+      user_metadata?: Record<string, unknown>;
+    };
     email_data?: {
       token_hash?: string;
       redirect_to?: string;
@@ -39,7 +44,24 @@ export async function deliverAuthEmail(
       growthDigest: "disabled" as const,
     },
   };
-  const link = emailLink(origin, data.token_hash, data.redirect_to);
+  let link = emailLink(origin, data.token_hash, data.redirect_to);
+  // Only a signed, new-user verification event may carry registration intent.
+  // Optional context failure never prevents ordinary verification email delivery.
+  if (
+    data.email_action_type === "signup" &&
+    verified.user?.id &&
+    new URL(data.redirect_to).searchParams.get("registration_invitation") ===
+      "1"
+  ) {
+    const receipt = verificationReceipt(
+      verified.user.user_metadata?.atomic_bond_registration_receipt,
+      email,
+      verified.user.id,
+      data.token_hash,
+    );
+    if (receipt)
+      link = `${origin}/auth/register/confirm#${new URLSearchParams({ token_hash: data.token_hash, receipt })}`;
+  }
   const id = headers["webhook-id"];
   if (!id || !/^[\w-]{1,200}$/.test(id)) throw new Error("Invalid hook id");
   if (data.email_action_type === "signup")

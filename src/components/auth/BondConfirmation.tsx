@@ -1,6 +1,10 @@
 "use client";
 import { useState } from "react";
 import { confirmOwnerBond } from "../../services/auth/actions";
+import {
+  confirmRegistrationInvitation,
+  dismissRegistrationInvitation,
+} from "../../services/auth/registration-actions";
 import Link from "next/link";
 import { OwnerExperience } from "./OwnerExperience";
 import type { ReactNode } from "react";
@@ -9,9 +13,11 @@ import "../participation/participation.css";
 export function BondConfirmation({
   token,
   children,
+  registrationInvitation = false,
 }: {
   token: string;
   children: ReactNode;
+  registrationInvitation?: boolean;
 }) {
   const [result, setResult] = useState<Awaited<
     ReturnType<typeof confirmOwnerBond>
@@ -51,7 +57,9 @@ export function BondConfirmation({
         onClick={async () => {
           setPending(true);
           try {
-            const r = await confirmOwnerBond(token);
+            const r = registrationInvitation
+              ? await confirmRegistrationInvitation()
+              : await confirmOwnerBond(token);
             if (r.next) {
               window.history.replaceState(null, "", "/explore");
               setResult(r);
@@ -63,11 +71,34 @@ export function BondConfirmation({
           }
         }}
       >
-        {pending ? "Confirming Bond…" : "CONFIRM BOND"}
+        {pending
+          ? "Confirming Bond…"
+          : registrationInvitation
+            ? "ACCEPT BOND"
+            : "CONFIRM BOND"}
       </button>
-      <Link className="decline-bond" href="/explore" replace>
-        DECLINE
-      </Link>
+      {registrationInvitation ? (
+        <button
+          className="decline-bond"
+          disabled={pending}
+          onClick={async () => {
+            setPending(true);
+            try {
+              const result = await dismissRegistrationInvitation();
+              window.location.replace(result.next);
+            } catch {
+              setError("Unable to dismiss. Please try again.");
+              setPending(false);
+            }
+          }}
+        >
+          NOT NOW
+        </button>
+      ) : (
+        <Link className="decline-bond" href="/explore" replace>
+          DECLINE
+        </Link>
+      )}
       <p>
         Declining creates no Bond and does not notify or penalize either person.
       </p>
