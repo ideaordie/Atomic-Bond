@@ -12,6 +12,7 @@ export default defineConfig({
   webServer: [
     {
       command: "node scripts/test-auth-server.mjs",
+      env: { AUTH_CONTINUATION_KEY: "16".repeat(32) },
       url: "http://127.0.0.1:54330/health",
       timeout: 60000,
       reuseExistingServer: false,
@@ -23,6 +24,7 @@ export default defineConfig({
       reuseExistingServer: false,
       env: {
         ATOMIC_BOND_DATA_MODE: "supabase",
+        AUTH_CONTINUATION_KEY: "16".repeat(32),
         NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54330",
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_test_only",
         APP_ORIGIN: "http://127.0.0.1:3104",

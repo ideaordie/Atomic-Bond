@@ -16,12 +16,13 @@ adds `/admin` navigation and read-only `/admin/network` structural analytics usi
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.16.2 — Universal 24-hour Bond invitations**. New in-person QR and remote invitations share one server-authoritative 24-hour lifetime. Existing deadlines and explicit mutual confirmation are preserved.
+Current release: **v0.16.3 — Bond Invitation Authentication Continuity**. Verified email login securely restores its pending invitation across fresh-browser entry and callback reload. Explicit consent and existing 24-hour deadlines remain unchanged.
+See [invitation authentication continuity](docs/architecture/INVITATION_AUTH_CONTINUATION_v0.1.md).
 See [invitation lifetime, migration and recovery](docs/architecture/BOND_INVITATION_24_HOURS_v0.1.md).
 See [invitation acceptance and device limitations](docs/architecture/FIRST_BOND_INVITATION_v0.2.md).
 The approved 30-second synthetic campaign still powers `/welcome`; see [campaign architecture](docs/architecture/PROMOTIONAL_CAMPAIGN_v0.1.md).
 
-Previous approved production baseline: **v0.16.1**, commit `821f435`.
+Previous approved production baseline: **v0.16.2**, commit `2a5651b`.
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.

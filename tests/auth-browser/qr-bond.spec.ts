@@ -207,7 +207,7 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   await reused.dialog.getByRole("button", { name: "Close invitation" }).click();
   await page.goto(original.url);
   await expect(page.getByText(/This is your invitation/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "CONFIRM BOND" })).toHaveCount(
+  await expect(page.getByRole("button", { name: "ACCEPT BOND" })).toHaveCount(
     0,
   );
   await page.goto("/explore");
@@ -222,7 +222,7 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
     receiver.getByRole("link", { name: "CREATE MY ATOM", exact: true }),
   ).toBeVisible();
   await expect(
-    receiver.getByRole("button", { name: "CONFIRM BOND" }),
+    receiver.getByRole("button", { name: "ACCEPT BOND" }),
   ).toHaveCount(0);
   const second = await register(
     receiver,
@@ -234,14 +234,14 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   const before = await (
     await request.get("http://127.0.0.1:54330/__test/counts")
   ).json();
-  await receiver.getByRole("link", { name: "DECLINE", exact: true }).click();
+  await receiver.getByRole("link", { name: "NOT NOW", exact: true }).click();
   await expect(receiver.getByTestId("reachable-count")).toHaveText("1");
   expect(
     await (await request.get("http://127.0.0.1:54330/__test/counts")).json(),
   ).toEqual(before);
   await receiver.goto(original.url);
   await receiver
-    .getByRole("button", { name: "CONFIRM BOND", exact: true })
+    .getByRole("button", { name: "ACCEPT BOND", exact: true })
     .click();
   await expect(
     receiver.getByText("YOUR NETWORK HAS BEGUN", { exact: true }),

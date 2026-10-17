@@ -28,6 +28,7 @@ describe("deployment publication boundaries", () => {
       "GLOBAL_DOODLE_CONTROLLED_ACCESS=",
       "PARTICI_PUZZLE_ENABLED=",
       "PARTICI_PUZZLE_CONTROLLED_ACCESS=",
+      "AUTH_CONTINUATION_KEY=",
     ]);
   });
 

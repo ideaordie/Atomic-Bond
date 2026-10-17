@@ -39,7 +39,7 @@ export default async function BondPage({
   const relationship = bondRelationship(graph, ownerId, invite.creatorPublicId);
   const identity = (
     <>
-      <h1>Confirm your Bond</h1>
+      <h1>YOU’VE BEEN INVITED TO BOND</h1>
       <p>Atom #{invite.creatorPublicId} has invited you to connect.</p>
       <p>
         Confirm before{" "}

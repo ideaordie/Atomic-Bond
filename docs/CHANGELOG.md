@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.16.3 — Bond Invitation Authentication Continuity
+
+- Bind invitation email continuation to the verified recipient and Auth attempt;
+  preserve it across fresh-browser email entry and callback reload.
+- Reuse explicit ACCEPT BOND / NOT NOW confirmation; no automatic Bond creation.
+- Add a dedicated managed server-only continuation key and fail-closed Production
+  build/cold-start configuration check; no database or frozen-specification change.
+- See [continuation architecture](architecture/INVITATION_AUTH_CONTINUATION_v0.1.md)
+  for recovery, legacy-link compatibility and physical-device limitations.
+
 ## v0.16.2 — Universal 24-hour Bond invitations
 
 - Universal 24-hour validity for newly created QR and remote Bond invitations; retain existing deadlines and invitation reuse without extension.

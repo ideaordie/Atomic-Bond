@@ -1,5 +1,10 @@
 # Verified email identity and passwordless ownership v0.1
 
+Task #16.3 locally replaces the unsigned invitation destination with a
+[sealed recipient-bound continuation](INVITATION_AUTH_CONTINUATION_v0.1.md).
+Publication and server-key provisioning remain gated. Historical behavior below
+describes the earlier baseline.
+
 Task #9.3 adds [explicit deactivation/reactivation](ACCOUNT_DEACTIVATION_v0.1.md).
 Verified access to DEACTIVATED never activates automatically; old sessions are
 blocked by a private lifecycle cutoff. Permanent deletion remains irreversible.
