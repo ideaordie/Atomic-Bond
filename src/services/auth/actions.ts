@@ -138,6 +138,7 @@ export async function createOwnerInvitation() {
   return {
     id: invite.id,
     expiresAt: invite.expiresAt,
+    createdAt: invite.createdAt,
     ...(await invitationPresentation(invite.token, process.env)),
   };
 }

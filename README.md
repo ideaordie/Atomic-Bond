@@ -7,20 +7,21 @@ Completed puzzles celebrate for one hour before the next READY puzzle starts.
 Private PostgreSQL media and existing five-minute cleanup remain in use.
 The synthetic development preview is `/review/puzzle/queue`.
 
-Product authority is frozen [Master Spec v0.7](docs/MASTER_SPEC_v0.7.md), containing
-only the approved Section 48B queue amendment and version metadata changes.
-Frozen v0.6 and all earlier specifications remain unchanged.
+Product authority is frozen [Master Spec v0.8](docs/MASTER_SPEC_v0.8.md), adding only
+the approved Section 31 universal invitation lifetime and version metadata changes.
+Frozen v0.7 and all earlier specifications remain unchanged.
 
 The [Admin Hub and Connected Groups](docs/architecture/ADMIN_HUB_v0.1.md)
 adds `/admin` navigation and read-only `/admin/network` structural analytics using
 the existing verified ACTIVE administrator membership. Network Signal publication
 and public product mechanics are unchanged.
 
-Current release: **v0.16.1 — First Bond invitation paths**. In-person QR and remote sharing reuse the existing five-minute invitation and explicit mutual confirmation.
+Current release: **v0.16.2 — Universal 24-hour Bond invitations**. New in-person QR and remote invitations share one server-authoritative 24-hour lifetime. Existing deadlines and explicit mutual confirmation are preserved.
+See [invitation lifetime, migration and recovery](docs/architecture/BOND_INVITATION_24_HOURS_v0.1.md).
 See [invitation acceptance and device limitations](docs/architecture/FIRST_BOND_INVITATION_v0.2.md).
 The approved 30-second synthetic campaign still powers `/welcome`; see [campaign architecture](docs/architecture/PROMOTIONAL_CAMPAIGN_v0.1.md).
 
-Previous approved production baseline: **v0.15.0**, commit `783cd3a`.
+Previous approved production baseline: **v0.16.1**, commit `821f435`.
 See [installation behavior and device verification](docs/architecture/PWA_v0.1.md).
 Shared monochrome design tokens and opt-in Light/Dark appearance cover public, owner,
 admin and offline screens. The appearance choice is browser-local; no migration is required.

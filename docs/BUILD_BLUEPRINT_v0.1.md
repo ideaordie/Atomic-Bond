@@ -3,7 +3,7 @@
 ## Build Blueprint — v0.1
 
 **Status:** Initial Engineering Blueprint
-**Product Authority:** Atomic Bond Master Product Specification v0.7
+**Product Authority:** Atomic Bond Master Product Specification v0.8
 **Purpose:** Translate the frozen product specification into a modular, testable, agent-friendly software architecture.
 
 ---
@@ -23,7 +23,7 @@ The system must be:
 * visually distinctive
 * resistant to regression
 
-The application must preserve the principles defined in the frozen Master Product Specification v0.7.
+The application must preserve the principles defined in the frozen Master Product Specification v0.8.
 
 If this blueprint conflicts with the Master Product Specification, the **Master Product Specification takes precedence.**
 

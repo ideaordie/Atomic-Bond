@@ -91,6 +91,7 @@ export class SupabaseBondService {
     return {
       id: string(row.id),
       token: invitationToken(string(row.token)),
+      createdAt: typeof row.createdAt === "string" ? row.createdAt : undefined,
       expiresAt: string(row.expiresAt),
       status: "ACTIVE" as const,
     };

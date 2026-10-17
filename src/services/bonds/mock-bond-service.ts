@@ -72,7 +72,7 @@ export class MockBondService implements BondService {
     const invite: Invitation = Object.freeze({
       code,
       inviterId,
-      expiresAt: this.now() + 300_000,
+      expiresAt: this.now() + 86_400_000,
       state: "INVITE_CREATED",
       history: Object.freeze(["INVITE_CREATED"] as BondState[]),
     });

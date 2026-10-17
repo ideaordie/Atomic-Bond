@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.16.2 — Universal 24-hour Bond invitations
+
+- Universal 24-hour validity for newly created QR and remote Bond invitations; retain existing deadlines and invitation reuse without extension.
+- Hours/minutes/seconds sender countdown, actual recipient/share deadline, and truthful legacy invitation labeling.
+- Apply the version-controlled future-issuance migration and freeze the approved Section 31 amendment as Master Spec v0.8; preserve v0.7 and all existing invitation deadlines.
+
 ## v0.16.1 — First Bond invitation paths
 
 - Separate in-person QR and remote sharing paths; opening CREATE BOND alone no longer prepares an invitation.

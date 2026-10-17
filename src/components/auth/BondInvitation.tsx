@@ -1,10 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import {
+  invitationTimeRemaining,
+  isDayInvitation,
+} from "../../utils/invitation-time";
 import { cancelOwnerInvitation } from "../../services/auth/actions";
 
 export interface DisplayInvitation {
   id: string;
   expiresAt: string;
+  createdAt?: string | undefined;
   url: string;
   image: string;
 }
@@ -106,7 +111,7 @@ export function BondInvitation({
         // Invoke directly from the click, with no awaited server request before it.
         await navigator.share({
           title: "Connect on Atomic Bond",
-          text: "Let’s connect on Atomic Bond! Open this invitation, create or access your Atom, then confirm our Bond. This invitation lasts five minutes.",
+          text: `Let’s connect on Atomic Bond! Open this invitation, create or access your Atom, then confirm our Bond before ${new Date(invite.expiresAt).toISOString().replace("T", " ").replace("Z", " UTC")}.`,
           url: invite.url,
         });
         setMessage(
@@ -177,8 +182,8 @@ export function BondInvitation({
           </div>
           <p className="invite-consent">
             Choose when they’re ready: preparing a new invitation starts its
-            five-minute clock. Nothing is sent automatically. An existing
-            invitation keeps its original deadline.
+            24-hour clock. Nothing is sent automatically. An existing invitation
+            keeps its original deadline.
           </p>
           <p className="invite-consent">
             Choosing either path gives your consent as ATOM #{publicId} to
@@ -250,11 +255,14 @@ export function BondInvitation({
                 They’ll create or access their own Atom, then confirm your Bond
                 to connect your two Atoms.
               </p>
+              <p>
+                {isDayInvitation(invite.createdAt, invite.expiresAt)
+                  ? "INVITATION VALID FOR 24 HOURS"
+                  : "ORIGINAL INVITATION DEADLINE"}
+              </p>
               <p role="timer" aria-label="Invitation time remaining">
                 Invitation expires in:{" "}
-                {remaining === null
-                  ? "…"
-                  : `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`}
+                {remaining === null ? "…" : invitationTimeRemaining(remaining)}
               </p>
               <p className="invite-consent">
                 They must confirm before this deadline, including email

@@ -156,7 +156,7 @@ describe("mutually confirmed local Bond state machine", () => {
     expect(arrivalVisibility(1, 2)).toBe(1);
     expect(arrivalVisibility(1, 8)).toBe(1);
   });
-  it("creates a five-minute invitation and leaves the graph unchanged before confirmation", () => {
+  it("creates a 24-hour invitation and leaves the graph unchanged before confirmation", () => {
     const session = pending();
     expect(session.invite.state).toBe("EMAIL_VERIFICATION_PENDING");
     expect(session.invite.history).toEqual([
@@ -175,7 +175,7 @@ describe("mutually confirmed local Bond state machine", () => {
         session.invite.recipientId!,
       ),
     ).toThrow("Verify your email");
-    session.advance(299_999);
+    session.advance(86_399_999);
     expect(session.bonds.read(session.invite.code).state).toBe(
       "EMAIL_VERIFICATION_PENDING",
     );
@@ -244,7 +244,7 @@ describe("mutually confirmed local Bond state machine", () => {
     expect(() => session.bonds.identifyExisting(reverse.code, root)).toThrow(
       "already pending",
     );
-    session.advance(300_000);
+    session.advance(86_400_000);
     expect(() => session.bonds.confirm(code)).toThrow("expired");
     expect(session.bonds.graph()).toBe(graph);
     const fresh = session.bonds.createInvitation(root);

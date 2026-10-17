@@ -41,6 +41,9 @@ async function invitation(page: Page) {
   await expect(dialog.getByRole("timer")).toContainText(
     "Invitation expires in:",
   );
+  await expect(
+    dialog.getByText("INVITATION VALID FOR 24 HOURS", { exact: true }),
+  ).toBeVisible();
   const src = await dialog.getByRole("img").getAttribute("src");
   const png = PNG.sync.read(Buffer.from(src!.split(",")[1]!, "base64"));
   const qr = jsQR(new Uint8ClampedArray(png.data), png.width, png.height);
@@ -74,7 +77,7 @@ test("first invitation cancellation and expiry preserve the genuine zero-Bond st
   const expired = await invitation(page);
   expect(expired.url).not.toBe(cancelled.url);
   await page.clock.install();
-  await page.clock.fastForward(301000);
+  await page.clock.fastForward(86401000);
   await expect(
     expired.dialog.getByText(
       "Waiting for their confirmation. No Bond has been created yet.",
@@ -365,7 +368,7 @@ test("real QR transport, isolated recipients, consent, reciprocal graph, reuse a
   ).toBeVisible();
   const expiring = await invitation(page);
   await page.clock.install();
-  await page.clock.fastForward(301000);
+  await page.clock.fastForward(86401000);
   await expect(expiring.dialog.getByRole("img")).toHaveCount(0);
   await expect(
     expiring.dialog.getByText(/THIS BOND INVITATION HAS EXPIRED/),
@@ -448,13 +451,16 @@ test("invitation paths defer creation, share privately, fall back to copy, and r
     dialog.getByRole("button", { name: "SEND INVITATION", exact: true }),
   ).toBeVisible();
   expect(await count()).toBe(before + 1);
+  await expect(
+    dialog.getByText("INVITATION VALID FOR 24 HOURS", { exact: true }),
+  ).toBeVisible();
   const prepared = await snapshot();
   expect(
     Date.parse(prepared.latest.expiresAt) -
       Date.parse(prepared.latest.createdAt),
-  ).toBe(300000);
+  ).toBe(86400000);
   await expect(dialog.getByRole("timer")).toContainText(
-    /Invitation expires in: [45]:\d{2}/,
+    /Invitation expires in: (24h 00m|23h 59m)/,
   );
   await expect(dialog.getByRole("img")).toHaveCount(0);
   const send = dialog.getByRole("button", {
@@ -553,7 +559,7 @@ test("invitation paths defer creation, share privately, fall back to copy, and r
   });
   await expect(dialog.getByRole("timer")).toBeInViewport();
   await page.clock.install();
-  await page.clock.fastForward(301000);
+  await page.clock.fastForward(86401000);
   await expect(dialog.getByRole("img")).toHaveCount(0);
   await expect(
     dialog.getByRole("button", { name: "COPY LINK", exact: true }),
@@ -574,7 +580,7 @@ test("invitation paths defer creation, share privately, fall back to copy, and r
   expect(
     Date.parse(replacement.latest.expiresAt) -
       Date.parse(replacement.latest.createdAt),
-  ).toBe(300000);
+  ).toBe(86400000);
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
 });

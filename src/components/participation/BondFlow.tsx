@@ -7,6 +7,7 @@ import {
   type Invitation,
   type ParticipationServices,
 } from "../../services/participation/contracts";
+import { invitationTimeRemaining } from "../../utils/invitation-time";
 import { LocationField } from "./LocationField";
 import { normalizeXHandle, X_HANDLE_ERROR } from "../../utils/x-profile";
 
@@ -24,7 +25,9 @@ export function BondFlow({
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const [invite, setInvite] = useState(initial);
-  const [remaining, setRemaining] = useState(300);
+  const [remaining, setRemaining] = useState(() =>
+    Math.max(0, Math.ceil((initial.expiresAt - Date.now()) / 1000)),
+  );
   const [error, setError] = useState("");
   const [existing, setExisting] = useState(false);
   const [email, setEmail] = useState("");
@@ -132,8 +135,7 @@ export function BondFlow({
       </h2>
       {!result && !["DECLINED", "EXPIRED"].includes(invite.state) && (
         <p className="invitation-timer" data-testid="invitation-timer">
-          Expires in {String(Math.floor(remaining / 60)).padStart(2, "0")}:
-          {String(remaining % 60).padStart(2, "0")}
+          Expires in {invitationTimeRemaining(remaining)}
         </p>
       )}
       {error && (

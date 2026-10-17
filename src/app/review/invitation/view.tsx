@@ -79,11 +79,13 @@ export function InvitationReview({
               create={async () => {
                 if (invite && Date.parse(invite.expiresAt) > Date.now()) return;
                 setCreated((count) => count + 1);
+                const issuedAt = Date.now();
                 setInvite({
                   id: "synthetic",
                   image,
                   url,
-                  expiresAt: new Date(Date.now() + 300000).toISOString(),
+                  createdAt: new Date(issuedAt).toISOString(),
+                  expiresAt: new Date(issuedAt + 86400000).toISOString(),
                 });
               }}
               cancel={async () => {

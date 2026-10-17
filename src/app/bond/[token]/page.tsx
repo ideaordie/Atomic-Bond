@@ -41,6 +41,16 @@ export default async function BondPage({
     <>
       <h1>Confirm your Bond</h1>
       <p>Atom #{invite.creatorPublicId} has invited you to connect.</p>
+      <p>
+        Confirm before{" "}
+        <time dateTime={invite.expiresAt}>
+          {new Date(invite.expiresAt)
+            .toISOString()
+            .replace("T", " ")
+            .replace("Z", " UTC")}
+        </time>
+        . Opening this link does not extend its deadline.
+      </p>
       {inviter?.displayName && <h2>{inviter.displayName}</h2>}
       {inviter?.socialProfiles?.x && (
         <a

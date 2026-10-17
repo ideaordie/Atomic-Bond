@@ -191,7 +191,7 @@ test("existing Atom, duplicate prevention, decline, and expiration remain privat
   await expect(page.getByRole("dialog").getByRole("alert")).toHaveText(
     "YOU ARE ALREADY BONDED",
   );
-  await page.clock.fastForward(300_500);
+  await page.clock.fastForward(86_400_500);
   await expect(
     page.getByRole("heading", { name: "Invitation expired" }),
   ).toBeVisible();
