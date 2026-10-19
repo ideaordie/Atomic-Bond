@@ -62,6 +62,10 @@ export async function NetworkPage({
         </div>
         <span>See how connected we already are.</span>
         <ApplicationNavigation
+          evolve={
+            owner?.atom?.status === "ACTIVE" &&
+            process.env.EVOLVE_ENABLED === "true"
+          }
           owner={Boolean(ownerId)}
           puzzle={
             owner?.atom?.status === "ACTIVE" &&

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.19.0 — EVOLVE
+
+- Add moderated community ideas, equal support/withdrawal, private author acknowledgments and independent development history through existing verified ACTIVE-owner authorization.
+- Integrate EVOLVE navigation and secured Admin Hub review, preserving the approved Light/Dark interface and all unrelated application behavior.
+- Apply `202610210001_evolve.sql`: private RLS tables, transactional cooldown/support/lifecycle enforcement, bounded five-minute cleanup and administrator-only health monitoring. No new credential.
+- Freeze the approved EVOLVE-only Master Spec v0.9 amendment; preserve all earlier frozen specifications. Update only authority version references in AGENTS.md and the Build Blueprint.
+- Local unit/security, concurrency, persistence and EVOLVE browser checks passed. Three existing Pulse timeouts during concurrent suites passed unchanged on isolated reruns; no checks were weakened. Hosted acceptance and release evidence: `docs/proposals/EVOLVE_PRODUCTION_READINESS_v0.1.md`.
+
 ## v0.16.4.6 — 16× Map Zoom
 
 - Increase the map-only maximum zoom from 8× to 16×; preserve the 1× minimum/default and existing orbital zoom limits.

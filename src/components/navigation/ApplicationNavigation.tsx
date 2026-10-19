@@ -8,12 +8,14 @@ export function ApplicationNavigation({
   owner = false,
   doodle = false,
   puzzle = false,
+  evolve = false,
   current,
   hrefs = {},
 }: {
   owner?: boolean;
   doodle?: boolean;
   puzzle?: boolean;
+  evolve?: boolean;
   current?: string;
   hrefs?: Record<string, string>;
 }) {
@@ -30,7 +32,8 @@ export function ApplicationNavigation({
             (item) =>
               (!item.owner || owner) &&
               (item.href !== "/global-doodle" || doodle) &&
-              (item.href !== "/partici-puzzle" || puzzle),
+              (item.href !== "/partici-puzzle" || puzzle) &&
+              (item.href !== "/evolve" || evolve),
           )
           .map((item) => {
             const selected =

@@ -22,6 +22,13 @@ export default async function AdminPage() {
       <h1>ADMIN</h1>
       <p>Administrative tools and network operations.</p>
       <div className="admin-cards">
+        {process.env.EVOLVE_ENABLED === "true" && (
+          <article className="admin-card">
+            <h2>EVOLVE</h2>
+            <p>Review community ideas, decisions and development history.</p>
+            <Link href="/admin/evolve">REVIEW IDEAS</Link>
+          </article>
+        )}
         <article className="admin-card">
           <h2>PUZZLE STUDIO</h2>
           <p>

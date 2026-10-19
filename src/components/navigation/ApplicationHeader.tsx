@@ -17,6 +17,7 @@ export async function ApplicationHeader() {
     <header className="shared-application-header">
       <Link href="/">ATOMIC BOND</Link>
       <ApplicationNavigation
+        evolve={Boolean(active) && process.env.EVOLVE_ENABLED === "true"}
         owner={Boolean(active)}
         puzzle={
           Boolean(active) && process.env.PARTICI_PUZZLE_ENABLED === "true"

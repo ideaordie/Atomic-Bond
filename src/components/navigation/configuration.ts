@@ -3,6 +3,7 @@ export const navigationGroups = {
   applications: [
     { label: "GLOBAL DOODLE", href: "/global-doodle", owner: true },
     { label: "PARTICIPUZZLE", href: "/partici-puzzle", owner: true },
+    { label: "EVOLVE", href: "/evolve", owner: true },
   ],
   information: [
     { label: "ABOUT", href: "/about", owner: false },
