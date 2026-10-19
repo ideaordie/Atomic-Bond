@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.1 — EVOLVE UI cleanup
+
+- Remove EVOLVE’s redundant theme toggle and SHARE AN IDEA link; retain the global Settings theme and existing submission form.
+- Place EVOLVE immediately after MY ATOM in primary navigation, preserving routes and horizontal scrolling.
+
 ## v0.19.0 — EVOLVE
 
 - Add moderated community ideas, equal support/withdrawal, private author acknowledgments and independent development history through existing verified ACTIVE-owner authorization.

@@ -1,9 +1,9 @@
 export const navigationGroups = {
   core: [{ label: "MY ATOM", href: "/explore", owner: true }],
   applications: [
+    { label: "EVOLVE", href: "/evolve", owner: true },
     { label: "GLOBAL DOODLE", href: "/global-doodle", owner: true },
     { label: "PARTICIPUZZLE", href: "/partici-puzzle", owner: true },
-    { label: "EVOLVE", href: "/evolve", owner: true },
   ],
   information: [
     { label: "ABOUT", href: "/about", owner: false },

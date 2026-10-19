@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { selectAppearance, useAppearance } from "../appearance/appearance";
 import styles from "./view.module.css";
 
 const stages = [
@@ -35,7 +34,6 @@ export function EvolveView({
   local?: boolean;
   administrator?: boolean;
 }) {
-  const appearance = useAppearance();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [draft, setDraft] = useState("");
   const [attribution, setAttribution] = useState(false);
@@ -183,14 +181,6 @@ export function EvolveView({
     <main className={styles.page}>
       <header className={styles.header}>
         <span className="wordmark">ATOMIC BOND</span>
-        <button
-          onClick={() =>
-            selectAppearance(appearance === "dark" ? "light" : "dark")
-          }
-          aria-label={`Switch to ${appearance === "dark" ? "light" : "dark"} mode`}
-        >
-          {appearance === "dark" ? "LIGHT" : "DARK"}
-        </button>
       </header>
       <p className={styles.prototype}>
         {local ? "LOCAL DATABASE - SYNTHETIC DATA" : "SHAPED BY OUR COMMUNITY"}
@@ -214,9 +204,6 @@ export function EvolveView({
           Something could be simpler. Something could bring us closer.
           <br className={styles.desktopBreak} /> Start with one small idea.
         </p>
-        <a className={styles.primary} href="#suggestion">
-          SHARE AN IDEA <span aria-hidden="true">↗</span>
-        </a>
         <details className={styles.how}>
           <summary>How your contribution makes a difference</summary>
           <p>

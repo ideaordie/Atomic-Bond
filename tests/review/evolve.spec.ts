@@ -60,11 +60,46 @@ test("persistent authorized participation and private administrator review", asy
       .click();
     await expect(card).toContainText("0 support");
   }
+  await expect(
+    page.getByRole("button", { name: /Switch to .* mode/ }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "SHARE AN IDEA" })).toHaveCount(
+    0,
+  );
+  const links = page
+    .getByRole("navigation", { name: "Application navigation" })
+    .getByRole("link");
+  await expect(links).toHaveText([
+    "MY ATOM",
+    "EVOLVE",
+    "GLOBAL DOODLE",
+    "PARTICIPUZZLE",
+    "ABOUT",
+    "SETTINGS",
+  ]);
+  const destinations = [
+    "/explore",
+    "/evolve",
+    "/global-doodle",
+    "/partici-puzzle",
+    "/about",
+    "/owner",
+  ];
+  for (const [i, destination] of destinations.entries())
+    await expect(links.nth(i)).toHaveAttribute("href", destination);
+  await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
+  await links.last().scrollIntoViewIfNeeded();
+  await expect(links.last()).toBeInViewport();
   for (const theme of ["light", "dark"]) {
-    const toggle = page.getByRole("button", {
-      name: `Switch to ${theme} mode`,
-    });
-    if (await toggle.isVisible()) await toggle.click();
+    await page.evaluate((value) => {
+      localStorage.setItem("atomic-bond-appearance", value);
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "atomic-bond-appearance",
+          newValue: value,
+        }),
+      );
+    }, theme);
     await expect(page.locator("html")).toHaveAttribute(
       "data-appearance",
       theme,
