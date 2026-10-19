@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.20.1 — GLOBAL DOODLE eight-color activation
+
+- Activate the existing eight-color composer and version 2 submissions through the application and database feature gates; no application or migration changes.
+- Preserve version 1 artwork, dual-format readers, authorization, moderation, cooldowns and seven-day lifecycle.
+- Freeze the approved Section 48A amendment as Master Spec v0.10; preserve every earlier frozen specification and update only authority metadata.
+- Recovery disables new color submissions while retaining compatible readers, schema and artwork. Activation evidence and limitations: `docs/reviews/TASK_20_4_DOODLE_COLOR_ACTIVATION.md`.
+
 ## v0.20.0 — GLOBAL DOODLE color compatibility (Stage 1)
 
 - Publish version-aware editor, feed, Hall of Fame and moderation readers while keeping color submissions disabled. Preserve existing monochrome appearance and all Doodle lifecycle rules.
