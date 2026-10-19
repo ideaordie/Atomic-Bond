@@ -7,11 +7,13 @@ import { paintDoodle } from "./paint";
 export function DrawingCanvas({
   editor,
   tool,
+  color = 1,
   revision,
   onChange,
 }: {
   editor: DoodleEditor;
   tool: "draw" | "erase";
+  color?: number;
   revision: number;
   onChange: () => void;
 }) {
@@ -102,7 +104,7 @@ export function DrawingCanvas({
         keyboard.current = false;
         event.currentTarget.setPointerCapture(event.pointerId);
         pointer.current = event.pointerId;
-        editor.begin(point(event), tool === "draw");
+        editor.begin(point(event), tool === "draw", color);
         redraw();
       }}
       onPointerMove={(event) => {
@@ -136,7 +138,7 @@ export function DrawingCanvas({
         else if (event.key === "ArrowDown")
           next = Math.min(63, y + 1) * SIDE + x;
         else if (event.key === " " || event.key === "Enter") {
-          editor.begin(next, tool === "draw");
+          editor.begin(next, tool === "draw", color);
           editor.finish();
           onChange();
         } else return;
@@ -146,7 +148,7 @@ export function DrawingCanvas({
         redraw();
       }}
     >
-      Draw a monochrome image on a 64 by 64 dot grid.
+      Draw an image on a 64 by 64 dot grid.
     </canvas>
   );
 }

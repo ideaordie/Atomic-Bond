@@ -116,4 +116,18 @@ describe("Doodle ingress boundary", () => {
     expect(rate.status).toBe(429);
     expect(rate.headers.get("retry-after")).toBe("42");
   });
+  it("requires a dual-format reader before returning a color drawing", async () => {
+    const data = { items: [{ version: 2, bitmap: "color" }] };
+    const deps = { ...dependencies(), execute: async () => ({ data }) };
+    const old = await handleDoodle(request(), deps);
+    expect(old.status).toBe(409);
+    expect(await old.text()).not.toContain('"bitmap"');
+    const current = await handleDoodle(
+      request(undefined, { "X-Doodle-Formats": "1,2" }),
+      deps,
+    );
+    expect(current.status).toBe(200);
+    expect(await current.json()).toEqual({ data });
+    expect(current.headers.get("cache-control")).toBe("private, no-store");
+  });
 });

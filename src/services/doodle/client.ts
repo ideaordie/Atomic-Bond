@@ -2,6 +2,7 @@ export type DoodleItem = {
   id: string;
   atomNumber: string;
   bitmap: string;
+  version?: 1 | 2;
   publishedAt: string;
   expiresAt: string;
   score: number;
@@ -29,7 +30,7 @@ export const requestDoodle: DoodleRequest = async (
 ) => {
   const response = await fetch("/api/doodle", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "X-Doodle-Formats": "1,2" },
     body: JSON.stringify({ action, args }),
     cache: "no-store",
     signal: signal ?? null,

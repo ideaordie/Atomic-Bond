@@ -1,23 +1,27 @@
 "use client";
 import { useState } from "react";
 import { DoodleEditor, dotCount, type Drawing } from "./model";
+import { PALETTE } from "./palette";
 import { DrawingCanvas, DoodlePlayback } from "./DoodleCanvas";
 /** The approved editor tools and renderer, with a separate submission boundary. */
 export function DoodleComposer({
   onSubmit,
+  colorEnabled = false,
   busy,
   paused = false,
   simplified = false,
   editingLocked = false,
 }: {
   onSubmit: (drawing: Drawing) => Promise<boolean>;
+  colorEnabled?: boolean;
   busy: boolean;
   paused?: boolean;
   simplified?: boolean;
   editingLocked?: boolean;
 }) {
-  const [editor] = useState(() => new DoodleEditor());
+  const [editor] = useState(() => new DoodleEditor(colorEnabled ? 2 : 1));
   const [revision, setRevision] = useState(0);
+  const [color, setColor] = useState(1);
   const [tool, setTool] = useState<"draw" | "erase">("draw");
   const [preview, setPreview] = useState<Drawing | null>(null);
   const [clear, setClear] = useState(false);
@@ -65,9 +69,36 @@ export function DoodleComposer({
               CLEAR
             </button>
           </div>
+          {editor.version === 2 && (
+            <div
+              className="doodle-palette"
+              role="group"
+              aria-label="Drawing colors"
+            >
+              {PALETTE.map((entry, index) => (
+                <button
+                  key={entry.name}
+                  type="button"
+                  aria-label={entry.name}
+                  aria-pressed={color === index + 1 && tool === "draw"}
+                  onClick={() => {
+                    setColor(index + 1);
+                    setTool("draw");
+                  }}
+                >
+                  <span
+                    aria-hidden="true"
+                    style={{ backgroundColor: entry.hex }}
+                  />
+                  {entry.name}
+                </button>
+              ))}
+            </div>
+          )}
           <DrawingCanvas
             editor={editor}
             tool={tool}
+            color={color}
             revision={revision}
             onChange={changed}
           />

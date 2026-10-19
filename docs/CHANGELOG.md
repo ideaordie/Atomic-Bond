@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.20.0 — GLOBAL DOODLE color compatibility (Stage 1)
+
+- Publish version-aware editor, feed, Hall of Fame and moderation readers while keeping color submissions disabled. Preserve existing monochrome appearance and all Doodle lifecycle rules.
+- Promote the reviewed `202610220001_doodle_indexed_color.sql` migration: immutable format identification, bounded indexed-color/replay validation and version-aware fingerprints; deploy compatible readers before applying it.
+- Keep `GLOBAL_DOODLE_COLOR_ENABLED` absent/false and the new database `color_submissions` gate false. No public color test drawings or Stage 2 activation are authorized by this release.
+- Preserve frozen Master Spec v0.9; v0.10 remains a proposal. Preflight and recovery details: `docs/reviews/TASK_20_2_DOODLE_COLOR_PREFLIGHT.md`.
+
 ## v0.19.1 — EVOLVE UI cleanup
 
 - Remove EVOLVE’s redundant theme toggle and SHARE AN IDEA link; retain the global Settings theme and existing submission form.

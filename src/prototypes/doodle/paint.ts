@@ -1,4 +1,5 @@
-import { hasDot, SIDE } from "./model";
+import { hasDot, SIDE, COLOR_BYTES, pixel } from "./model";
+import { PALETTE, contrast } from "./palette";
 export function paintDoodle(
   canvas: HTMLCanvasElement,
   bits: Uint8Array,
@@ -29,17 +30,34 @@ export function paintDoodle(
     }
     ctx.fill();
   }
-  ctx.fillStyle = style.color;
-  ctx.beginPath();
-  for (let p = 0; p < SIDE * SIDE; p++)
-    if (hasDot(bits, p)) {
-      const x = ((p % SIDE) + 0.5) * step,
-        y = (Math.floor(p / SIDE) + 0.5) * step,
-        r = step * 0.38;
-      ctx.moveTo(x + r, y);
-      ctx.arc(x, y, r, 0, Math.PI * 2);
+  const colored = bits.length === COLOR_BYTES;
+  for (let index = 1; index <= (colored ? 8 : 1); index++) {
+    const fill = colored ? PALETTE[index - 1]!.hex : style.color;
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    for (let p = 0; p < SIDE * SIDE; p++)
+      if (colored ? pixel(bits, p) === index : hasDot(bits, p)) {
+        const x = ((p % SIDE) + 0.5) * step,
+          y = (Math.floor(p / SIDE) + 0.5) * step,
+          r = step * 0.38;
+        ctx.moveTo(x + r, y);
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+      }
+    ctx.fill();
+    // Literal black/white/yellow need a contrasting edge on some themes.
+    // Keep the occupied dot's outside radius unchanged; legacy ink is untouched.
+    if (
+      colored &&
+      contrast(fill, style.getPropertyValue("--surface").trim()) < 3
+    ) {
+      ctx.strokeStyle = style.color;
+      ctx.lineWidth = Math.min(0.65, step * 0.15);
+      ctx.save();
+      ctx.clip();
+      ctx.stroke();
+      ctx.restore();
     }
-  ctx.fill();
+  }
   if (cursor !== null) {
     ctx.strokeStyle = style.color;
     ctx.lineWidth = 1.5;

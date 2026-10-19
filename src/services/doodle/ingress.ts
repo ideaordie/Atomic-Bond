@@ -99,6 +99,13 @@ export async function handleDoodle(
         },
         result.retryAfterSeconds,
       );
+    if (
+      request.headers.get("X-Doodle-Formats") !== "1,2" &&
+      containsColorDrawing(result.data)
+    )
+      return reply(409, {
+        error: "Reload Atomic Bond to view color drawings.",
+      });
     return reply(200, { data: result.data });
   } catch {
     return reply(403, {
@@ -108,4 +115,15 @@ export async function handleDoodle(
     clearTimeout(timer);
     reader.releaseLock();
   }
+}
+
+/** Capability negotiation prevents old open tabs from feeding v2 into a v1 decoder. */
+export function containsColorDrawing(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  if (Array.isArray(value)) return value.some(containsColorDrawing);
+  const record = value as Record<string, unknown>;
+  return (
+    (record.version === 2 && typeof record.bitmap === "string") ||
+    Object.values(record).some(containsColorDrawing)
+  );
 }

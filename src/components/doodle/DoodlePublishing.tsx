@@ -18,9 +18,11 @@ type Published = {
 };
 export function DoodlePublishing({
   request = requestDoodle,
+  colorEnabled = false,
   returnHref = "/explore",
 }: {
   request?: DoodleRequest;
+  colorEnabled?: boolean;
   returnHref?: string;
 }) {
   const [published, setPublished] = useState<Published | null>(null),
@@ -128,13 +130,14 @@ export function DoodlePublishing({
       ) : (
         <>
           <p>
-            Monochrome drawings remain live for 7 days. Do not include private
-            information.
+            {colorEnabled ? "Color drawings" : "Monochrome drawings"} remain
+            live for 7 days. Do not include private information.
           </p>
           {paused && <p role="status">NEW SUBMISSIONS PAUSED</p>}
           {remaining > 0 && <p>Next submission in {wait}</p>}
           <DoodleComposer
             key={revision}
+            colorEnabled={colorEnabled}
             simplified
             editingLocked={retry}
             busy={busy}

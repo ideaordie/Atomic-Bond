@@ -350,6 +350,7 @@ function DoodleFeedWindow({
           <article key={item.id} data-doodle-id={item.id}>
             <DoodleBitmap
               bitmap={item.bitmap}
+              version={item.version ?? 1}
               label={`Drawing by Atom #${item.atomNumber}`}
             />
             <p>

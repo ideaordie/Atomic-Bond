@@ -25,7 +25,9 @@ export default async function DoodlePage() {
   return (
     <>
       <ApplicationHeader />
-      <DoodlePublishing />
+      <DoodlePublishing
+        colorEnabled={process.env.GLOBAL_DOODLE_COLOR_ENABLED === "true"}
+      />
     </>
   );
 }

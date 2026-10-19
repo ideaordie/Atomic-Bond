@@ -16,6 +16,7 @@ type Item = {
   id: string;
   atomNumber: string;
   bitmap: string;
+  version?: 1 | 2;
   publishedAt: string;
   expiresAt: string;
   score: number;
@@ -45,21 +46,23 @@ type Queue = { threshold: number; submissionsPaused: boolean; items: Item[] };
 
 function Bitmap({
   bitmap,
+  version = 1,
   description,
 }: {
   bitmap: string;
+  version?: 1 | 2;
   description: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const appearance = useAppearance();
   useEffect(() => {
     const node = ref.current!;
-    const draw = () => paintDoodle(node, decode(bitmap));
+    const draw = () => paintDoodle(node, decode(bitmap, version));
     const observer = new ResizeObserver(draw);
     observer.observe(node);
     draw();
     return () => observer.disconnect();
-  }, [bitmap, appearance]);
+  }, [bitmap, version, appearance]);
   return (
     <canvas
       ref={ref}
@@ -69,7 +72,7 @@ function Bitmap({
     />
   );
 }
-function ReplayReview({ drawing }: { drawing: Drawing }) {
+export function ReplayReview({ drawing }: { drawing: Drawing }) {
   const [step, setStep] = useState(0);
   const ref = useRef<HTMLCanvasElement>(null);
   const appearance = useAppearance();
@@ -196,7 +199,10 @@ export function DoodleProductionReview({
         production ? "/api/doodle" : "/api/review/doodle",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-Doodle-Formats": "1,2",
+          },
           body: JSON.stringify(
             production ? { action, args } : { actor, action, args },
           ),
@@ -337,6 +343,7 @@ export function DoodleProductionReview({
           </div>
           <Bitmap
             bitmap={item.bitmap}
+            version={item.version ?? 1}
             description={`Drawing by synthetic Atom ${item.atomNumber}`}
           />
           <p className="doodle-help">
@@ -682,6 +689,7 @@ export function DoodleProductionReview({
                   <article key={item.id}>
                     <Bitmap
                       bitmap={item.bitmap}
+                      version={item.version ?? 1}
                       description="Private review thumbnail"
                     />
                     <div>

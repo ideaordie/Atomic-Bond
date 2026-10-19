@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import {
   createDoodleFixture,
   fixtureDrawing,
+  doodleColorMigrationSql,
 } from "../tests/helpers/doodle-fixture.mjs";
 const root = resolve("artifacts/database-tests");
 await mkdir(root, { recursive: true });
@@ -71,6 +72,22 @@ try {
     ),
     drawing = fixtureDrawing(),
     key = randomUUID();
+  if (process.env.DOODLE_COLOR_REVIEW === "true") {
+    await admin.query(await doodleColorMigrationSql());
+    await admin.query(
+      "update private.doodle_settings set color_submissions=true",
+    );
+    const bits = Buffer.alloc(2048);
+    bits[0] = 0x81;
+    Object.assign(drawing, {
+      version: 2,
+      bitmap: bits.toString("base64"),
+      strokes: [
+        { draw: true, color: 1, points: [0] },
+        { draw: true, color: 8, points: [1] },
+      ],
+    });
+  }
   const submissions = await Promise.all(
     Array.from({ length: 12 }, () => f.rpc(1, "submit_doodle", [key, drawing])),
   );

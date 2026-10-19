@@ -33,6 +33,9 @@ export async function createDoodleFixture(
         !f.startsWith("202610170002") &&
         !f.startsWith("202610170003") &&
         !f.startsWith("202610190001") &&
+        // Historical fixtures deliberately retain their selected format/lifetime.
+        // Color acceptance explicitly applies the candidate through the helper below.
+        !f.startsWith("202610220001") &&
         (next || !/^20261012000[23]/.test(f)) &&
         (sevenDays || !f.startsWith("202610130001")),
     )
@@ -164,4 +167,15 @@ export async function seedDoodleReview(f, lifetime = 60) {
     await f.rpc(voter, "appreciate_doodle", [live]);
   await f.rpc(12, "submit_doodle", [randomUUID(), fixtureDrawing(25)]);
   return { live };
+}
+
+// Works before and after the approved candidate is promoted into the release chain.
+export async function doodleColorMigrationSql() {
+  const name = "202610220001_doodle_indexed_color.sql";
+  try {
+    return await readFile("supabase/migrations/" + name, "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+    return readFile("supabase/candidates/" + name, "utf8");
+  }
 }
