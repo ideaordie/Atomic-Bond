@@ -90,6 +90,9 @@ export async function NetworkPage({
       ) : ownView && ownerId && owner ? (
         <>
           <OwnerExperience
+            directRequestsEnabled={
+              process.env.DIRECT_BOND_REQUESTS_ENABLED === "true"
+            }
             activeOwner={owner.atom?.status === "ACTIVE"}
             graph={source.graph}
             publicId={ownerId}

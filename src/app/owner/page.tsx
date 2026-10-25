@@ -19,6 +19,10 @@ export default async function OwnerPage() {
     <main>
       <ApplicationHeader />
       <OwnerSettings
+        directRequestsEnabled={
+          atom?.status === "ACTIVE" &&
+          process.env.DIRECT_BOND_REQUESTS_ENABLED === "true"
+        }
         publicId={atom!.publicId!}
         alias={atom!.alias}
         xHandle={atom!.xHandle}

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.21.0 — Direct Bond Requests
+
+- Add private recipient-bound requests between eligible indirectly connected ACTIVE Atoms, with explicit acceptance, dismissal, decline, cancellation and Settings opt-out.
+- Preserve external 24-hour invitations and existing authentication. Enforce seven-day expiry, five sends per rolling 24 hours, ten outstanding and thirty-day decline retry protection.
+- Promote `202610250001_direct_bond_requests.sql`; use gated activation, dedicated SDK throttling and bounded scheduled cleanup. Preserve existing Bonds and records on recovery.
+- Freeze the exact approved Direct Bond Requests amendment as Master Spec v0.11; preserve all earlier frozen specifications.
+- Publication evidence and limitations: `docs/reviews/TASK_21_2_DIRECT_BOND_PUBLICATION.md`.
+
 ## v0.20.1 — GLOBAL DOODLE eight-color activation
 
 - Activate the existing eight-color composer and version 2 submissions through the application and database feature gates; no application or migration changes.

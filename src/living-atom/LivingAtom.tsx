@@ -41,6 +41,7 @@ export interface LivingAtomProps {
   firstBond?: boolean;
   firstBondBegun?: boolean;
   informationPanel?: React.ReactNode;
+  requestAction?: (publicNumber: string) => React.ReactNode;
   ownerMode?: boolean;
   synthetic?: boolean;
   emotional?: {
@@ -63,6 +64,7 @@ export function LivingAtom({
   firstBond = false,
   firstBondBegun = false,
   informationPanel,
+  requestAction,
   graph,
   originalAtomId,
   onCreateBond,
@@ -478,6 +480,9 @@ export function LivingAtom({
       )}
       {inspectedId && graph.nodes.some((node) => node.id === inspectedId) && (
         <AtomContextPanel
+          requestAction={requestAction?.(
+            graph.nodes.find((node) => node.id === inspectedId)!.publicId,
+          )}
           ownerMode={ownerMode}
           graph={graph}
           centerId={selectedId}

@@ -1,4 +1,5 @@
 "use client";
+import { DirectPreference } from "../direct-bonds/DirectRequests";
 import { InstallOffer } from "../pwa/InstallOffer";
 import { AppearancePreference } from "../appearance/AppearancePreference";
 import { MotionPreference } from "../appearance/MotionPreference";
@@ -22,12 +23,14 @@ function SignOutButton() {
   );
 }
 export function OwnerSettings({
+  directRequestsEnabled = false,
   publicId,
   alias,
   xHandle,
   preferences,
   homeRegion,
 }: {
+  directRequestsEnabled?: boolean;
   publicId: string;
   alias: string | null;
   xHandle: string | null;
@@ -109,6 +112,7 @@ export function OwnerSettings({
       </form>
       {homeRegion && <HomeRegionEditor current={homeRegion} />}
       <WeeklyGrowthPreference enabled={preferences.growthDigest === "weekly"} />
+      {directRequestsEnabled && <DirectPreference />}
       <AppearancePreference />
       <MotionPreference />
       <InstallOffer preferences />

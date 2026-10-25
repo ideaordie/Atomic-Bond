@@ -17,6 +17,7 @@ export function AtomContextPanel({
   activePulse,
   pulseNow = 0,
   ownerMode = true,
+  requestAction,
 }: {
   graph: GraphData;
   centerId: string;
@@ -27,6 +28,7 @@ export function AtomContextPanel({
   activePulse?: EmotionalPulse;
   pulseNow?: number;
   ownerMode?: boolean;
+  requestAction?: React.ReactNode;
 }) {
   const [openedAt, setOpenedAt] = useState(() => Date.now());
   useEffect(() => {
@@ -152,6 +154,11 @@ export function AtomContextPanel({
             : context.bondedAt.slice(0, 10)}
         </p>
       )}
+      {ownerMode &&
+        !deleted &&
+        context.distance !== undefined &&
+        context.distance > 1 &&
+        requestAction}
       <button
         type="button"
         className="view-network"

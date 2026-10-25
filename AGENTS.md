@@ -4,18 +4,18 @@
 
 Before performing substantial work in this repository, read:
 
-1. `docs/MASTER_SPEC_v0.10.md`
+1. `docs/MASTER_SPEC_v0.11.md`
 2. `docs/BUILD_BLUEPRINT_v0.1.md`
 
 The Master Product Specification defines what Atomic Bond is.
 
-The Master Product Specification v0.10 (`docs/MASTER_SPEC_v0.10.md`) is the authoritative FROZEN product specification.
+The Master Product Specification v0.11 (`docs/MASTER_SPEC_v0.11.md`) is the authoritative FROZEN product specification.
 
-Master Product Specification v0.10 supersedes v0.9.
+Master Product Specification v0.11 supersedes v0.10.
 
-v0.1, v0.2, v0.3, v0.4, v0.5, v0.6, v0.7, v0.8 and v0.9 are historical only and remain unchanged.
+v0.1, v0.2, v0.3, v0.4, v0.5, v0.6, v0.7, v0.8, v0.9 and v0.10 are historical only and remain unchanged.
 
-If another document conflicts with v0.10, v0.10 takes precedence.
+If another document conflicts with v0.11, v0.11 takes precedence.
 
 Do not modify, reinterpret, replace, or silently contradict the Master Product Specification.
 

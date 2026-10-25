@@ -1,4 +1,5 @@
 "use client";
+import { DirectRequests, RequestAction } from "../direct-bonds/DirectRequests";
 import { NetworkSignal } from "../signals/NetworkSignal";
 import { InstallOffer } from "../pwa/InstallOffer";
 
@@ -29,6 +30,7 @@ export function OwnerExperience({
   initialFirstBond = false,
   activeOwner = false,
   showInstallOffer = true,
+  directRequestsEnabled = false,
 }: {
   graph: GraphData;
   publicId: string;
@@ -37,7 +39,12 @@ export function OwnerExperience({
   initialFirstBond?: boolean;
   activeOwner?: boolean;
   showInstallOffer?: boolean;
+  directRequestsEnabled?: boolean;
 }) {
+  const [requestsReady, setRequestsReady] = useState(
+    !directRequestsEnabled || !activeOwner,
+  );
+  const [requestDialog, setRequestDialog] = useState(false);
   const [graph, setGraph] = useState(initialGraph);
   const [arrival, setArrival] = useState(initialArrivalId);
   const graphRef = useRef(initialGraph);
@@ -169,26 +176,45 @@ export function OwnerExperience({
     );
   return (
     <>
-      {showInstallOffer && <InstallOffer />}
-      <LivingAtom
-        authorizeMap={async () => {
-          const result = await ownerGeographicNetwork();
+      {showInstallOffer && requestsReady && !requestDialog && <InstallOffer />}
+      <DirectRequests
+        enabled={directRequestsEnabled && activeOwner}
+        blocked={invitationOpen}
+        onReady={() => setRequestsReady(true)}
+        onDialog={setRequestDialog}
+        onAccepted={async () => {
+          const result = await refreshOwnerNetwork();
           graphRef.current = result.graph;
           setGraph(result.graph);
-          return result;
+          setPulses(result.pulses);
+          setNotice("BOND CREATED");
         }}
-        mapAccessAvailable={status !== "unavailable" && status !== "offline"}
-        firstBond={firstBond}
-        firstBondBegun={notice === "YOUR NETWORK HAS BEGUN"}
-        informationPanel={<NetworkSignal />}
-        graph={graph}
-        originalAtomId={publicId}
-        synthetic={false}
-        creatingBond={creating}
-        arrivalId={arrival}
-        emotional={{ pulses, now, send, updatedAt, status }}
-        onCreateBond={() => setInvitationOpen(true)}
-      />
+      >
+        <LivingAtom
+          requestAction={
+            directRequestsEnabled && activeOwner
+              ? (target) => <RequestAction key={target} target={target} />
+              : () => null
+          }
+          authorizeMap={async () => {
+            const result = await ownerGeographicNetwork();
+            graphRef.current = result.graph;
+            setGraph(result.graph);
+            return result;
+          }}
+          mapAccessAvailable={status !== "unavailable" && status !== "offline"}
+          firstBond={firstBond}
+          firstBondBegun={notice === "YOUR NETWORK HAS BEGUN"}
+          informationPanel={<NetworkSignal />}
+          graph={graph}
+          originalAtomId={publicId}
+          synthetic={false}
+          creatingBond={creating}
+          arrivalId={arrival}
+          emotional={{ pulses, now, send, updatedAt, status }}
+          onCreateBond={() => setInvitationOpen(true)}
+        />
+      </DirectRequests>
       <p className="bond-update" role="status">
         {notice === "YOUR NETWORK HAS BEGUN" ? "" : notice}
       </p>
