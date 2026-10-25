@@ -68,7 +68,7 @@ describe("public Atom identity context", () => {
       expect(html).toContain('href="https://x.com/example_user"');
       expect(html).toContain("Ownership not verified");
     }
-    expect(html).toContain("View their network");
+    expect(html).toContain("VIEW THEIR NETWORK");
   });
   it("keeps direct and indirect context anchored to you after changing perspective", () => {
     expect(render(base, "friend")).toContain("Directly Bonded to you");
