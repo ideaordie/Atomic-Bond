@@ -54,7 +54,9 @@ export function RequestAction({
   }
   return (
     <div className="direct-action">
-      {state.pending && <p role="status">REQUEST PENDING</p>}
+      <p className="direct-action-status" role="status">
+        {state.pending ? "REQUEST PENDING" : ""}
+      </p>
       <button
         className="view-network"
         disabled={busy}

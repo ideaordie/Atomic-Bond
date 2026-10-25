@@ -154,19 +154,21 @@ export function AtomContextPanel({
             : context.bondedAt.slice(0, 10)}
         </p>
       )}
-      {ownerMode &&
-        !deleted &&
-        context.distance !== undefined &&
-        context.distance > 1 &&
-        requestAction}
-      <button
-        type="button"
-        className="view-network"
-        onClick={onView}
-        disabled={atomId === centerId}
-      >
-        View their network <span aria-hidden="true">↗</span>
-      </button>
+      <div className="context-actions">
+        {ownerMode &&
+          !deleted &&
+          context.distance !== undefined &&
+          context.distance > 1 &&
+          requestAction}
+        <button
+          type="button"
+          className="view-network"
+          onClick={onView}
+          disabled={atomId === centerId}
+        >
+          VIEW THEIR NETWORK <span aria-hidden="true">↗</span>
+        </button>
+      </div>
     </aside>
   );
 }

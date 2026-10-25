@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.21.1 — Direct Bond Request button presentation
+
+- Group Atom-panel actions in one sticky area with matching dimensions and stable request/loading/cancel positioning.
+- Capitalize VIEW THEIR NETWORK and preserve REQUEST DIRECT BOND / CANCEL REQUEST actions. Use paired theme tokens for readable hover and pressed states.
+- Local synthetic interaction/layout checks passed in Light/Dark at 390 × 844, 768 × 1024 and 1440 × 900, including keyboard focus and one-action submission. TypeScript, lint, formatting, production build and secret scan passed. Physical-device acceptance remains pending.
+- No backend, authentication, database, action-handler, feature-setting or frozen Master Spec v0.11 changes.
+
 ## v0.21.0 — Direct Bond Requests
 
 - Add private recipient-bound requests between eligible indirectly connected ACTIVE Atoms, with explicit acceptance, dismissal, decline, cancellation and Settings opt-out.

@@ -298,9 +298,13 @@
   letter-spacing: 0.04em;
   margin: 12px 0 0;
 }
-.atom-context .view-network {
+.atom-context .context-actions {
   position: sticky;
   bottom: 0;
+  display: grid;
+  gap: 0.6rem;
+  background: var(--surface);
+  padding-block: 0.4rem;
 }
 .context-title {
   display: flex;
@@ -651,6 +655,11 @@
 .living-atom .view-network {
   background: var(--accent);
   color: var(--on-accent);
+}
+.living-atom .view-network:hover,
+.living-atom .view-network:active {
+  background: var(--surface-muted);
+  color: var(--text);
 }
 .scale-controls button[aria-pressed="true"] {
   background: var(--surface-muted);
